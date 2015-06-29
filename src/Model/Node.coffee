@@ -72,7 +72,7 @@ the appropriate Node(s) when certain calls are made--basically whenever we go
 
 _ = require "underscore"
 
-module.exports = node = {
+module.exports = Node = {
   constructor: ->
     @_master = null
     @_variants = []
@@ -243,4 +243,4 @@ module.exports = node = {
 
 }
 
-node.constructor()
+Node.constructor()

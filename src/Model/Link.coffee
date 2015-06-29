@@ -1,6 +1,6 @@
-node = require "./node"
+Node = require "./Node"
 
-module.exports = link = node.createVariant {
+module.exports = Link = Node.createVariant {
   setTarget: (@_target) ->
 
   target: ->

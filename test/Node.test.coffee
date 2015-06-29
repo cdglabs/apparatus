@@ -1,28 +1,28 @@
 test = require("tape")
 
-node = require("../src/Model/node")
+Node = require("../src/Model/Node")
 
 
 test "basic prototype works", (t) ->
-  a = node.createVariant({foo: 20})
+  a = Node.createVariant({foo: 20})
   b = a.createVariant()
   t.equal(b.foo, 20)
   t.end()
 
 test "chaining constructors works", (t) ->
   called = false
-  a = node.createVariant {
+  a = Node.createVariant {
     constructor: ->
       called = true
-      node.constructor.apply(this, arguments)
+      Node.constructor.apply(this, arguments)
   }
   t.ok(called)
   t.end()
 
 test "adding/removing children changes parent", (t) ->
-  a = node.createVariant()
-  b = node.createVariant()
-  c = node.createVariant()
+  a = Node.createVariant()
+  b = Node.createVariant()
+  c = Node.createVariant()
 
   a.addChild(b)
   a.addChild(c)
@@ -38,10 +38,10 @@ test "adding/removing children changes parent", (t) ->
   t.end()
 
 test "creating variants copies structure", (t) ->
-  a = node.createVariant()
-  b = node.createVariant()
-  c = node.createVariant()
-  d = node.createVariant()
+  a = Node.createVariant()
+  b = Node.createVariant()
+  c = Node.createVariant()
+  d = Node.createVariant()
 
   a.addChild(b)
   a.addChild(c)
@@ -55,11 +55,11 @@ test "creating variants copies structure", (t) ->
   t.end()
 
 test "changing structure changes variants", (t) ->
-  a = node.createVariant()
+  a = Node.createVariant()
   a2 = a.createVariant()
 
-  b = node.createVariant()
-  c = node.createVariant()
+  b = Node.createVariant()
+  c = Node.createVariant()
   a.addChild(b)
   a.addChild(c)
 
@@ -71,7 +71,7 @@ test "changing structure changes variants", (t) ->
   t.end()
 
 test "adding a variant as a child (to create recursion) does not crash / overflow", (t) ->
-  a = node.createVariant()
+  a = Node.createVariant()
   a2 = a.createVariant()
 
   a.addChild(a2)

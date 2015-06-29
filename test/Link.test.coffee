@@ -1,19 +1,19 @@
 test = require "tape"
 
-node = require "../src/Model/node"
-link = require "../src/Model/link"
+Node = require "../src/Model/Node"
+Link = require "../src/Model/Link"
 
 test "Links point analogously", (t) ->
-  a = node.createVariant()
-  b = node.createVariant()
-  c = node.createVariant()
+  a = Node.createVariant()
+  b = Node.createVariant()
+  c = Node.createVariant()
   a.addChild(b)
   a.addChild(c)
 
   a2 = a.createVariant()
   [b2, c2] = a.children()
 
-  l = link.createVariant()
+  l = Link.createVariant()
   b.addChild(l)
   l.setTarget(c)
 
