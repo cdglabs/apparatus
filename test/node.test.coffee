@@ -4,10 +4,19 @@ node = require("../src/Model/node")
 
 
 test "basic prototype works", (t) ->
-  a = node.createVariant()
+  a = node.createVariant({foo: 20})
   b = a.createVariant()
-  a.foo = 20
   t.equal(b.foo, 20)
+  t.end()
+
+test "chaining constructors works", (t) ->
+  called = false
+  a = node.createVariant {
+    constructor: ->
+      called = true
+      node.constructor.apply(this, arguments)
+  }
+  t.ok(called)
   t.end()
 
 test "adding/removing children changes parent", (t) ->
