@@ -1,3 +1,5 @@
+_ = require "underscore"
+
 Node = require "./Node"
 Link = require "./Link"
 Attribute = require "./Attribute"

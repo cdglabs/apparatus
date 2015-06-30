@@ -1,4 +1,3 @@
-react
 outline view
 
 summary descriptions of modules

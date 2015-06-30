@@ -2,6 +2,7 @@
   "name": "Apparatus",
   "version": "0.4.0",
   "dependencies": {
+    "react": "^0.13.3",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -12,8 +13,10 @@
     "watchify": "^3.2.3"
   },
   "scripts": {
-    "build-js": "browserify src/index.coffee -o dist/apparatus.js -t coffeeify",
-    "watch-js": "watchify src/index.coffee -o dist/apparatus.js -t coffeeify -dv",
+    "build-js": "browserify src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\"",
+    "watch-js": "watchify src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\" -dv",
+    "build": "npm run build-js",
+    "watch": "npm run watch-js",
     "test": "coffeetape test/*.coffee"
   }
 }
