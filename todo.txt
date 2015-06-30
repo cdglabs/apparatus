@@ -1,3 +1,19 @@
 outline view
 
-summary descriptions of modules
+
+Outline
+  Expand/collapse
+  Reorder with drag
+
+Layout
+
+Inspector
+
+
+
+How is Editor modeled? Where is state stored? Is UI state in Editor? Where is state persisted?
+
+
+
+Documentation
+  summary descriptions of modules

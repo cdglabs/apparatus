@@ -1,12 +1,20 @@
+_ = require "underscore"
+Util = require "../Util/Util"
+Dataflow = require "../Dataflow/Dataflow"
 Node = require "./Node"
 Link = require "./Link"
+
+
+ReferenceLink = Link.createVariant()
 
 module.exports = Attribute = Node.createVariant
   constructor: ->
     # Call "super"
     Node.constructor.apply(this, arguments)
 
-    # TODO: set up cell
+    @__cell = new Dataflow.Cell -> throw "Attribute not initialized"
+
+  value: -> @__cell.value()
 
   setExpression: (exprString, references={}) ->
     @exprString = ""+exprString
@@ -20,11 +28,9 @@ module.exports = Attribute = Node.createVariant
       referenceLink = ReferenceLink.createVariant()
       referenceLink.key = key
       referenceLink.setTarget(attribute)
+      @addChild(referenceLink)
 
-    @_setDirty()
-
-  _setDirty: ->
-    # TODO
+    @_compile()
 
   references: ->
     references = {}
@@ -34,6 +40,45 @@ module.exports = Attribute = Node.createVariant
       references[key] = attribute
     return references
 
+  hasReferences: -> _.any(@references(), -> true)
 
+  isNumber: ->
+    return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(@exprString)
 
-ReferenceLink = Link.createVariant()
+  _compile: ->
+    if @isNumber()
+      value = parseFloat(@exprString)
+      @_setFn -> value
+      return
+
+    wrapped = @_wrapped()
+    compiled = Util.jsEvaluate(wrapped)
+
+    if !@hasReferences()
+      value = compiled()
+      @_setFn -> value
+      return
+
+    @_setFn =>
+      referenceValues = _.mapObject @references(), (attribute) ->
+        attribute.value()
+      return compiled(referenceValues)
+
+  _setFn: (fn) ->
+    @__cell.fn = fn
+    @__cell.invalidate()
+
+  _wrapped: ->
+    result    = "'use strict';\n"
+    result   += "(function ($$$referenceValues) {\n"
+
+    for referenceKey, referenceAttribute of @references()
+      result += "  var #{referenceKey} = $$$referenceValues.#{referenceKey};\n"
+
+    if @exprString.indexOf("return") == -1
+      result += "  return #{@exprString};\n"
+    else
+      result += "\n\n#{exprString}\n\n"
+
+    result   += "});"
+    return result
