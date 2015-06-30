@@ -1,0 +1,29 @@
+// ============================================================================
+// Mixins
+// ============================================================================
+
+inline(va)
+  display inline-block
+  vertical-align va
+
+shadow(size, opacity)
+  box-shadow 0px size 2*size rgba(0, 0, 0, opacity)
+
+
+// ============================================================================
+// Generic
+// ============================================================================
+
+html, body
+  margin 0
+
+[contenteditable]:active, [contenteditable]:focus, button:active, button:focus
+  outline none
+
+[contenteditable]
+  cursor text
+
+body
+  font-family "Lucida Sans Unicode", "Lucida Grande", sans-serif
+  font-size 12px
+  color #333

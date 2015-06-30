@@ -9,14 +9,17 @@
     "browserify": "^10.2.4",
     "coffeeify": "^1.1.0",
     "coffeetape": "^1.0.1",
+    "stylus": "^0.51.1",
     "tape": "^4.0.0",
     "watchify": "^3.2.3"
   },
   "scripts": {
     "build-js": "browserify src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\"",
     "watch-js": "watchify src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\" -dv",
-    "build": "npm run build-js",
-    "watch": "npm run watch-js",
+    "build-css": "stylus style/index.styl --out dist/apparatus.css",
+    "watch-css": "stylus style/index.styl --out dist/apparatus.css -w",
+    "build": "npm run build-js && npm run build-css",
+    "watch": "npm run watch-js & npm run watch-css",
     "test": "coffeetape test/*.coffee"
   }
 }
