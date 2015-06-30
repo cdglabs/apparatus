@@ -1,6 +1,3 @@
-elements
-attributes
-
 react
 outline view
 

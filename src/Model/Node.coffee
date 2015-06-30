@@ -241,6 +241,16 @@ module.exports = Node = {
       return @isAncestorOf(parent)
     return false
 
+  addChildren: (children) ->
+    @addChild(child) for child in children
+
+  childrenOfType: (type) ->
+    _.filter @children(), (child) -> child.isVariantOf(type)
+
+  childOfType: (type) ->
+    _.find @children(), (child) -> child.isVariantOf(type)
+
+
 }
 
 Node.constructor()
