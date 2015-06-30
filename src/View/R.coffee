@@ -51,3 +51,7 @@ desugarPropType = (propType) ->
         return new Error("In `#{componentName}`, property `#{propName}` is the wrong type.")
   else
     return propType
+
+
+
+require "./Outline"

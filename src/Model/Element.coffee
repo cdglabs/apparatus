@@ -10,3 +10,4 @@ module.exports = Element = Node.createVariant
     # TODO: Set up cells for matrix, graphic, etc.
 
 
+  childElements: -> @childrenOfType(Element)

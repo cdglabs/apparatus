@@ -15,8 +15,8 @@ Model.Element = Element
 
 createAttribute = (label, name, exprString) ->
   attribute = Model.Attribute.createVariant
-    label
-    name
+    label: label
+    name: name
   attribute.setExpression(exprString)
   return attribute
 
@@ -88,6 +88,7 @@ createAnchor = (x, y) ->
   attributes = transform.getAttributesByName()
   attributes.x.setExpression(x)
   attributes.y.setExpression(y)
+  return anchor
 
 
 Model.PathComponent = Model.Component.createVariant
