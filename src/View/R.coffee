@@ -54,4 +54,5 @@ desugarPropType = (propType) ->
 
 
 
+require "./Generic/EditableText"
 require "./Outline"

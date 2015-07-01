@@ -73,14 +73,15 @@ R.create "OutlineItem",
             onClick: @_onClickTriangle,
           }
         R.div {className: "ElementRowLabel"},
-          element.label
-          # R.EditableText {
-          #   className: "EditableTextInline Interactive"
-          #   value: @element.label
-          #   setValue: (newValue) =>
-          #     @element.label = newValue
-          # }
+          R.EditableText {
+            className: "EditableTextInline Interactive"
+            value: element.label
+            setValue: @_setLabelValue
+          }
       # R.PartialAttributesList {element: @element}
+
+  _setLabelValue: (newValue) ->
+    @props.element.label = newValue
 
   _onMouseEnter: ->
     # return if State.UI.dragPayload
