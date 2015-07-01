@@ -9,6 +9,7 @@
     "browserify": "^10.2.4",
     "coffeeify": "^1.1.0",
     "coffeetape": "^1.0.1",
+    "livereloadify": "^2.0.0",
     "stylus": "^0.51.1",
     "tape": "^4.0.0",
     "watchify": "^3.2.3"
@@ -20,6 +21,8 @@
     "watch-css": "stylus style/index.styl --out dist/apparatus.css -w",
     "build": "npm run build-js && npm run build-css",
     "watch": "npm run watch-js & npm run watch-css",
+    "livereload": "livereloadify dist",
+    "dev": "npm run watch & npm run livereload",
     "test": "coffeetape test/*.coffee"
   }
 }
