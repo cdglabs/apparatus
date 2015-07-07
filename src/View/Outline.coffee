@@ -5,11 +5,8 @@ Util = require "../Util/Util"
 
 
 R.create "Outline",
-  propTypes:
-    element: Model.Element
-
   render: ->
-    element = @props.element
+    element = Editor.viewedElement
     R.div {className: "Outline"},
       R.div {className: "Header"}, "Outline"
       R.div {className: "Scroller"},

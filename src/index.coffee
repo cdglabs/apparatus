@@ -1,11 +1,13 @@
 R = require "./View/R"
 Model = require "./Model/Model"
+Editor = require "./Editor/Editor"
 
 
 
 # For debugging
 Apparatus = window.Apparatus = {}
 Apparatus.Dataflow = require "./Dataflow/Dataflow"
+Apparatus.Editor = Editor
 Apparatus.Model = Model
 Apparatus.R = R
 Apparatus.Util = require "./Util/Util"
@@ -13,14 +15,15 @@ Apparatus.Util = require "./Util/Util"
 
 
 
-# R.create "Tester",
-#   render: ->
-#     R.div {}, "hello"
 
-# R.render(R.Tester(), document.body)
+Editor.viewedElement = Model.Rectangle
+
+
+
+
 
 render = ->
-  R.render(R.Outline({element: Model.Rectangle}), document.body)
+  R.render(R.Editor({}), document.body)
 
 render()
 

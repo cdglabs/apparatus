@@ -11,6 +11,9 @@ ensureParticularElement = (element) ->
 
 module.exports = Editor = new class
   constructor: ->
+
+    @viewedElement = null
+
     @_selectedParticularElement = null
     @_hoveredParticularElement = null
     @_controlledParticularElement = null
