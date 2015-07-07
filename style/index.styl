@@ -27,3 +27,463 @@ body
   font-family "Lucida Sans Unicode", "Lucida Grande", sans-serif
   font-size 12px
   color #333
+
+canvas
+  position absolute
+  top 0px
+  left 0px
+  width 100%
+  height 100%
+
+.CursorOverride *
+  cursor inherit !important
+
+
+// ============================================================================
+// LoadingNotice
+// ============================================================================
+
+#LoadingNotice
+  display none
+  background-color rgba(0, 0, 0, 0.5)
+  color white
+  text-align center
+  position fixed
+  top 20px
+  left 50%
+  width 200px
+  margin-left -100px
+  padding 10px
+  border-radius 100px
+  z-index 10
+
+  &:before
+    content "Loading Snapshot..."
+
+
+// ============================================================================
+// DragHintContainer
+// ============================================================================
+
+.DragHintContainer
+  position fixed
+  top 0
+  left 0
+  pointer-events none
+  z-index 10
+  .DragHint
+    position absolute
+
+
+// ============================================================================
+// Layout
+// ============================================================================
+
+CreatePanelWidth = 120px
+OutlineWidth = 400px
+InspectorHeight = 50%
+ToolbarHeight = 32px
+
+.CreatePanel
+  box-sizing border-box
+  position absolute
+  top 0
+  left 0
+  bottom 0
+  width CreatePanelWidth
+
+  background-color #eee
+  border-right 1px solid #ccc
+
+.Outline
+  box-sizing border-box
+  position absolute
+  top 0
+  right 0
+  bottom InspectorHeight
+  width OutlineWidth
+  background-color #fff
+  border-left 1px solid #ccc
+
+.Inspector
+  box-sizing border-box
+  position absolute
+  right 0
+  width OutlineWidth
+  bottom 0
+  height InspectorHeight
+  background-color #fff
+  border-left 1px solid #ccc
+
+.EditorCanvas
+  box-sizing border-box
+  position absolute
+  left CreatePanelWidth
+  top ToolbarHeight
+  right OutlineWidth
+  bottom 0
+
+.Toolbar
+  box-sizing border-box
+  position absolute
+  height ToolbarHeight
+  left CreatePanelWidth
+  right OutlineWidth
+  background-color #eee
+  top 0
+  border-bottom 1px #ccc solid
+  padding 6px
+  display flex
+  .ToolbarRight
+    flex-grow 1
+    text-align right
+
+// ============================================================================
+// Layout "Chrome"
+// ============================================================================
+
+HeaderSize = 18px
+
+.Header
+  position absolute
+  width 100%
+  top 0px
+  height HeaderSize
+  box-sizing border-box
+  line-height HeaderSize - 2
+  text-align center
+  color #666
+  text-shadow 0px 1px 0px rgba(255,255,255,0.5)
+  background-color #eee
+  background-image linear-gradient(to bottom, #fff, #ddd)
+  border-top 1px solid #e6e6e6
+  border-bottom 1px solid #d3d3d3
+
+.Scroller
+  position absolute
+  width 100%
+  top HeaderSize
+  bottom 0px
+  overflow-y auto
+  overflow-x hidden
+
+
+// ============================================================================
+// CreatePanel
+// ============================================================================
+
+.CreatePanelItem
+  margin 6px 6px 18px 6px
+
+.CreatePanelThumbnail
+  cursor -webkit-grab
+  position relative
+  width CreatePanelWidth - 12px
+  height CreatePanelWidth - 12px
+  background-color white
+  margin-bottom 6px
+  shadow 1px 0.5
+
+.CreatePanelLabel
+  // text-align center
+
+.Thumbnail
+  width 100%
+  height 100%
+
+.CreatePanelItem.Selected
+  .CreatePanelThumbnail
+    outline 2px solid #09c
+  .CreatePanelItemEditButton
+    color #09c
+
+
+.CreatePanelItemEditButton
+    color #aaa
+    float right
+
+.CreatePanelAddItem
+  font-size 18px
+  text-align center
+
+
+// ============================================================================
+// Toolbar
+// ============================================================================
+
+.Toolbar button
+  margin-right 0.5em
+
+
+// ============================================================================
+// Outline
+// ============================================================================
+
+.OutlineChildren
+  margin-left 1.5em
+
+.OutlineItem
+  &.Hovered
+    background-color rgba(0, 153, 102, 0.10)
+  &.Selected
+    background-color rgba(0, 153, 204, 0.10)
+  &.Controller
+    .ElementRow
+      color #c66
+
+
+.ElementRow
+  display flex
+  padding: 0.175em 0
+  .ElementRowDisclosure
+    width 1.5em
+  .ElementRowLabel
+    flex-grow 1
+
+
+.DisclosureTriangle
+  width 0
+  height 0
+  margin-top .11em
+  margin-left 0.134em
+  border-top: 0.5em solid transparent
+  border-bottom: 0.5em solid transparent
+  border-left: 0.866em solid #ccc
+  transition -webkit-transform 0.05s
+  &.Expanded
+    -webkit-transform: rotate(90deg)
+  &.Hidden
+    // visibility hidden
+    display none
+
+
+
+.OutlineDragging
+  position fixed
+  z-index 20
+  background-color white
+  pointer-events none
+  box-shadow 0px 2px 6px rgba(0,0,0,0.5)
+  opacity 0.7
+
+.OutlinePlaceholder
+  background-color #bbb
+  box-shadow inset 0px 1px 3px rgba(0,0,0,0.5)
+
+
+// ============================================================================
+// Inspector
+// ============================================================================
+
+.InspectorList
+  padding 0.5em
+
+
+
+
+// ============================================================================
+// Attributes List
+// ============================================================================
+
+.AttributesList
+  margin-left 1.5em
+  // margin-bottom 1em
+
+
+// ============================================================================
+// ComponentSection
+// ============================================================================
+
+.ComponentSection
+  padding-bottom 1.25em
+
+.ComponentSectionTitle
+  // padding: 0.175em 0
+  margin-left 2.25em
+  color #999
+
+
+// ============================================================================
+// AttributeRow
+// ============================================================================
+
+.AttributeRow
+  padding: 0.175em 0
+  display flex
+
+  .AttributeRowLabel
+    width 9em
+
+  .AttributeRowExpression
+    flex-grow 1
+
+  .AttributeRowControl
+    width 1.5em
+
+
+  .AttributeControl
+    color #c66
+    width 1em
+    height 1em
+    border-radius 1em
+    border 1px solid #ddd
+    &.Controllable
+      border-color #c66
+
+    &.ImplicitlyControlled
+      background-color rgba(204, 102, 102, 0.4)
+
+    &.Controlled
+      background-color #c66
+
+.AddVariableRow
+  padding 0.05em 0 0.175em 0 // HACK to get it to line up
+  margin-left 1.5em
+
+
+// ============================================================================
+// AttributeLabel
+// ============================================================================
+
+.AttributeLabel
+  // inline(bottom)
+  margin-right 0.5em
+  border-radius 20px
+  padding 0 0.75em
+  // color #aaa
+  cursor -webkit-grab
+  &.Hovered
+    background-color #def
+  &.Editing
+    cursor text
+    // background-color transparent
+  &.Variable
+    color #c30 // TODO: Change this color
+
+// TODO: Should come up with better visual indicator to mark that a thing is
+// novel.
+// .Novel .AttributeLabel
+//   font-weight bold
+//   color #000
+
+.AttributeLabel, .ReferenceToken
+  background-color #ddd
+  background-image linear-gradient(to bottom, #eee, #ccc)
+  &.Hovered
+    background-color #def
+    // background-image linear-gradient(to bottom, #def, #bcd)
+    background-image linear-gradient(to bottom, #f99, #d77)
+
+
+// ============================================================================
+// Expression
+// ============================================================================
+
+.ExpressionValue
+  color #ccc
+
+.ReferenceToken
+  border-radius 20px
+  padding 0 0.75em
+  white-space nowrap
+
+.SpreadValue
+  &:before
+    content "["
+    opacity 0.5
+  &:after
+    content "]"
+    opacity 0.5
+
+.SpreadValueItem
+  &:not(:last-child):after
+    content ", "
+    opacity 0.5
+
+// ============================================================================
+// CodeMirror
+// ============================================================================
+
+.EditableTextInline
+  display inline
+  padding-right 0.75em
+
+
+// ============================================================================
+// CodeMirror
+// ============================================================================
+
+.CodeMirror
+  height auto
+  background-color transparent
+  font-family inherit
+  font-size inherit
+  line-height inherit
+  color inherit
+  .CodeMirror-lines
+    padding 0
+  pre
+    padding 0
+
+  // This fixes a CodeMirror bug/feature where old selection stuff remains
+  // highlighted even after the CodeMirror is blurred.
+  .CodeMirror-selected
+    opacity 0
+  &.CodeMirror-focused
+    .CodeMirror-selected
+      opacity 1
+
+// Numbers are scrubbable
+.cm-number
+  cursor ew-resize
+
+.CodeMirror-hints
+  font-family inherit
+
+
+
+
+
+
+
+
+
+
+// ============================================================================
+// To refactor...
+// ============================================================================
+
+
+
+
+AddButtonSize = 1em
+
+
+.AddButton
+  width AddButtonSize * 2
+  height AddButtonSize
+  padding 0
+  line-height AddButtonSize
+  font-size 1em
+  color #777
+  font-family verdana
+  font-weight bold
+  text-shadow 0 1px 0 rgba(255,255,255,0.5)
+  background-color #ddd
+  background-image linear-gradient(to bottom, #eee, #ccc)
+  box-shadow 0 2px 1px rgba(0,0,0,0.16), 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.55)
+  border-radius 20px
+  border 0px
+  &:before
+    content "+"
+  &:hover
+    background-image linear-gradient(to bottom, #f3f3f3, #d3d3d3)
+  &:active
+    background-image linear-gradient(to bottom, #cacaca, #d5d5d5)
+    box-shadow 0 1px 1px rgba(255,255,255,0.35), inset 0 0 1px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4)
+
+
+
+
+.TempContainer
+  overflow hidden

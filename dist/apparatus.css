@@ -16,3 +16,350 @@ body {
   font-size: 12px;
   color: #333;
 }
+canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+}
+.CursorOverride * {
+  cursor: inherit !important;
+}
+#LoadingNotice {
+  display: none;
+  background-color: rgba(0,0,0,0.5);
+  color: #fff;
+  text-align: center;
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  width: 200px;
+  margin-left: -100px;
+  padding: 10px;
+  border-radius: 100px;
+  z-index: 10;
+}
+#LoadingNotice:before {
+  content: "Loading Snapshot...";
+}
+.DragHintContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+.DragHintContainer .DragHint {
+  position: absolute;
+}
+.CreatePanel {
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 120px;
+  background-color: #eee;
+  border-right: 1px solid #ccc;
+}
+.Outline {
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 50%;
+  width: 400px;
+  background-color: #fff;
+  border-left: 1px solid #ccc;
+}
+.Inspector {
+  box-sizing: border-box;
+  position: absolute;
+  right: 0;
+  width: 400px;
+  bottom: 0;
+  height: 50%;
+  background-color: #fff;
+  border-left: 1px solid #ccc;
+}
+.EditorCanvas {
+  box-sizing: border-box;
+  position: absolute;
+  left: 120px;
+  top: 32px;
+  right: 400px;
+  bottom: 0;
+}
+.Toolbar {
+  box-sizing: border-box;
+  position: absolute;
+  height: 32px;
+  left: 120px;
+  right: 400px;
+  background-color: #eee;
+  top: 0;
+  border-bottom: 1px #ccc solid;
+  padding: 6px;
+  display: flex;
+}
+.Toolbar .ToolbarRight {
+  flex-grow: 1;
+  text-align: right;
+}
+.Header {
+  position: absolute;
+  width: 100%;
+  top: 0px;
+  height: 18px;
+  box-sizing: border-box;
+  line-height: 16px;
+  text-align: center;
+  color: #666;
+  text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+  background-color: #eee;
+  background-image: linear-gradient(to bottom, #fff, #ddd);
+  border-top: 1px solid #e6e6e6;
+  border-bottom: 1px solid #d3d3d3;
+}
+.Scroller {
+  position: absolute;
+  width: 100%;
+  top: 18px;
+  bottom: 0px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.CreatePanelItem {
+  margin: 6px 6px 18px 6px;
+}
+.CreatePanelThumbnail {
+  cursor: -webkit-grab;
+  position: relative;
+  width: 108px;
+  height: 108px;
+  background-color: #fff;
+  margin-bottom: 6px;
+  box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
+}
+.Thumbnail {
+  width: 100%;
+  height: 100%;
+}
+.CreatePanelItem.Selected .CreatePanelThumbnail {
+  outline: 2px solid #09c;
+}
+.CreatePanelItem.Selected .CreatePanelItemEditButton {
+  color: #09c;
+}
+.CreatePanelItemEditButton {
+  color: #aaa;
+  float: right;
+}
+.CreatePanelAddItem {
+  font-size: 18px;
+  text-align: center;
+}
+.Toolbar button {
+  margin-right: 0.5em;
+}
+.OutlineChildren {
+  margin-left: 1.5em;
+}
+.OutlineItem.Hovered {
+  background-color: rgba(0,153,102,0.1);
+}
+.OutlineItem.Selected {
+  background-color: rgba(0,153,204,0.1);
+}
+.OutlineItem.Controller .ElementRow {
+  color: #c66;
+}
+.ElementRow {
+  display: flex;
+  padding: 0.175em 0;
+}
+.ElementRow .ElementRowDisclosure {
+  width: 1.5em;
+}
+.ElementRow .ElementRowLabel {
+  flex-grow: 1;
+}
+.DisclosureTriangle {
+  width: 0;
+  height: 0;
+  margin-top: 0.11em;
+  margin-left: 0.134em;
+  border-top: 0.5em solid transparent;
+  border-bottom: 0.5em solid transparent;
+  border-left: 0.866em solid #ccc;
+  transition: -webkit-transform 0.05s;
+}
+.DisclosureTriangle.Expanded {
+  -webkit-transform: rotate(90deg);
+}
+.DisclosureTriangle.Hidden {
+  display: none;
+}
+.OutlineDragging {
+  position: fixed;
+  z-index: 20;
+  background-color: #fff;
+  pointer-events: none;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.5);
+  opacity: 0.7;
+}
+.OutlinePlaceholder {
+  background-color: #bbb;
+  box-shadow: inset 0px 1px 3px rgba(0,0,0,0.5);
+}
+.InspectorList {
+  padding: 0.5em;
+}
+.AttributesList {
+  margin-left: 1.5em;
+}
+.ComponentSection {
+  padding-bottom: 1.25em;
+}
+.ComponentSectionTitle {
+  margin-left: 2.25em;
+  color: #999;
+}
+.AttributeRow {
+  padding: 0.175em 0;
+  display: flex;
+}
+.AttributeRow .AttributeRowLabel {
+  width: 9em;
+}
+.AttributeRow .AttributeRowExpression {
+  flex-grow: 1;
+}
+.AttributeRow .AttributeRowControl {
+  width: 1.5em;
+}
+.AttributeRow .AttributeControl {
+  color: #c66;
+  width: 1em;
+  height: 1em;
+  border-radius: 1em;
+  border: 1px solid #ddd;
+}
+.AttributeRow .AttributeControl.Controllable {
+  border-color: #c66;
+}
+.AttributeRow .AttributeControl.ImplicitlyControlled {
+  background-color: rgba(204,102,102,0.4);
+}
+.AttributeRow .AttributeControl.Controlled {
+  background-color: #c66;
+}
+.AddVariableRow {
+  padding: 0.05em 0 0.175em 0;
+  margin-left: 1.5em;
+}
+.AttributeLabel {
+  margin-right: 0.5em;
+  border-radius: 20px;
+  padding: 0 0.75em;
+  cursor: -webkit-grab;
+}
+.AttributeLabel.Hovered {
+  background-color: #def;
+}
+.AttributeLabel.Editing {
+  cursor: text;
+}
+.AttributeLabel.Variable {
+  color: #c30;
+}
+.AttributeLabel,
+.ReferenceToken {
+  background-color: #ddd;
+  background-image: linear-gradient(to bottom, #eee, #ccc);
+}
+.AttributeLabel.Hovered,
+.ReferenceToken.Hovered {
+  background-color: #def;
+  background-image: linear-gradient(to bottom, #f99, #d77);
+}
+.ExpressionValue {
+  color: #ccc;
+}
+.ReferenceToken {
+  border-radius: 20px;
+  padding: 0 0.75em;
+  white-space: nowrap;
+}
+.SpreadValue:before {
+  content: "[";
+  opacity: 0.5;
+}
+.SpreadValue:after {
+  content: "]";
+  opacity: 0.5;
+}
+.SpreadValueItem:not(:last-child):after {
+  content: ", ";
+  opacity: 0.5;
+}
+.EditableTextInline {
+  display: inline;
+  padding-right: 0.75em;
+}
+.CodeMirror {
+  height: auto;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+.CodeMirror .CodeMirror-lines {
+  padding: 0;
+}
+.CodeMirror pre {
+  padding: 0;
+}
+.CodeMirror .CodeMirror-selected {
+  opacity: 0;
+}
+.CodeMirror.CodeMirror-focused .CodeMirror-selected {
+  opacity: 1;
+}
+.cm-number {
+  cursor: ew-resize;
+}
+.CodeMirror-hints {
+  font-family: inherit;
+}
+.AddButton {
+  width: 2em;
+  height: 1em;
+  padding: 0;
+  line-height: 1em;
+  font-size: 1em;
+  color: #777;
+  font-family: verdana;
+  font-weight: bold;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  background-color: #ddd;
+  background-image: linear-gradient(to bottom, #eee, #ccc);
+  box-shadow: 0 2px 1px rgba(0,0,0,0.16), 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.55);
+  border-radius: 20px;
+  border: 0px;
+}
+.AddButton:before {
+  content: "+";
+}
+.AddButton:hover {
+  background-image: linear-gradient(to bottom, #f3f3f3, #d3d3d3);
+}
+.AddButton:active {
+  background-image: linear-gradient(to bottom, #cacaca, #d5d5d5);
+  box-shadow: 0 1px 1px rgba(255,255,255,0.35), inset 0 0 1px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4);
+}
+.TempContainer {
+  overflow: hidden;
+}
