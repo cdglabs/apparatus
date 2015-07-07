@@ -19,7 +19,7 @@ R.create "OutlineTree",
 
   render: ->
     element = @props.element
-    isExpanded = element.expanded or true
+    isExpanded = element.expanded
     isBeingDragged = false
 
     # dragPayload = State.UI.dragPayload
@@ -92,8 +92,9 @@ R.create "OutlineItem",
     # State.Editor.setHovered(null)
 
   _onClickTriangle: ->
-    # @element.setExpanded(!@element.isExpanded())
-    # return
+    element = @props.element
+    element.expanded = !element.expanded
+    return
 
   _select: (mouseDownEvent) ->
     # target = mouseDownEvent.target

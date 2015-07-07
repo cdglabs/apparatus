@@ -195,7 +195,7 @@ canvas {
   border-left: 0.866em solid #ccc;
   transition: -webkit-transform 0.05s;
 }
-.DisclosureTriangle.Expanded {
+.DisclosureTriangle.isExpanded {
   -webkit-transform: rotate(90deg);
 }
 .DisclosureTriangle.Hidden {

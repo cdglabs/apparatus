@@ -2,7 +2,6 @@ outline view
 
 
 Outline
-  Expand/collapse
   Reorder with drag
 
 Layout
