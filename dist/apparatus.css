@@ -166,13 +166,13 @@ canvas {
 .OutlineChildren {
   margin-left: 1.5em;
 }
-.OutlineItem.Hovered {
+.OutlineItem.isHovered {
   background-color: rgba(0,153,102,0.1);
 }
-.OutlineItem.Selected {
+.OutlineItem.isSelected {
   background-color: rgba(0,153,204,0.1);
 }
-.OutlineItem.Controller .ElementRow {
+.OutlineItem.isController .ElementRow {
   color: #c66;
 }
 .ElementRow {

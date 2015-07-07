@@ -16,3 +16,10 @@ How is Editor modeled? Where is state stored? Is UI state in Editor? Where is st
 
 Documentation
   summary descriptions of modules
+
+
+Get canvas to draw some shapes
+Add thumbnails
+Add view matrix to shapes
+Selecting shapes
+Create panel

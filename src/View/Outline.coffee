@@ -1,5 +1,7 @@
 R = require "./R"
+Editor = require "../Editor/Editor"
 Model = require "../Model/Model"
+Util = require "../Util/Util"
 
 
 R.create "Outline",
@@ -48,7 +50,7 @@ R.create "OutlineItem",
 
   render: ->
     element = @props.element
-    isSelected = false
+    isSelected = Editor.getSelected()?.element == element
     isHovered = false
     isController = false
     isExpanded = element.expanded
@@ -97,10 +99,12 @@ R.create "OutlineItem",
     return
 
   _select: (mouseDownEvent) ->
-    # target = mouseDownEvent.target
-    # return if util.dom.closest(target, ".Interactive")
-    # util.mouseDownPreventDefault(mouseDownEvent)
-    # State.Editor.setSelected(@element)
+    target = mouseDownEvent.target
+    return if Util.closest(target, ".Interactive")
+
+    element = @props.element
+    Util.mouseDownPreventDefault(mouseDownEvent)
+    Editor.setSelected(element)
 
     # @_startDragToReorder(mouseDownEvent)
 
