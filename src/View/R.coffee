@@ -54,7 +54,11 @@ desugarPropType = (propType) ->
 
 
 
+R.DragManager = require "./DragManager"
+
 require "./Generic/EditableText"
 require "./Editor"
 require "./Outline"
 require "./Inspector"
+require "./AttributeRow"
+require "./Expression"

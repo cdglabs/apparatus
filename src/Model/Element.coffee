@@ -1,5 +1,7 @@
 Node = require "./Node"
 Link = require "./Link"
+Model = require "./Model"
+
 
 module.exports = Element = Node.createVariant
   constructor: ->
@@ -11,3 +13,7 @@ module.exports = Element = Node.createVariant
 
 
   childElements: -> @childrenOfType(Element)
+
+  variables: -> @childrenOfType(Model.Variable)
+
+  components: -> @childrenOfType(Model.Component)

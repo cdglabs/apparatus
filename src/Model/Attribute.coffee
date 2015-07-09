@@ -7,14 +7,20 @@ Link = require "./Link"
 
 ReferenceLink = Link.createVariant()
 
+uninitializedCellFn = ->
+  throw "Attribute not initialized"
+
 module.exports = Attribute = Node.createVariant
   constructor: ->
     # Call "super"
     Node.constructor.apply(this, arguments)
 
-    @__cell = new Dataflow.Cell -> throw "Attribute not initialized"
+    @__cell = new Dataflow.Cell(uninitializedCellFn)
 
-  value: -> @__cell.value()
+  value: ->
+    if @__cell.fn == uninitializedCellFn
+      @_compile()
+    @__cell.value()
 
   setExpression: (exprString, references={}) ->
     @exprString = ""+exprString
@@ -45,7 +51,13 @@ module.exports = Attribute = Node.createVariant
   isNumber: ->
     return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(@exprString)
 
+  isTrivial: ->
+    # TODO
+    return @isNumber()
+
   _compile: ->
+    # TODO: Call compile on all my variants!
+
     if @isNumber()
       value = parseFloat(@exprString)
       @_setFn -> value

@@ -45,5 +45,29 @@ Util.mouseDownPreventDefault = (e) ->
     el.CodeMirror.getInputField().blur()
 
 
+# =============================================================================
+# Precision
+# =============================================================================
 
+Util.precision = (x) ->
+  x = ""+x
+  # TODO: Deal with eE stuff.
+  decimalIndex = x.indexOf(".")
+  return 0 if decimalIndex == -1
+  return x.length - decimalIndex - 1
+
+Util.toPrecision = (x, precision) ->
+  x = Util.roundToPrecision(x, precision)
+  return x.toFixed(precision)
+
+Util.toMaxPrecision = (x, precision) ->
+  x = Util.toPrecision(x, precision)
+  if x.indexOf(".")
+    x = x.replace(/\.?0+$/, "")
+  return x
+
+Util.roundToPrecision = (x, precision) ->
+  multiplier = Math.pow(10, precision)
+  x = Math.round(x * multiplier) / multiplier
+  return x
 

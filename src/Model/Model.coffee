@@ -1,16 +1,12 @@
 _ = require "underscore"
 
-Node = require "./Node"
-Link = require "./Link"
-Attribute = require "./Attribute"
-Element = require "./Element"
 
 module.exports = Model = {}
 
-Model.Node = Node
-Model.Link = Link
-Model.Attribute = Attribute
-Model.Element = Element
+Model.Node = Node = require "./Node"
+Model.Link = Link = require "./Link"
+Model.Attribute = Attribute = require "./Attribute"
+Model.Element = Element = require "./Element"
 
 
 createAttribute = (label, name, exprString) ->
@@ -28,9 +24,11 @@ Model.Variable = Model.Attribute.createVariant()
 # =============================================================================
 
 Model.Component = Node.createVariant
+  attributes: ->
+    @childrenOfType(Model.Attribute)
+
   getAttributesByName: ->
-    attributes = @childrenOfType(Model.Attribute)
-    return _.indexBy attributes, "name"
+    _.indexBy @attributes(), "name"
 
 
 Model.Transform = Model.Component.createVariant
