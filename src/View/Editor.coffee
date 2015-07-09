@@ -4,11 +4,13 @@ Editor = require "../Editor/Editor"
 
 R.create "Editor",
   render: ->
+    cursor = R.DragManager.drag?.cursor
+
     R.div {
-      # className: R.cx {
-      #   CursorOverride: State.UI.globalCursor?
-      # }
-      # style: {cursor: State.UI.globalCursor ? ""}
+      className: R.cx {
+        CursorOverride: cursor?
+      }
+      style: {cursor: cursor ? ""}
     },
       # R.DragHintView {}
 

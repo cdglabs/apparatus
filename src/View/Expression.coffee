@@ -32,7 +32,6 @@ R.create "ExpressionCode",
 
     R.div {
       className: "ExpressionCode Interactive"
-      onMouseDown: @_onMouseDown
       onMouseUp: @_onMouseUp
     }
 
@@ -55,30 +54,39 @@ R.create "ExpressionCode",
     })
 
     @mirror.on("change", @_onChange)
+    @mirror.on("mousedown", @_onMirrorMouseDown)
     @componentDidUpdate()
 
   componentDidUpdate: ->
-    attribute = @props.attribute
-    value = attribute.exprString ? ""
-    if @mirror.getValue() != value
-      @mirror.setValue(value)
-    @_markAttributeTokens()
+    @_updateMirrorFromAttribute()
 
   _onChange: ->
-    @_updateAttributeExpression()
+    @_updateAttributeFromMirror()
     if @mirror.hasFocus()
       @_showAutocomplete()
 
-  _onMouseDown: (mouseDownEvent) ->
+  _onMirrorMouseDown: (mirror, mouseDownEvent) ->
     el = mouseDownEvent.target
     if Util.matches(el, ".cm-number")
+      mouseDownEvent.preventDefault()
       @_startNumberScrub(mouseDownEvent)
 
   _onMouseUp: (mouseUpEvent) ->
     # if dragging an attribute, transclude it
 
 
-  _updateAttributeExpression: ->
+  # ===========================================================================
+  # Updating (from both directions)
+  # ===========================================================================
+
+  _updateMirrorFromAttribute: ->
+    attribute = @props.attribute
+    value = attribute.exprString ? ""
+    if @mirror.getValue() != value
+      @mirror.setValue(value)
+    @_markAttributeTokens()
+
+  _updateAttributeFromMirror: ->
     attribute = @props.attribute
     newExprString = @mirror.getValue()
     if attribute.exprString != newExprString
@@ -236,8 +244,8 @@ R.create "ExpressionCode",
   # ===========================================================================
 
   _startNumberScrub: (mouseDownEvent) ->
-    Util.mouseDownPreventDefault(mouseDownEvent)
     {start, end} = @_getTokenPositionFromCursor(mouseDownEvent)
+    @mirror.focus()
     @mirror.setSelection(start, end)
     @_startScrubbingSelection(mouseDownEvent)
 
@@ -267,9 +275,6 @@ R.create "ExpressionCode",
 
     startX = mouseDownEvent.clientX
 
-    start = @mirror.getCursor("from")
-    end   = @mirror.getCursor("to")
-
     R.DragManager.start mouseDownEvent,
       cursor: "ew-resize"
       onMove: (moveEvent) =>
@@ -280,16 +285,7 @@ R.create "ExpressionCode",
         # if key.command
         #   newValue = Util.roundToPrecision(newValue, precision - 1)
         newValue = Util.toPrecision(newValue, precision)
-
-        @mirror.setSelection(start, end)
         @mirror.replaceSelection(""+newValue, "around")
-
-        start = @mirror.getCursor("from")
-        end   = @mirror.getCursor("to")
-      onDrop: =>
-        @mirror.setSelection(start, end)
-      onCancel: =>
-        @mirror.setSelection(start, end)
 
 
 
