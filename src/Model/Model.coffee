@@ -3,10 +3,10 @@ _ = require "underscore"
 
 module.exports = Model = {}
 
-Model.Node = Node = require "./Node"
-Model.Link = Link = require "./Link"
-Model.Attribute = Attribute = require "./Attribute"
-Model.Element = Element = require "./Element"
+Model.Node = require "./Node"
+Model.Link = require "./Link"
+Model.Attribute = require "./Attribute"
+Model.Element = require "./Element"
 Model.Project = require "./Project"
 Model.ParticularElement = require "./ParticularElement"
 
@@ -25,7 +25,7 @@ Model.Variable = Model.Attribute.createVariant()
 # Components
 # =============================================================================
 
-Model.Component = Node.createVariant
+Model.Component = Model.Node.createVariant
   attributes: ->
     @childrenOfType(Model.Attribute)
 
