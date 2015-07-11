@@ -1,13 +1,11 @@
 R = require "./View/R"
 Model = require "./Model/Model"
-Editor = require "./Editor/Editor"
 
 
 
 # For debugging
 Apparatus = window.Apparatus = {}
 Apparatus.Dataflow = require "./Dataflow/Dataflow"
-Apparatus.Editor = Editor
 Apparatus.Model = Model
 Apparatus.R = R
 Apparatus.Util = require "./Util/Util"
@@ -16,9 +14,13 @@ Apparatus.Util = require "./Util/Util"
 
 
 
-Editor.viewedElement = Model.Rectangle
+project = new Model.Project()
+project.viewedElement = Model.Rectangle
 
 
+
+
+R.project = project
 
 
 

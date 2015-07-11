@@ -7,6 +7,8 @@ Model.Node = Node = require "./Node"
 Model.Link = Link = require "./Link"
 Model.Attribute = Attribute = require "./Attribute"
 Model.Element = Element = require "./Element"
+Model.Project = require "./Project"
+Model.ParticularElement = require "./ParticularElement"
 
 
 createAttribute = (label, name, exprString) ->

@@ -1,11 +1,10 @@
 R = require "./R"
-Editor = require "../Editor/Editor"
 Model = require "../Model/Model"
 
 
 R.create "Inspector",
   render: ->
-    element = Editor.getSelected()?.element
+    element = R.project.selectedParticularElement?.element
 
     R.div {className: "Inspector"},
       R.div {className: "Header"},

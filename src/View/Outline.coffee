@@ -1,12 +1,11 @@
 R = require "./R"
-Editor = require "../Editor/Editor"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
 
 
 R.create "Outline",
   render: ->
-    element = Editor.viewedElement
+    element = R.project.viewedElement
     R.div {className: "Outline"},
       R.div {className: "Header"}, "Outline"
       R.div {className: "Scroller"},
@@ -47,7 +46,7 @@ R.create "OutlineItem",
 
   render: ->
     element = @props.element
-    isSelected = Editor.getSelected()?.element == element
+    isSelected = R.project.selectedParticularElement?.element == element
     isHovered = false
     isController = false
     isExpanded = element.expanded
@@ -101,7 +100,7 @@ R.create "OutlineItem",
 
     element = @props.element
     Util.mouseDownPreventDefault(mouseDownEvent)
-    Editor.setSelected(element)
+    R.project.select(element)
 
     # @_startDragToReorder(mouseDownEvent)
 

@@ -1,12 +1,29 @@
+
+Pass project down in R through context?
+
+
+
+Project keeps track of the "toolbox" (create panel) and also what is selected.
+
+Project can serialize itself and also load serialized stuff.
+
+Hovered stuff is kept track of in R.HoverManager
+
+R.Project
+R.DragManager
+R.HoverManager
+
+
+
+
+
+
 outline view
 
 
 Outline
   Reorder with drag
 
-Layout
-
-Inspector
 
 
 

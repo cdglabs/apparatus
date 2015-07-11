@@ -1,5 +1,4 @@
 R = require "./R"
-Editor = require "../Editor/Editor"
 
 
 R.create "Editor",
