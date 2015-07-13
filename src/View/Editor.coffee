@@ -1,5 +1,6 @@
 R = require "./R"
 Model = require "../Model/Model"
+DragManager = require "./Manager/DragManager"
 
 
 R.create "Editor",
@@ -8,12 +9,17 @@ R.create "Editor",
 
   childContextTypes:
     project: Model.Project
+    dragManager: DragManager
 
   getChildContext: ->
-    {project: @props.project}
+    {
+      project: @props.project
+      dragManager: @dragManager()
+    }
 
   render: ->
-    cursor = R.DragManager.drag?.cursor
+    dragManager = @dragManager()
+    cursor = dragManager.drag?.cursor
 
     R.div {
       className: R.cx {
@@ -36,3 +42,7 @@ R.create "Editor",
   #   key "backspace", (e) ->
   #     e.preventDefault()
   #     State.Editor.removeSelectedElement()
+
+
+  dragManager: ->
+    return @_dragManager ?= new DragManager()

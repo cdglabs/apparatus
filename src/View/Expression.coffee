@@ -8,6 +8,7 @@ CodeMirror = require "codemirror"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
+DragManager = require "./Manager/DragManager"
 
 
 
@@ -26,6 +27,9 @@ R.create "Expression",
 R.create "ExpressionCode",
   propTypes:
     attribute: Model.Attribute
+
+  contextTypes:
+    dragManager: DragManager
 
   render: ->
     attribute = @props.attribute
@@ -270,12 +274,14 @@ R.create "ExpressionCode",
     return {start, end}
 
   _startScrubbingSelection: (mouseDownEvent) ->
+    dragManager = @context.dragManager
+
     originalValue = +@mirror.getSelection()
     precision = Util.precision(@mirror.getSelection())
 
     startX = mouseDownEvent.clientX
 
-    R.DragManager.start mouseDownEvent,
+    dragManager.start mouseDownEvent,
       cursor: "ew-resize"
       onMove: (moveEvent) =>
         dx = moveEvent.clientX - startX

@@ -20,7 +20,7 @@ _ = require "underscore"
 
 ###
 
-module.exports = DragManager = new class
+module.exports = class DragManager
   constructor: ->
     @drag = null
     window.addEventListener("mousemove", @_onMouseMove)

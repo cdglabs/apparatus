@@ -52,15 +52,13 @@ desugarPropType = (propType) ->
       prop = props[propName]
       unless prop.isVariantOf(propType)
         return new Error("In `#{componentName}`, property `#{propName}` is the wrong type.")
-  else if _.contains(Model, propType)
+  else
     return React.PropTypes.instanceOf(propType).isRequired
 
-  else
-    return propType
 
 
 
-R.DragManager = require "./Manager/DragManager"
+
 
 require "./Generic/EditableText"
 require "./Editor"

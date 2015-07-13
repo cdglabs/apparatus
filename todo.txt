@@ -7,10 +7,6 @@ Project can serialize itself and also load serialized stuff.
 
 
 
-Pass Drag Manager (and HoverManager) down through context
-
-
-
 
 Outline
   Reorder with drag
