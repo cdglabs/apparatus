@@ -4,8 +4,12 @@ Util = require "../Util/Util"
 
 
 R.create "Outline",
+  contextTypes:
+    project: Model.Project
+
   render: ->
-    element = R.project.viewedElement
+    project = @context.project
+    element = project.viewedElement
     R.div {className: "Outline"},
       R.div {className: "Header"}, "Outline"
       R.div {className: "Scroller"},
@@ -44,9 +48,14 @@ R.create "OutlineItem",
   propTypes:
     element: Model.Element
 
+  contextTypes:
+    project: Model.Project
+
   render: ->
+    project = @context.project
     element = @props.element
-    isSelected = R.project.selectedParticularElement?.element == element
+
+    isSelected = project.selectedParticularElement?.element == element
     isHovered = false
     isController = false
     isExpanded = element.expanded
@@ -100,7 +109,7 @@ R.create "OutlineItem",
 
     element = @props.element
     Util.mouseDownPreventDefault(mouseDownEvent)
-    R.project.select(element)
+    @context.project.select(element)
 
     # @_startDragToReorder(mouseDownEvent)
 

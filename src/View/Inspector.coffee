@@ -3,8 +3,12 @@ Model = require "../Model/Model"
 
 
 R.create "Inspector",
+  contextTypes:
+    project: Model.Project
+
   render: ->
-    element = R.project.selectedParticularElement?.element
+    project = @context.project
+    element = project.selectedParticularElement?.element
 
     R.div {className: "Inspector"},
       R.div {className: "Header"},

@@ -1,6 +1,8 @@
 React = require "react"
 _ = require "underscore"
 
+Model = require "../Model/Model"
+
 
 module.exports = R = {}
 
@@ -15,8 +17,9 @@ R.cx = (classNames) ->
 
 
 R.create = (name, spec) ->
-  if spec.propTypes
-    spec.propTypes = desugarPropTypes(spec.propTypes)
+  for typesProperty in ["propTypes", "childContextTypes", "contextTypes"]
+    if spec[typesProperty]
+      spec[typesProperty] = desugarPropTypes(spec[typesProperty])
 
   component = React.createClass(spec)
   R[name] = React.createFactory(component)
@@ -49,6 +52,9 @@ desugarPropType = (propType) ->
       prop = props[propName]
       unless prop.isVariantOf(propType)
         return new Error("In `#{componentName}`, property `#{propName}` is the wrong type.")
+  else if _.contains(Model, propType)
+    return React.PropTypes.instanceOf(propType).isRequired
+
   else
     return propType
 

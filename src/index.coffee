@@ -20,12 +20,8 @@ project.viewedElement = Model.Rectangle
 
 
 
-R.project = project
-
-
-
 render = ->
-  R.render(R.Editor({}), document.body)
+  R.render(R.Editor({project}), document.body)
 
 render()
 

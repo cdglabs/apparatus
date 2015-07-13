@@ -1,7 +1,17 @@
 R = require "./R"
+Model = require "../Model/Model"
 
 
 R.create "Editor",
+  propTypes:
+    project: Model.Project
+
+  childContextTypes:
+    project: Model.Project
+
+  getChildContext: ->
+    {project: @props.project}
+
   render: ->
     cursor = R.DragManager.drag?.cursor
 
