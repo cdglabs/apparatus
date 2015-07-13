@@ -3,13 +3,17 @@ _ = require "underscore"
 
 module.exports = Model = {}
 
+# These are *classes*
+Model.Project = require "./Project"
+Model.ParticularElement = require "./ParticularElement"
+
+# These are *variants of the Node object*
 Model.Node = require "./Node"
 Model.Link = require "./Link"
 Model.Attribute = require "./Attribute"
 Model.Element = require "./Element"
-Model.Project = require "./Project"
-Model.ParticularElement = require "./ParticularElement"
 
+Model.Variable = Model.Attribute.createVariant()
 
 createAttribute = (label, name, exprString) ->
   attribute = Model.Attribute.createVariant
@@ -17,9 +21,6 @@ createAttribute = (label, name, exprString) ->
     name: name
   attribute.setExpression(exprString)
   return attribute
-
-Model.Variable = Model.Attribute.createVariant()
-
 
 # =============================================================================
 # Components
@@ -140,14 +141,3 @@ Model.Text = Model.Shape.createVariant
 Model.Text.addChildren [
   Model.TextComponent.createVariant()
 ]
-
-
-
-
-
-
-
-
-
-
-
