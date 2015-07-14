@@ -10,9 +10,8 @@ Util.jsEvaluate = require "./jsEvaluate"
 # DOM
 # =============================================================================
 
-matchesSelector = Element::webkitMatchesSelector ? Element::mozMatchesSelector ? Element::oMatchesSelector
-
 Util.matches = (el, selector) ->
+  matchesSelector = Element::webkitMatchesSelector ? Element::mozMatchesSelector ? Element::oMatchesSelector
   matchesSelector.call(el, selector)
 
 Util.closest = (el, selector) ->

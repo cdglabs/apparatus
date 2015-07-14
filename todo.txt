@@ -39,9 +39,6 @@ View
 
 
 
-Node
-  cell for children
-  test it
 
 
 Element
