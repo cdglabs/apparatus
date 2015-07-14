@@ -1,15 +1,15 @@
 
 
-Project keeps track of the "toolbox" (create panel) and also what is selected.
+Project
+  keep track of the "toolbox" (create panel) and also what is selected.
+  serialize
+  load serialized stuff
 
-Project can serialize itself and also load serialized stuff.
+Storage
+  localStorage autosave
+  undo/redo
 
 
-
-
-
-Outline
-  Reorder with drag
 
 
 
@@ -19,8 +19,41 @@ Documentation
   summary descriptions of modules
 
 
+
+
+View
+
+  Outline
+    Reorder with drag
+    Show "relevant" attributes
+
+  Expression
+    Maybe factor a Code view
+    color picker
+    autocomplete
+    arrow keys between them and EditableText
+    drag an attribute to transclude
+    click an attribute to transclude
+    displaying expression values
+
+
+
+
+Node
+  cell for children
+  test it
+
+
+Element
+  cell for matrix
+  cell for graphic
+  cell for renderTree
+
+Graphic
+
 Get canvas to draw some shapes
-Add thumbnails
-Add view matrix to shapes
-Selecting shapes
+Add thumbnails everywhere
+Add view matrix to shapes (instead of modifying the root shape)
 Create panel
+
+
