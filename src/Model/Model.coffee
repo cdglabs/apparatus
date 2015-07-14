@@ -1,5 +1,7 @@
 _ = require "underscore"
 
+Util = require "../Util/Util"
+
 
 module.exports = Model = {}
 
@@ -33,12 +35,16 @@ Model.Component = Model.Node.createVariant
   getAttributesByName: ->
     _.indexBy @attributes(), "name"
 
+  getAttributesValuesByName: ->
+    _.mapObject @getAttributesByName(), (attribute) ->
+      attribute.value()
+
 
 Model.Transform = Model.Component.createVariant
   label: "Transform"
-  getMatrix: ->
+  matrix: ->
     v = @getAttributesValuesByName()
-    return Matrix.naturalConstruct(v.x, v.y, v.sx, v.sy, v.rotate)
+    return Util.Matrix.naturalConstruct(v.x, v.y, v.sx, v.sy, v.rotate)
 
 Model.Transform.addChildren [
   createAttribute("X", "x", "0.00")

@@ -90,6 +90,8 @@ module.exports = Node = {
     # This is just to register some cells and make invalidation work. I don't
     # like how this is. Should all the invalidation stuff be removed or
     # replaced with something simpler? Is it necessary for performance?
+    # Perhaps the core of Dataflow.Cell is abstracting Spreads, not cache
+    # invalidation. In this case, no modifications to Node would be needed.
     # Another issue with this is that (currently) only children and parents
     # are invalidated properly. Master/variants are not. This seems fragile.
     # It may lead to inconsistency issues in the future.
