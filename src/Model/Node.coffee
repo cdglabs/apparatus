@@ -125,8 +125,8 @@ module.exports = Node = {
     @_parent
 
   children: ->
-    @_childrenRead()
     @_hatch()
+    @_childrenRead()
     return @_children
 
   head: -> @_head
@@ -144,10 +144,12 @@ module.exports = Node = {
 
     @_isHatched = true
 
+    @_isHatching = true
     if @_master?
       for masterChild in @_master.children()
         myChild = masterChild._createVariantWithHead(@_head)
         @addChild(myChild)
+    delete @_isHatching
 
 
   # ===========================================================================
@@ -256,6 +258,9 @@ module.exports = Node = {
   _setupCell: ->
     @__childrenCell = new Dataflow.Cell ->
     @__parentCell = new Dataflow.Cell ->
+    @__childrenCell.name = "children"
+    @__parentCell.name = "parent"
+    @__childrenCell.node = @__parentCell.node = this
 
   _childrenRead: ->
     @__childrenCell.value()
@@ -264,10 +269,12 @@ module.exports = Node = {
     @__parentCell.value()
 
   _childrenChanged: ->
-    @__childrenCell.invalidate()
+    unless @_isHatching
+      @__childrenCell.invalidate()
 
   _parentChanged: ->
-    @__parentCell.invalidate()
+    unless @parent._isHatching
+      @__parentCell.invalidate()
 
 
   # ===========================================================================

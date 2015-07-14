@@ -42,6 +42,17 @@ test "Invalidation works", (t) ->
   t.equal(c.value(), 15)
   t.end()
 
+test "Invalidation works across stacks", (t) ->
+  a = new Dataflow.Cell -> 4
+  b = new Dataflow.Cell -> a.value() * 2
+  c = new Dataflow.Cell -> b.value() * 2
+  d = new Dataflow.Cell -> c.value() * 2
+  t.equal(d.value(), 32)
+  a.fn = -> 5
+  a.invalidate()
+  t.equal(d.value(), 40)
+  t.end()
+
 test "Invalidation does not result in extra evaluation", (t) ->
   aCount = 0
   a = new Dataflow.Cell ->

@@ -160,6 +160,10 @@ class Dataflow.Cell
       return result
 
   invalidate: ->
+    if Dataflow.Evaluator.currentContext.parent?
+      console.log this
+      throw "Cannot invalidate a Cell during a computation."
+
     @_isInvalid = true
 
     # Need to tell every cell that depends on me that it is now invalid.
