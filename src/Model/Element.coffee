@@ -15,7 +15,6 @@ module.exports = Element = Node.createVariant
     @expanded = false
 
     @__matrix = new Dataflow.Cell =>
-      console.log "called!", Dataflow.Evaluator.currentContext
       matrix = new Util.Matrix()
       for transform in @childrenOfType(Model.Transform)
         matrix = matrix.compose(transform.matrix())
@@ -28,16 +27,8 @@ module.exports = Element = Node.createVariant
       else
         return new Util.Matrix()
 
-    dummyCell = new Dataflow.Cell -> 6
-
     @__accumulatedMatrix = new Dataflow.Cell =>
-      console.log "__accumulatedMatrix called", Dataflow.Evaluator.currentContext
-      dummyCell.value()
-      console.log "at this point", @__accumulatedMatrix._dependencies.size
-      v = @__matrix.value()
-      console.log "and then", @__accumulatedMatrix._dependencies.size, Dataflow.Evaluator.currentContext
-      # return v
-      # return @__contextMatrix.value().compose(@__matrix.value())
+      return @__contextMatrix.value().compose(@__matrix.value())
 
     # TODO: Set up cells for graphic, renderTree
 

@@ -78,7 +78,6 @@ module.exports = Attribute = Node.createVariant
 
   _setFn: (fn) ->
     @__cell.fn = fn
-    @__cell.invalidate()
 
   _wrapped: ->
     result    = "'use strict';\n"

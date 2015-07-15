@@ -72,8 +72,6 @@ the appropriate Node(s) when certain calls are made--basically whenever we go
 
 _ = require "underscore"
 
-Dataflow = require "../Dataflow/Dataflow"
-
 
 module.exports = Node = {
   constructor: ->
@@ -86,16 +84,6 @@ module.exports = Node = {
     @_head = null
 
     @_isHatched = false
-
-    # This is just to register some cells and make invalidation work. I don't
-    # like how this is. Should all the invalidation stuff be removed or
-    # replaced with something simpler? Is it necessary for performance?
-    # Perhaps the core of Dataflow.Cell is abstracting Spreads, not cache
-    # invalidation. In this case, no modifications to Node would be needed.
-    # Another issue with this is that (currently) only children and parents
-    # are invalidated properly. Master/variants are not. This seems fragile.
-    # It may lead to inconsistency issues in the future.
-    @_setupCell()
 
 
   # ===========================================================================
@@ -121,12 +109,10 @@ module.exports = Node = {
     return @_variants
 
   parent: ->
-    @_parentRead()
     @_parent
 
   children: ->
     @_hatch()
-    @_childrenRead()
     return @_children
 
   head: -> @_head
@@ -144,12 +130,10 @@ module.exports = Node = {
 
     @_isHatched = true
 
-    @_isHatching = true
     if @_master?
       for masterChild in @_master.children()
         myChild = masterChild._createVariantWithHead(@_head)
         @addChild(myChild)
-    delete @_isHatching
 
 
   # ===========================================================================
@@ -190,9 +174,6 @@ module.exports = Node = {
 
       variant.addChild(correspondingChild, insertionIndex)
 
-    @_childrenChanged()
-    childToAdd._parentChanged()
-
   removeChild: (childToRemove) ->
     @_hatch()
 
@@ -215,9 +196,6 @@ module.exports = Node = {
       correspondingChild = childToRemove.findVariantWithHead(head)
       if correspondingChild?.parent() == variant
         variant.removeChild(correspondingChild)
-
-    @_childrenChanged()
-    childToRemove._parentChanged()
 
 
   # ===========================================================================
@@ -249,32 +227,6 @@ module.exports = Node = {
   findVariantWithHead: (head) ->
     return _.find @variants(), (variant) ->
       variant.head() == head
-
-
-  # ===========================================================================
-  # Cell
-  # ===========================================================================
-
-  _setupCell: ->
-    @__childrenCell = new Dataflow.Cell ->
-    @__parentCell = new Dataflow.Cell ->
-    @__childrenCell.name = "children"
-    @__parentCell.name = "parent"
-    @__childrenCell.node = @__parentCell.node = this
-
-  _childrenRead: ->
-    @__childrenCell.value()
-
-  _parentRead: ->
-    @__parentCell.value()
-
-  _childrenChanged: ->
-    unless @_isHatching
-      @__childrenCell.invalidate()
-
-  _parentChanged: ->
-    unless @parent._isHatching
-      @__parentCell.invalidate()
 
 
   # ===========================================================================

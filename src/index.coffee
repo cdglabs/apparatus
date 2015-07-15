@@ -1,11 +1,11 @@
 R = require "./View/R"
 Model = require "./Model/Model"
-
+Dataflow = require "./Dataflow/Dataflow"
 
 
 # For debugging
 Apparatus = window.Apparatus = {}
-Apparatus.Dataflow = require "./Dataflow/Dataflow"
+Apparatus.Dataflow = Dataflow
 Apparatus.Model = Model
 Apparatus.R = R
 Apparatus.Util = require "./Util/Util"
@@ -21,7 +21,8 @@ project.viewedElement = Model.Rectangle
 
 
 render = ->
-  R.render(R.Editor({project}), document.body)
+  Dataflow.run ->
+    R.render(R.Editor({project}), document.body)
 
 render()
 

@@ -1,208 +1,134 @@
 ###
 
-# Introduction
+Why would you want to use Cells? Two reasons:
 
+1. Cells memoize across a single computation.
 
-# Cells
+2. Cells allow you use Spreads.
 
-A Cell is like a data cell in a spreadsheet. You construct them by passing in
-a function which computes the value. For example:
-
-    a = new Dataflow.Cell(-> 4)
-    b = new Dataflow.Cell(-> a.value() * 2)
-
-When you construct a Cell, these are your responsibilities:
-
-1. The Cell's function should be pure. That is, if you call the function
-multiple times it should always return the same value. The function should
-have no side effects.
-
-2. If the function changes then you must call the cell's invalidate() method.
-For example, a function might change because you manually change the cell's fn
-property or because the function is closed over a variable that changes.
-
-However, you are not responsible for calling invalidate if the cell references
-another cell and the referenced one changes. The Dataflow module takes care of
-this dependency tracking.
-
-For example:
-
-    a.fn = -> 22
-    a.invalidate() # Must call this.
-    # Don't need to call b.invalidate().
-
-You must call a.invalidate() because you changed a's fn. But you do not need
-to call b.invalidate(). Dataflow keeps track of dependencies between cells and
-will automatically call b.invalidate() for you.
-
-
-# Dependency Tracking implementation
-
-Whenever a Cell's value method is called, while running the Cell's fn,
-Dataflow logs any other Cell's whose value method is called. It then saves
-dependency links appropriately. This dynamic dependency tracking
-implementation strategy is inspired by [Meteor's Tracker][meteor], though it's
-used for cache invalidation and keeping track of context (see Spreads below)
-rather than Meteor's reactive re-execution of "stale" functions.
-
-[meteor]: https://github.com/meteor/meteor/wiki/Tracker-Manual
-
-
-# Spreads
-
-
+TODO: Flesh out this documentation.
 
 ###
-
-
 
 
 module.exports = Dataflow = {}
 
 
+# =============================================================================
+# Running a computation
+# =============================================================================
 
-class Dataflow.UnresolvedSpreadError
-  constructor: (@spread) ->
+isComputationRunning = false
+computationCounter = 0
+
+Dataflow.run = (callback) ->
+  isComputationRunning = true
+  computationCounter++
+  result = callback()
+  isComputationRunning = false
+  return result
 
 
+# =============================================================================
+# Context
+# =============================================================================
+
+# A Context is created every time a Cell is evaluated. The Context holds
+# information for what index we're on for each Spread that is referenced in
+# the Cell's fn.
+
+currentContext = null
 
 class Dataflow.Context
   constructor: ->
+    @spreadToIndex = new Map() # Spread : index, spread must be a root spread.
 
-  currentCell: ->
-    if @cell
-      return @cell
-    else if @parent
-      return @parent.currentCell()
-    else
-      return null
+  assignSpreadIndex: (spread, index) ->
+    @spreadToIndex.set(spread.root, index)
 
-  spreadIndex: (spread) ->
-    if @spread == spread
-      return @index
-    else if @parent
-      return @parent.spreadIndex(spread)
+  deleteSpread: (spread) ->
+    @spreadToIndex.delete(spread.root)
+
+  lookupSpread: (spread) ->
+    if @spreadToIndex.has(spread.root)
+      return @spreadToIndex.get(spread.root)
     else
       throw new Dataflow.UnresolvedSpreadError(spread)
 
-class Dataflow.SpreadContext extends Dataflow.Context
-  constructor: (@parent, @spread, @index) ->
 
-class Dataflow.CellContext extends Dataflow.Context
-  constructor: (@parent, @cell) ->
-
-
-
-Dataflow.Evaluator = new class
-  constructor: ->
-    @currentContext = new Dataflow.Context()
-
-  evaluateCell: (cell) ->
-    @currentContext = new Dataflow.CellContext(@currentContext, cell)
-
-    # We remove all dependencies from cell because the proper ones will be
-    # added when cell.fn is run.
-    Dataflow.removeAllDependencies(cell)
-
-    try
-      return cell.fn()
-    catch error
-      if error instanceof Dataflow.UnresolvedSpreadError
-        spread = error.spread
-        return @evaluateCellWithSpread(cell, spread)
-      else
-        throw error
-    finally
-      @currentContext = @currentContext.parent
-
-  evaluateCellWithSpread: (cell, spread) ->
-    rootSpread = spread.root()
-    resultItems = []
-    for index in [0 ... rootSpread.items.length]
-      @currentContext = new Dataflow.SpreadContext(@currentContext, rootSpread, index)
-      resultItems.push @evaluateCell(cell)
-      @currentContext = @currentContext.parent
-    return new Dataflow.Spread(resultItems, spread)
-
-  spreadIndex: (spread) ->
-    return @currentContext.spreadIndex(spread.root())
-
-  logRetrieval: (cell) ->
-    dependency = cell
-    dependent = @currentContext.currentCell()
-
-    if dependent
-      Dataflow.addDependency(dependent, dependency)
-
-
+# =============================================================================
+# Cell
+# =============================================================================
 
 class Dataflow.Cell
   constructor: (@fn) ->
     @_value = null
-    @_isInvalid = true
-    @_dependencies = new Set() # Cell
-    @_dependents = new Set() # Cell
+    @_lastEvaluated = null
 
   value: (canReturnSpread=false) ->
-    Dataflow.Evaluator.logRetrieval(this)
+    # Ensure that a computation is running.
+    if !isComputationRunning
+      return Dataflow.run => @value(canReturnSpread)
 
-    if @_isInvalid
-      @_value = Dataflow.Evaluator.evaluateCell(this)
-      @_isInvalid = false
+    if !@_isValid()
+      @_value = @_evaluate()
+      @_lastEvaluated = computationCounter
 
     if canReturnSpread
       return @_value
     else
-      result = @_value
-      while result instanceof Dataflow.Spread
-        index = Dataflow.Evaluator.spreadIndex(result)
-        result = result.items[index]
-      return result
+      return @_resolvedValue()
 
-  invalidate: ->
-    if Dataflow.Evaluator.currentContext.parent?
-      console.log this
-      throw "Cannot invalidate a Cell during a computation."
+  _isValid: ->
+    @_lastEvaluated == computationCounter
 
-    @_isInvalid = true
+  _evaluate: ->
+    # Evaluate myself, returning a Spread if my fn returns a Spread.
+    previousContext = currentContext
+    currentContext = new Dataflow.Context()
+    try
+      return @_evaluateFn()
+    finally
+      currentContext = previousContext
 
-    # Need to tell every cell that depends on me that it is now invalid.
-    @_dependents.forEach (cell) =>
-      cell.invalidate()
+  _evaluateFn: ->
+    try
+      return @fn()
+    catch error
+      if error instanceof Dataflow.UnresolvedSpreadError
+        spread = error.spread
+        return @_evaluateAcrossSpread(spread)
+      else
+        throw error
 
-    # Since I'm invalid, I no longer depend on anything.
-    Dataflow.removeAllDependencies(this)
+  _evaluateAcrossSpread: (spread) ->
+    resultItems = []
+    for index in [0 ... spread.size()]
+      currentContext.assignSpreadIndex(spread, index)
+      resultItems.push @_evaluateFn()
+    currentContext.deleteSpread(spread)
+    return new Dataflow.Spread(resultItems, spread.root)
+
+  _resolvedValue: ->
+    result = @_value
+    while result instanceof Dataflow.Spread
+      index = currentContext.lookupSpread(result)
+      result = result.items[index]
+    return result
 
 
-
-Dataflow.addDependency = (dependent, dependency) ->
-  dependent._dependencies.add(dependency)
-  dependency._dependents.add(dependent)
-
-Dataflow.removeDependency = (dependent, dependency) ->
-  dependent._dependencies.delete(dependency)
-  dependency._dependents.delete(dependent)
-
-Dataflow.removeAllDependencies = (dependent) ->
-  dependent._dependencies.forEach (dependency) ->
-    Dataflow.removeDependency(dependent, dependency)
-
-
+# =============================================================================
+# Spread
+# =============================================================================
 
 class Dataflow.Spread
-  constructor: (@items, @parent) ->
-  root: ->
-    if @parent
-      return @parent.root()
-    else
-      return this
+  constructor: (@items, @root) ->
+    if !@root
+      @root = this
+
+  size: -> @items.length
 
 
-
-
-
-
-
-
-
+class Dataflow.UnresolvedSpreadError
+  constructor: (@spread) ->
 
