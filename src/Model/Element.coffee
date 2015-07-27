@@ -14,6 +14,20 @@ module.exports = Element = Node.createVariant
     # this constructor for every Element.
     @expanded = false
 
+    @_setupCells()
+
+  childElements: -> @childrenOfType(Element)
+
+  variables: -> @childrenOfType(Model.Variable)
+
+  components: -> @childrenOfType(Model.Component)
+
+
+  # ===========================================================================
+  # Cells
+  # ===========================================================================
+
+  _setupCells: ->
     @__matrix = new Dataflow.Cell =>
       matrix = new Util.Matrix()
       for transform in @childrenOfType(Model.Transform)
@@ -23,18 +37,16 @@ module.exports = Element = Node.createVariant
     @__contextMatrix = new Dataflow.Cell =>
       parent = @parent()
       if parent and parent.isVariantOf(Element)
-        return parent.__accumulatedMatrix.value()
+        return parent.accumulatedMatrix()
       else
         return new Util.Matrix()
 
     @__accumulatedMatrix = new Dataflow.Cell =>
-      return @__contextMatrix.value().compose(@__matrix.value())
+      return @contextMatrix().compose(@matrix())
 
     # TODO: Set up cells for graphic, renderTree
 
+  matrix: -> @__matrix.value()
+  contextMatrix: -> @__contextMatrix.value()
+  accumulatedMatrix: -> @__accumulatedMatrix.value()
 
-  childElements: -> @childrenOfType(Element)
-
-  variables: -> @childrenOfType(Model.Variable)
-
-  components: -> @childrenOfType(Model.Component)

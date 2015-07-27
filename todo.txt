@@ -42,7 +42,6 @@ View
 
 
 Element
-  cell for matrix
   cell for graphic
   cell for renderTree
 

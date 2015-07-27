@@ -8,6 +8,11 @@ Why would you want to use Cells? Two reasons:
 
 TODO: Flesh out this documentation.
 
+TODO: Maybe there should be a function that turns a function into a "cell-
+ified" function. Sort of like _.memoize but it ties the function in to the
+Dataflow system. This is the pattern that Element is using to "cell-ify"
+matrix, accumulatedMatrix, etc. Need to think of a good name.
+
 ###
 
 
