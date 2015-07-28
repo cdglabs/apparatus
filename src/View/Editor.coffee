@@ -33,6 +33,7 @@ R.create "Editor",
       R.Outline {}
       R.Inspector {}
       # R.ToolbarView {}
+      R.Canvas {}
       # R.EditorCanvasView {shape: State.Editor.topSelected()}
 
   # componentDidMount: ->

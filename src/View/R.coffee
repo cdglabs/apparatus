@@ -61,7 +61,9 @@ desugarPropType = (propType) ->
 
 
 require "./Generic/EditableText"
+require "./Generic/HTMLCanvas"
 require "./Editor"
+require "./Canvas"
 require "./Outline"
 require "./Inspector"
 require "./AttributeRow"

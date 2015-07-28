@@ -52,7 +52,7 @@ class Graphic.Anchor extends Graphic.Element
 class Graphic.Path extends Graphic.Element
   render: (opts) ->
     ctx = opts.ctx
-    @buildPath(ctx)
+    @buildPath(opts)
     for component in @components
       if component instanceof Graphic.PaintOp
         component.paint(ctx)

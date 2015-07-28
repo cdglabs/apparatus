@@ -85,7 +85,7 @@ canvas {
   background-color: #fff;
   border-left: 1px solid #ccc;
 }
-.EditorCanvas {
+.Canvas {
   box-sizing: border-box;
   position: absolute;
   left: 120px;
