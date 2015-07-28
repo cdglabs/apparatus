@@ -44,9 +44,29 @@ module.exports = Element = Node.createVariant
     @__accumulatedMatrix = new Dataflow.Cell =>
       return @contextMatrix().compose(@matrix())
 
-    # TODO: Set up cells for graphic, renderTree
+    @__graphic = new Dataflow.Cell =>
+      graphic = new @graphicClass()
+      # TODO: All Elements (and Components) need to define @graphicClass
+
+      graphic.matrix = @accumulatedMatrix()
+
+      graphic.components = _.map @components(), (component) ->
+        component.graphic()
+
+      graphic.childGraphics = _.flatten(_.map(@childElements(), (element) ->
+        element.allGraphics()
+      ))
+
+      return graphic
 
   matrix: -> @__matrix.value()
   contextMatrix: -> @__contextMatrix.value()
   accumulatedMatrix: -> @__accumulatedMatrix.value()
+  graphic: -> @__graphic.value()
 
+  allGraphics: ->
+    result = @__graphic.value(true)
+    if result instanceof Dataflow.Spread
+      return result.items
+    else
+      return result

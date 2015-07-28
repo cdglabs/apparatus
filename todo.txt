@@ -53,3 +53,8 @@ Add view matrix to shapes (instead of modifying the root shape)
 Create panel
 
 
+Rename:
+  Node.children -> childNodes
+  Node.childrenOfType -> childVariantsOf
+
+Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
