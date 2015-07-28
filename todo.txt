@@ -40,14 +40,6 @@ View
 
 
 
-
-Element
-  cell for graphic
-  cell for renderTree
-
-Graphic
-
-Get canvas to draw some shapes
 Add thumbnails everywhere
 Add view matrix to shapes (instead of modifying the root shape)
 Create panel
