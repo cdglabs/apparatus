@@ -29,7 +29,7 @@ class Graphic.Element
     ###
     throw "Not implemented"
 
-  hitDetect: (opts) -> throw "Not implemented"
+  hitDetect: (opts) ->
     ###
     Opts:
 
@@ -39,6 +39,7 @@ class Graphic.Element
     returns true or false whether to hit detect that anchor.
 
     ###
+    throw "Not implemented"
 
 
 class Graphic.Group extends Graphic.Element

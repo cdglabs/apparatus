@@ -1,3 +1,4 @@
+_ = require "underscore"
 Node = require "./Node"
 Link = require "./Link"
 Model = require "./Model"
@@ -46,7 +47,10 @@ module.exports = Element = Node.createVariant
 
     @__graphic = new Dataflow.Cell =>
       graphic = new @graphicClass()
-      # TODO: All Elements (and Components) need to define @graphicClass
+
+      # TODO: In order for hit detection to work, Graphics will need to be
+      # annotated with the Element they came from and the Spread context, in
+      # other words with a ParticularElement.
 
       graphic.matrix = @accumulatedMatrix()
 

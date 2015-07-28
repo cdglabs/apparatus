@@ -13,6 +13,19 @@ ified" function. Sort of like _.memoize but it ties the function in to the
 Dataflow system. This is the pattern that Element is using to "cell-ify"
 matrix, accumulatedMatrix, etc. Need to think of a good name.
 
+
+What functions need to be "cellified"?
+
+1. Attribute evaluation. Because the spread values need to be displayed in the
+inspector.
+
+2. Accumulated matrix. Because we need to get specific ones out in order to
+back compute drag operations.
+
+3. Graphic. Because we need to create the appropriate render tree which
+spreads at the Element level.
+
+
 ###
 
 

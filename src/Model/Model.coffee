@@ -1,5 +1,6 @@
 _ = require "underscore"
 
+Graphic = require "../Graphic/Graphic"
 Util = require "../Util/Util"
 
 
@@ -39,6 +40,14 @@ Model.Component = Model.Node.createVariant
     _.mapObject @getAttributesByName(), (attribute) ->
       attribute.value()
 
+  graphicClass: Graphic.Component
+
+  graphic: ->
+    graphic = new @graphicClass()
+    _.extend graphic, @getAttributesValuesByName()
+    return graphic
+
+
 
 Model.Transform = Model.Component.createVariant
   label: "Transform"
@@ -57,6 +66,7 @@ Model.Transform.addChildren [
 
 Model.Fill = Model.Component.createVariant
   label: "Fill"
+  graphicClass: Graphic.Fill
 
 Model.Fill.addChildren [
   createAttribute("Fill Color", "color", "rgba(0.93, 0.93, 0.93, 1.00)")
@@ -65,6 +75,7 @@ Model.Fill.addChildren [
 
 Model.Stroke = Model.Component.createVariant
   label: "Stroke"
+  graphicClass: Graphic.Stroke
 
 Model.Stroke.addChildren [
   createAttribute("Stroke Color", "color", "rgba(0.60, 0.60, 0.60, 1.00)")
@@ -84,10 +95,12 @@ Model.Shape.addChildren [
 
 Model.Group = Model.Shape.createVariant
   label: "Group"
+  graphicClass: Graphic.Group
 
 
 Model.Anchor = Model.Shape.createVariant
   label: "Anchor"
+  graphicClass: Graphic.Anchor
 
 createAnchor = (x, y) ->
   anchor = Model.Anchor.createVariant()
@@ -100,6 +113,7 @@ createAnchor = (x, y) ->
 
 Model.PathComponent = Model.Component.createVariant
   label: "Path"
+  # TODO graphicClass
 
 Model.PathComponent.addChildren [
   createAttribute("Close Path", "closed", "true")
@@ -107,6 +121,7 @@ Model.PathComponent.addChildren [
 
 Model.Path = Model.Shape.createVariant
   label: "Path"
+  graphicClass: Graphic.Path
 
 Model.Path.addChildren [
   Model.PathComponent.createVariant()
@@ -117,6 +132,7 @@ Model.Path.addChildren [
 
 Model.Circle = Model.Path.createVariant
   label: "Circle"
+  # TODO graphicClass
 
 
 Model.Rectangle = Model.Path.createVariant
@@ -132,6 +148,7 @@ Model.Rectangle.addChildren [
 
 Model.TextComponent = Model.Component.createVariant
   label: "Text"
+  # TODO graphicClass
 
 Model.TextComponent.addChildren [
   createAttribute("Text", "text", '"Text"')
@@ -143,6 +160,7 @@ Model.TextComponent.addChildren [
 
 Model.Text = Model.Shape.createVariant
   label: "Text"
+  # TODO graphicClass
 
 Model.Text.addChildren [
   Model.TextComponent.createVariant()
