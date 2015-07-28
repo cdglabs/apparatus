@@ -55,8 +55,6 @@ Dataflow.run = (callback) ->
 # information for what index we're on for each Spread that is referenced in
 # the Cell's fn.
 
-currentContext = null
-
 class Dataflow.Context
   constructor: ->
     @spreadToIndex = new Map() # Spread : index, spread must be a root spread.
@@ -72,6 +70,10 @@ class Dataflow.Context
       return @spreadToIndex.get(spread.root)
     else
       throw new Dataflow.UnresolvedSpreadError(spread)
+
+currentContext = new Dataflow.Context()
+currentContext.assignSpreadIndex = ->
+  throw "Cannot assign spread index. There is no current computation running."
 
 
 # =============================================================================
@@ -130,8 +132,6 @@ class Dataflow.Cell
   _resolvedValue: ->
     result = @_value
     while result instanceof Dataflow.Spread
-      if !currentContext
-        throw new Dataflow.UnresolvedSpreadError(result)
       index = currentContext.lookupSpread(result)
       result = result.items[index]
     return result
