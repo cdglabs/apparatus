@@ -26,12 +26,12 @@ R.create "Canvas",
     element = @_viewedElement()
     viewMatrix = @_viewMatrix()
 
-    # Should it be allGraphics?
-    graphic = element.graphic()
+    # TODO: background grid
 
-    # @_paintBackgroundGrid(ctx)
+    for graphic in element.allGraphics()
+      graphic.render({ctx, viewMatrix})
 
-    graphic.render({ctx, viewMatrix})
+    # TODO: control points
 
   _viewedElement: ->
     project = @context.project

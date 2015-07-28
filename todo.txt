@@ -50,3 +50,15 @@ Rename:
   Node.childrenOfType -> childVariantsOf
 
 Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
+
+
+Needs cleanup
+  jsEvaluate, spread - move them into their own folder?
+  Attribute - value and valueAsSpread. Can this whole thing be simplified? Also it errors when there's a syntax error. Instead it should show that there's an error and use the last valid function.
+
+There's a bug with dataflow.
+  Even if canReturnSpread is true, it should try to resolve all the spreads it can first.
+
+a = new Dataflow.Cell -> new Dataflow.Spread([0, 1])
+b = new Dataflow.Cell -> a.value() * 2
+c = new Dataflow.Cell -> {a: a.value(), b: b.value(true)}
