@@ -22,6 +22,11 @@ module.exports = Attribute = Node.createVariant
       @_compile()
     @__cell.value()
 
+  valueAsSpread: ->
+    if @__cell.fn == uninitializedCellFn
+      @_compile()
+    @__cell.value(true)
+
   setExpression: (exprString, references={}) ->
     @exprString = ""+exprString
 

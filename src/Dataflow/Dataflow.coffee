@@ -130,6 +130,8 @@ class Dataflow.Cell
   _resolvedValue: ->
     result = @_value
     while result instanceof Dataflow.Spread
+      if !currentContext
+        throw new Dataflow.UnresolvedSpreadError(result)
       index = currentContext.lookupSpread(result)
       result = result.items[index]
     return result

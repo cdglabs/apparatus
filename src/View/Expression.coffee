@@ -7,6 +7,7 @@ CodeMirror = require "codemirror"
 
 R = require "./R"
 Model = require "../Model/Model"
+Dataflow = require "../Dataflow/Dataflow"
 Util = require "../Util/Util"
 DragManager = require "./Manager/DragManager"
 
@@ -363,7 +364,7 @@ R.create "ExpressionValue",
     if attribute.isTrivial()
       R.span {}
     else
-      value = attribute.value()
+      value = attribute.valueAsSpread()
       R.div {className: "ExpressionValue"},
         R.Value {value: value}
 
@@ -379,8 +380,8 @@ R.create "Value",
         "(Error)"
       else if _.isFunction(value)
         "(Function)"
-      # else if value instanceof Model.Spread
-      #   R.SpreadValue {spread: value}
+      else if value instanceof Dataflow.Spread
+        "(Spread)"
       else if _.isNumber(value)
         Util.toMaxPrecision(value, 3)
       else

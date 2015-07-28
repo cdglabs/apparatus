@@ -73,4 +73,4 @@ module.exports = Element = Node.createVariant
     if result instanceof Dataflow.Spread
       return result.items
     else
-      return result
+      return [result]

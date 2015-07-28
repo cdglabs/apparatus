@@ -1,3 +1,6 @@
+spread = require "./spread"
+
+
 module.exports = jsEvaluate = (jsString) ->
   try
     result = eval(jsString)
@@ -39,11 +42,6 @@ round = Math.round
 sin = Math.sin
 sqrt = Math.sqrt
 tan = Math.tan
-
-spread = (start, end, increment=1) ->
-  throw "Spread increment cannot be 0" if increment == 0
-  n = (end - start) / increment
-  return (start + increment * i for i in [0 ... n])
 
 rgba = (r, g, b, a) ->
   r = Math.round(r * 255)
