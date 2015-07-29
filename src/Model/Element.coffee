@@ -15,7 +15,10 @@ module.exports = Element = Node.createVariant
     # this constructor for every Element.
     @expanded = false
 
-    @_setupCells()
+    # TODO: Should more methods be cell'ed? Should these all be _private?
+    @graphic = Dataflow.cell(@_graphic.bind(this))
+    @accumulatedMatrix = Dataflow.cell(@_accumulatedMatrix.bind(this))
+
 
   childElements: -> @childrenOfType(Element)
 
@@ -25,51 +28,51 @@ module.exports = Element = Node.createVariant
 
 
   # ===========================================================================
-  # Cells
+  # Geometry
   # ===========================================================================
 
-  _setupCells: ->
-    @__matrix = new Dataflow.Cell =>
-      matrix = new Util.Matrix()
-      for transform in @childrenOfType(Model.Transform)
-        matrix = matrix.compose(transform.matrix())
-      return matrix
+  matrix: ->
+    matrix = new Util.Matrix()
+    for transform in @childrenOfType(Model.Transform)
+      matrix = matrix.compose(transform.matrix())
+    return matrix
 
-    @__contextMatrix = new Dataflow.Cell =>
-      parent = @parent()
-      if parent and parent.isVariantOf(Element)
-        return parent.accumulatedMatrix()
-      else
-        return new Util.Matrix()
+  contextMatrix: ->
+    parent = @parent()
+    if parent and parent.isVariantOf(Element)
+      return parent.accumulatedMatrix()
+    else
+      return new Util.Matrix()
 
-    @__accumulatedMatrix = new Dataflow.Cell =>
-      return @contextMatrix().compose(@matrix())
+  _accumulatedMatrix: ->
+    return @contextMatrix().compose(@matrix())
 
-    @__graphic = new Dataflow.Cell =>
-      graphic = new @graphicClass()
 
-      # TODO: In order for hit detection to work, Graphics will need to be
-      # annotated with the Element they came from and the Spread context, in
-      # other words with a ParticularElement.
+  # ===========================================================================
+  # Graphic
+  # ===========================================================================
 
-      graphic.matrix = @accumulatedMatrix()
+  _graphic: ->
+    graphic = new @graphicClass()
 
-      graphic.components = _.map @components(), (component) ->
-        component.graphic()
+    # TODO: In order for hit detection to work, Graphics will need to be
+    # annotated with the Element they came from and the Spread context, in
+    # other words with a ParticularElement.
 
-      graphic.childGraphics = _.flatten(_.map(@childElements(), (element) ->
-        element.allGraphics()
-      ))
+    graphic.matrix = @accumulatedMatrix()
 
-      return graphic
+    graphic.components = _.map @components(), (component) ->
+      component.graphic()
 
-  matrix: -> @__matrix.value()
-  contextMatrix: -> @__contextMatrix.value()
-  accumulatedMatrix: -> @__accumulatedMatrix.value()
-  graphic: -> @__graphic.value()
+    graphic.childGraphics = _.flatten(_.map(@childElements(), (element) ->
+      element.allGraphics()
+    ))
+
+    return graphic
 
   allGraphics: ->
-    result = @__graphic.value(true)
+    result = @graphic.asSpread()
+    # TODO: This should keep flattening, not just one level.
     if result instanceof Dataflow.Spread
       return result.items
     else

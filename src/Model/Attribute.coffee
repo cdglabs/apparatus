@@ -7,28 +7,25 @@ Link = require "./Link"
 
 ReferenceLink = Link.createVariant()
 
-uninitializedCellFn = ->
-  throw "Attribute not initialized"
-
 module.exports = Attribute = Node.createVariant
   constructor: ->
     # Call "super"
     Node.constructor.apply(this, arguments)
 
-    @__cell = new Dataflow.Cell(uninitializedCellFn)
+    @__isDirty = true
 
   value: ->
-    if @__cell.fn == uninitializedCellFn
+    if @__isDirty
       @_compile()
-    @__cell.value()
+    return @_fn()
 
-  valueAsSpread: ->
-    if @__cell.fn == uninitializedCellFn
-      @_compile()
-    @__cell.value(true)
+  _setDirty: ->
+    @__isDirty = true
+    for variant in @variants()
+      variant._setDirty()
 
   setExpression: (exprString, references={}) ->
-    @exprString = ""+exprString
+    @exprString = String(exprString)
 
     # Remove all existing reference links
     for referenceLink in @childrenOfType(ReferenceLink)
@@ -41,7 +38,7 @@ module.exports = Attribute = Node.createVariant
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
 
-    @_compile()
+    @_setDirty()
 
   references: ->
     references = {}
@@ -60,12 +57,14 @@ module.exports = Attribute = Node.createVariant
     # TODO
     return @isNumber()
 
-  _compile: ->
-    # TODO: Call compile on all my variants!
+  # ===========================================================================
+  # Compiling
+  # ===========================================================================
 
+  _compile: ->
     if @isNumber()
       value = parseFloat(@exprString)
-      @_setFn -> value
+      @_fn = -> value
       return
 
     wrapped = @_wrapped()
@@ -73,16 +72,12 @@ module.exports = Attribute = Node.createVariant
 
     if !@hasReferences()
       value = compiled()
-      @_setFn -> value
-      return
+      @_fn = -> value
 
-    @_setFn =>
+    @_fn = =>
       referenceValues = _.mapObject @references(), (attribute) ->
         attribute.value()
       return compiled(referenceValues)
-
-  _setFn: (fn) ->
-    @__cell.fn = fn
 
   _wrapped: ->
     result    = "'use strict';\n"

@@ -1,154 +1,130 @@
-###
-
-Why would you want to use Cells? Two reasons:
-
-1. Cells memoize across a single computation.
-
-2. Cells allow you use Spreads.
-
-TODO: Flesh out this documentation.
-
-TODO: Maybe there should be a function that turns a function into a "cell-
-ified" function. Sort of like _.memoize but it ties the function in to the
-Dataflow system. This is the pattern that Element is using to "cell-ify"
-matrix, accumulatedMatrix, etc. Need to think of a good name.
-
-
-What functions need to be "cellified"?
-
-1. Attribute evaluation. Because the spread values need to be displayed in the
-inspector.
-
-2. Accumulated matrix. Because we need to get specific ones out in order to
-back compute drag operations.
-
-3. Graphic. Because we need to create the appropriate render tree which
-spreads at the Element level.
-
-
-###
-
-
-module.exports = Dataflow = {}
+_ = require "underscore"
+ComputationManager = require "./ComputationManager"
+DynamicScope = require "./DynamicScope"
 
 
 # =============================================================================
-# Running a computation
+# Computation
 # =============================================================================
 
-isComputationRunning = false
-computationCounter = 0
-
-Dataflow.run = (callback) ->
-  isComputationRunning = true
-  computationCounter++
-  result = callback()
-  isComputationRunning = false
-  return result
+computationManager = new ComputationManager()
 
 
 # =============================================================================
-# Context
+# Spread Environment
 # =============================================================================
 
-# A Context is created every time a Cell is evaluated. The Context holds
-# information for what index we're on for each Spread that is referenced in
-# the Cell's fn.
+class SpreadEnv
+  constructor: (@parent, @spread, @index) ->
 
-class Dataflow.Context
-  constructor: ->
-    @spreadToIndex = new Map() # Spread : index, spread must be a root spread.
+  lookup: (spread) ->
+    if spread.origin == @spread
+      return @index
+    return @parent?.lookup(spread)
 
-  assignSpreadIndex: (spread, index) ->
-    @spreadToIndex.set(spread.root, index)
+  # Note: Not a mutation, assign returns a new SpreadEnv where spread is
+  # assigned to index.
+  assign: (spread, index) ->
+    return new SpreadEnv(this, spread.origin, index)
 
-  deleteSpread: (spread) ->
-    @spreadToIndex.delete(spread.root)
-
-  lookupSpread: (spread) ->
-    if @spreadToIndex.has(spread.root)
-      return @spreadToIndex.get(spread.root)
-    else
-      throw new Dataflow.UnresolvedSpreadError(spread)
-
-currentContext = new Dataflow.Context()
-currentContext.assignSpreadIndex = ->
-  throw "Cannot assign spread index. There is no current computation running."
+emptySpreadEnv = new SpreadEnv()
 
 
 # =============================================================================
-# Cell
+# Dynamic Scope
 # =============================================================================
 
-class Dataflow.Cell
-  constructor: (@fn) ->
-    @_value = null
-    @_lastEvaluated = null
+dynamicScope = new DynamicScope {
+  # The current spread environment.
+  spreadEnv: emptySpreadEnv
 
-  value: (canReturnSpread=false) ->
+  # Whether or not cells should throw an UnresolvedSpreadError if they
+  # encounter a spread that is not in the current spread environment.
+  shouldThrow: false
+}
+
+
+# =============================================================================
+# Creating Cells
+# =============================================================================
+
+cell = (fn) ->
+
+  cellFn = ->
     # Ensure that a computation is running.
-    if !isComputationRunning
-      return Dataflow.run => @value(canReturnSpread)
+    unless computationManager.isRunning
+      return computationManager.run(cellFn)
 
-    if !@_isValid()
-      @_value = @_evaluate()
-      @_lastEvaluated = computationCounter
+    value = memoizedEvaluateFull()
+    value = resolve(value)
+    if value instanceof Spread and dynamicScope.context.shouldThrow
+      throw new UnresolvedSpreadError(value)
+    return value
 
-    if canReturnSpread
-      return @_value
-    else
-      return @_resolvedValue()
+  # Given a spread, resolve will recursively try to lookup an index in the
+  # current spread environment and return the item in the spread at that
+  # index.
+  resolve = (value) ->
+    currentSpreadEnv = dynamicScope.context.spreadEnv
+    if value instanceof Spread
+      index = currentSpreadEnv.lookup(value)
+      if index?
+        value = value.items[index]
+        return resolve(value)
+    return value
 
-  _isValid: ->
-    @_lastEvaluated == computationCounter
+  # This returns the full value of the cell meaning as a spread (if necessary)
+  # and irrespective of the current dynamic scope context.
+  evaluateFull = ->
+    dynamicScope.with {shouldThrow: false, spreadEnv: emptySpreadEnv}, asSpread
 
-  _evaluate: ->
-    # Evaluate myself, returning a Spread if my fn returns a Spread.
-    previousContext = currentContext
-    currentContext = new Dataflow.Context()
+  memoizedEvaluateFull = computationManager.memoize(evaluateFull)
+
+  # This returns the value of the cell as a spread (if necessary) within the
+  # current dynamic scope context. It evaluates fn, telling it to throw an
+  # UnresolvedSpreadError if it encounters a spread which is not in the
+  # current spread environment. It then catches this and evaluates fn across
+  # the encountered spread.
+  asSpread = ->
     try
-      return @_evaluateFn()
-    finally
-      currentContext = previousContext
-
-  _evaluateFn: ->
-    try
-      return @fn()
+      return dynamicScope.with {shouldThrow: true}, fn
     catch error
       if error instanceof Dataflow.UnresolvedSpreadError
         spread = error.spread
-        return @_evaluateAcrossSpread(spread)
+        return evaluateAcrossSpread(spread)
       else
         throw error
 
-  _evaluateAcrossSpread: (spread) ->
-    resultItems = []
-    for index in [0 ... spread.size()]
-      currentContext.assignSpreadIndex(spread, index)
-      resultItems.push @_evaluateFn()
-    currentContext.deleteSpread(spread)
-    return new Dataflow.Spread(resultItems, spread.root)
+  evaluateAcrossSpread = (spread) ->
+    currentSpreadEnv = dynamicScope.context.spreadEnv
+    items = _.map spread.items, (item, index) ->
+      spreadEnv = currentSpreadEnv.assign(spread, index)
+      return dynamicScope.with {spreadEnv}, asSpread
+    return new Spread(items, spread.origin)
 
-  _resolvedValue: ->
-    result = @_value
-    while result instanceof Dataflow.Spread
-      index = currentContext.lookupSpread(result)
-      result = result.items[index]
-    return result
+  cellFn.asSpread = asSpread
+  return cellFn
 
 
 # =============================================================================
 # Spread
 # =============================================================================
 
-class Dataflow.Spread
-  constructor: (@items, @root) ->
-    if !@root
-      @root = this
+class Spread
+  constructor: (@items, @origin) ->
+    if !@origin
+      @origin = this
 
-  size: -> @items.length
-
-
-class Dataflow.UnresolvedSpreadError
+class UnresolvedSpreadError
   constructor: (@spread) ->
 
+
+# =============================================================================
+# Export
+# =============================================================================
+
+module.exports = Dataflow = {
+  run: (callback) -> computationManager.run(callback)
+  currentSpreadEnv: -> dynamicScope.context.spreadEnv
+  cell, Spread, SpreadEnv, UnresolvedSpreadError
+}
