@@ -1,4 +1,5 @@
 _ = require "underscore"
+ComputationManager = require "./ComputationManager"
 DynamicScope = require "./DynamicScope"
 
 
@@ -6,37 +7,7 @@ DynamicScope = require "./DynamicScope"
 # Computation
 # =============================================================================
 
-###
-
-This code is responsible for keeping track of whether we are running a
-computation and also memoizing functions so that they do not reexecute within
-a given computation.
-
-TODO: This section can be factored out into its own file, ComputationManager,
-and tested separately.
-
-###
-
-isComputationRunning = false
-computationCounter = 0
-
-# Any memoized functions called within callback will never be reexecuted. They
-# will instead return their cached value.
-run = (callback) ->
-  isComputationRunning = true
-  computationCounter++
-  result = callback()
-  isComputationRunning = false
-  return result
-
-memoize = (fn) ->
-  cachedValue = null
-  lastEvaluated = -1
-  return ->
-    if lastEvaluated != computationCounter
-      cachedValue = fn()
-      lastEvaluated = computationCounter
-    return cachedValue
+computationManager = new ComputationManager()
 
 
 # =============================================================================
@@ -81,8 +52,8 @@ cell = (fn) ->
 
   cellFn = ->
     # Ensure that a computation is running.
-    unless isComputationRunning
-      return run(cellFn)
+    unless computationManager.isRunning
+      return computationManager.run(cellFn)
 
     value = memoizedEvaluateFull()
     value = resolve(value)
@@ -107,7 +78,7 @@ cell = (fn) ->
   evaluateFull = ->
     dynamicScope.with {shouldThrow: false, spreadEnv: emptySpreadEnv}, asSpread
 
-  memoizedEvaluateFull = memoize(evaluateFull)
+  memoizedEvaluateFull = computationManager.memoize(evaluateFull)
 
   # This returns the value of the cell as a spread (if necessary) within the
   # current dynamic scope context. It evaluates fn, telling it to throw an
@@ -153,7 +124,7 @@ class UnresolvedSpreadError
 # =============================================================================
 
 module.exports = Dataflow = {
-  run
+  run: (callback) -> computationManager.run(callback)
   currentSpreadEnv: -> dynamicScope.context.spreadEnv
   cell, Spread, SpreadEnv, UnresolvedSpreadError
 }
