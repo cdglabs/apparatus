@@ -2,12 +2,7 @@ spread = require "./spread"
 
 
 module.exports = jsEvaluate = (jsString) ->
-  try
-    result = eval(jsString)
-  catch error
-    return error
-  return result
-
+  return eval(jsString)
 
 
 # =============================================================================

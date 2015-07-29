@@ -17,7 +17,13 @@ module.exports = Attribute = Node.createVariant
   value: ->
     if @__isDirty
       @_compile()
-    return @_fn()
+    try
+      return @_fn()
+    catch error
+      if error instanceof Dataflow.UnresolvedSpreadError
+        throw error
+      else
+        return error
 
   _setDirty: ->
     @__isDirty = true
@@ -62,16 +68,28 @@ module.exports = Attribute = Node.createVariant
   # ===========================================================================
 
   _compile: ->
+    if @exprString == ""
+      @_setError()
+      return
+
     if @isNumber()
       value = parseFloat(@exprString)
       @_setFn -> value
       return
 
     wrapped = @_wrapped()
-    compiled = Util.jsEvaluate(wrapped)
+    try
+      compiled = Util.jsEvaluate(wrapped)
+    catch error
+      @_setError()
+      return
 
     if !@hasReferences()
-      value = compiled()
+      try
+        value = compiled()
+      catch
+        @_setError()
+        return
       @_setFn -> value
 
     @_setFn =>
@@ -80,7 +98,12 @@ module.exports = Attribute = Node.createVariant
       return compiled(referenceValues)
 
   _setFn: (fn) ->
+    @_isSyntaxError = false
     @_fn = Dataflow.cell(fn)
+    @__isDirty = false
+
+  _setError: ->
+    @_isSyntaxError = true
     @__isDirty = false
 
   _wrapped: ->

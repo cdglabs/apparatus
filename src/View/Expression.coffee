@@ -182,11 +182,13 @@ R.create "ExpressionCode",
   # ===========================================================================
 
   _showAutocomplete: ->
-    @mirror.showHint
-      hint: @_hint
-      completeSingle: false
-      # Uncomment below to play with styling in browser inspector.
-      # closeOnUnfocus: false
+    # TODO
+
+    # @mirror.showHint
+    #   hint: @_hint
+    #   completeSingle: false
+    #   # Uncomment below to play with styling in browser inspector.
+    #   # closeOnUnfocus: false
 
   _hint: (mirror) ->
     cursor = mirror.getCursor()

@@ -54,4 +54,4 @@ Maybe move PathComponent attributes into Path element and TextComponent attribut
 
 Needs cleanup
   jsEvaluate, spread - move them into their own folder?
-  Attribute - value and valueAsSpread. Can this whole thing be simplified? Also it errors when there's a syntax error. Instead it should show that there's an error and use the last valid function.
+  Attribute - error handling throw catches everywhere.
