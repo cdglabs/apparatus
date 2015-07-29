@@ -59,3 +59,12 @@ test "Spreads rejoin", (t) ->
   t.deepEqual(d.value(true).items, [0, 5, 10, 15, 20, 25, 30, 35, 40, 45])
 
   t.end()
+
+test "All spreads should try to resolve as deep as possible", (t) ->
+  a = new Dataflow.Cell -> new Dataflow.Spread([0, 1])
+  b = new Dataflow.Cell -> a.value() * 2
+  c = new Dataflow.Cell -> {a: a.value(), b: b.value(true)}
+  t.deepEqual(c.value(true).items, [{a: 0, b: 0}, {a: 1, b: 2}])
+  d = new Dataflow.Cell -> {b: b.value(true)}
+  t.deepEqual(d.value().b.items, [0, 2])
+  t.end()
