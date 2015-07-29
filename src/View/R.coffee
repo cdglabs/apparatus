@@ -17,6 +17,9 @@ R.cx = (classNames) ->
 
 
 R.create = (name, spec) ->
+  # Component.displayName is used by React in its debugging messages.
+  spec.displayName = name
+
   for typesProperty in ["propTypes", "childContextTypes", "contextTypes"]
     if spec[typesProperty]
       spec[typesProperty] = desugarPropTypes(spec[typesProperty])

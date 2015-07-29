@@ -64,7 +64,7 @@ module.exports = Attribute = Node.createVariant
   _compile: ->
     if @isNumber()
       value = parseFloat(@exprString)
-      @_fn = -> value
+      @_setFn -> value
       return
 
     wrapped = @_wrapped()
@@ -72,12 +72,16 @@ module.exports = Attribute = Node.createVariant
 
     if !@hasReferences()
       value = compiled()
-      @_fn = -> value
+      @_setFn -> value
 
-    @_fn = =>
+    @_setFn =>
       referenceValues = _.mapObject @references(), (attribute) ->
         attribute.value()
       return compiled(referenceValues)
+
+  _setFn: (fn) ->
+    @_fn = Dataflow.cell(fn)
+    @__isDirty = false
 
   _wrapped: ->
     result    = "'use strict';\n"

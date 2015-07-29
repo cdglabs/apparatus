@@ -381,7 +381,8 @@ R.create "Value",
       else if _.isFunction(value)
         "(Function)"
       else if value instanceof Dataflow.Spread
-        "(Spread)"
+        # TODO: Make this better
+        "(Spread) " + JSON.stringify(value.items)
       else if _.isNumber(value)
         Util.toMaxPrecision(value, 3)
       else
