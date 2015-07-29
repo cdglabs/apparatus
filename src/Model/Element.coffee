@@ -72,8 +72,7 @@ module.exports = Element = Node.createVariant
 
   allGraphics: ->
     result = @graphic.asSpread()
-    # TODO: This should keep flattening, not just one level.
     if result instanceof Dataflow.Spread
-      return result.items
+      return result.flattenToArray()
     else
       return [result]
