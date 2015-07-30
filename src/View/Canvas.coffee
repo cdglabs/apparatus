@@ -23,13 +23,20 @@ R.create "Canvas",
       }
 
   _draw: (ctx) ->
+    project = @context.project
     element = @_viewedElement()
     viewMatrix = @_viewMatrix()
+
+    highlight = (graphic) ->
+      if project.selectedParticularElement?.isAncestorOf(graphic.particularElement)
+        return {color: "#09c", lineWidth: 2.5}
+
+    renderOpts = {ctx, viewMatrix, highlight}
 
     # TODO: background grid
 
     for graphic in element.allGraphics()
-      graphic.render({ctx, viewMatrix})
+      graphic.render(renderOpts)
 
     # TODO: control points
 

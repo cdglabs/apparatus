@@ -51,16 +51,26 @@ class Graphic.Anchor extends Graphic.Element
 
 class Graphic.Path extends Graphic.Element
   render: (opts) ->
-    ctx = opts.ctx
     @buildPath(opts)
+    @performPaintOps(opts)
+    @highlightIfNecessary(opts)
+
+  performPaintOps: ({ctx}) ->
     for component in @components
       if component instanceof Graphic.PaintOp
         component.paint(ctx)
 
-  buildPath: (opts) ->
-    ctx = opts.ctx
-    viewMatrix = opts.viewMatrix
+  highlightIfNecessary: ({highlight, ctx}) ->
+    return unless highlight
+    highlightSpec = highlight(this)
+    if highlightSpec
+      ctx.save()
+      ctx.strokeStyle = highlightSpec.color
+      ctx.lineWidth = highlightSpec.lineWidth
+      ctx.stroke()
+      ctx.restore()
 
+  buildPath: ({ctx, viewMatrix}) ->
     ctx.beginPath()
     anchors = @collectAnchors()
     for anchor in anchors

@@ -28,6 +28,12 @@ class SpreadEnv
   assign: (spread, index) ->
     return new SpreadEnv(this, spread.origin, index)
 
+  indices: ->
+    if @parent
+      return @parent.indices().concat(@index)
+    else
+      return []
+
 emptySpreadEnv = new SpreadEnv()
 
 

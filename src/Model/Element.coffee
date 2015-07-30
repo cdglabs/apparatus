@@ -55,11 +55,8 @@ module.exports = Element = Node.createVariant
   _graphic: ->
     graphic = new @graphicClass()
 
-    # These annotations are used to associate the graphic with the element and
-    # spread environment it came from. Maybe they should be replaced by
-    # ParticularElement.
-    graphic.element = this
-    graphic.spreadEnv = Dataflow.currentSpreadEnv()
+    spreadEnv = Dataflow.currentSpreadEnv()
+    graphic.particularElement = new Model.ParticularElement(this, spreadEnv.indices())
 
     graphic.matrix = @accumulatedMatrix()
 

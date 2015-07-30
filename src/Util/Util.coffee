@@ -71,3 +71,15 @@ Util.roundToPrecision = (x, precision) ->
   x = Math.round(x * multiplier) / multiplier
   return x
 
+
+# =============================================================================
+# Generic
+# =============================================================================
+
+Util.startsWith = (longerArray, shorterArray) ->
+  return false unless longerArray.length >= shorterArray.length
+  for shorterItem, index in shorterArray
+    longerItem = longerArray[index]
+    return false if longerItem != shorterItem
+  return true
+
