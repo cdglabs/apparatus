@@ -55,9 +55,11 @@ module.exports = Element = Node.createVariant
   _graphic: ->
     graphic = new @graphicClass()
 
-    # TODO: In order for hit detection to work, Graphics will need to be
-    # annotated with the Element they came from and the Spread context, in
-    # other words with a ParticularElement.
+    # These annotations are used to associate the graphic with the element and
+    # spread environment it came from. Maybe they should be replaced by
+    # ParticularElement.
+    graphic.element = this
+    graphic.spreadEnv = Dataflow.currentSpreadEnv()
 
     graphic.matrix = @accumulatedMatrix()
 

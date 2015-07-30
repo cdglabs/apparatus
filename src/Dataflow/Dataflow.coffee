@@ -87,6 +87,10 @@ cell = (fn) ->
   # current spread environment. It then catches this and evaluates fn across
   # the encountered spread.
   asSpread = ->
+    # Ensure that a computation is running.
+    unless computationManager.isRunning
+      return computationManager.run(asSpread)
+
     try
       return dynamicScope.with {shouldThrow: true}, fn
     catch error
