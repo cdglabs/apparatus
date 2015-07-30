@@ -9,7 +9,8 @@ Storage
   localStorage autosave
   undo/redo
 
-
+CSS
+  get stylus to convert -vendor stuff so it works in Safari, etc.
 
 
 
@@ -38,6 +39,25 @@ View
 
 
 
+Hovering and selection
+  We need a notion of ParticularElement
+    constructor: (@element, @indices)
+    resolveSpread: (spread)
+      traverses spread by taking the indices in order
+      this is used for drag operations (get accumulatedMatrix.asSpread() then resolve it to the particularElement)
+
+    isEqualTo: (particularElement)
+      needed for selection in canvas logic
+
+    isWithin: (particularElement)
+      for knowing when to highlight graphics
+
+
+
+
+
+
+
 
 
 Add thumbnails everywhere
@@ -55,3 +75,7 @@ Maybe move PathComponent attributes into Path element and TextComponent attribut
 Needs cleanup
   jsEvaluate, spread - move them into their own folder?
   Attribute - error handling throw catches everywhere.
+
+Nice to have
+  Would be great if build process were faster. Maybe add a build-vendor step and then when building apparatus exclude those files,
+    https://lincolnloop.com/blog/speedy-browserifying-multiple-bundles/
