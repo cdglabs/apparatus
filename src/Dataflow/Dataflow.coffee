@@ -2,45 +2,12 @@ _ = require "underscore"
 ComputationManager = require "./ComputationManager"
 DynamicScope = require "./DynamicScope"
 Spread = require "./Spread"
+SpreadEnv = require "./SpreadEnv"
 
-
-# =============================================================================
-# Computation
-# =============================================================================
 
 computationManager = new ComputationManager()
 
-
-# =============================================================================
-# Spread Environment
-# =============================================================================
-
-class SpreadEnv
-  constructor: (@parent, @origin, @index) ->
-
-  lookup: (spread) ->
-    if spread.origin == @origin
-      return @index
-    return @parent?.lookup(spread)
-
-  # Note: Not a mutation, assign returns a new SpreadEnv where spread is
-  # assigned to index.
-  assign: (spread, index) ->
-    return new SpreadEnv(this, spread.origin, index)
-
-  indices: ->
-    # TODO: Remove
-    if @parent
-      return @parent.indices().concat(@index)
-    else
-      return []
-
 emptySpreadEnv = new SpreadEnv()
-
-
-# =============================================================================
-# Dynamic Scope
-# =============================================================================
 
 dynamicScope = new DynamicScope {
   # The current spread environment.
@@ -51,10 +18,9 @@ dynamicScope = new DynamicScope {
   shouldThrow: false
 }
 
+class UnresolvedSpreadError
+  constructor: (@spread) ->
 
-# =============================================================================
-# Creating Cells
-# =============================================================================
 
 cell = (fn) ->
 
@@ -117,18 +83,6 @@ cell = (fn) ->
   cellFn.asSpread = asSpread
   return cellFn
 
-
-# =============================================================================
-# UnresolvedSpreadError
-# =============================================================================
-
-class UnresolvedSpreadError
-  constructor: (@spread) ->
-
-
-# =============================================================================
-# Export
-# =============================================================================
 
 module.exports = Dataflow = {
   run: (callback) -> computationManager.run(callback)
