@@ -42,11 +42,7 @@ View
 Hovering and selection
   Select from the Canvas
   Hover
-  Highlight the appropriate spread selection in attribute inspector...
-    This is tricky. I see two options:
-      1. Get the Attribute's parent element and ask for its graphic, then try to piece together where the index corresponds...
-      2. Tag each spread with the Attribute it came from, then do something more like the old Apparatus for SpreadEnv. The limiting factor here is: every spread must have an origin at an attribute. No two spreads can have the same attribute as their origin. Is this okay?
-
+  Highlight the appropriate spread selection in attribute inspector
 
 
   We need a notion of ParticularElement
@@ -63,7 +59,7 @@ Hovering and selection
 
 
 
-
+Test if we even need Dataflow memoization anymore...
 
 
 

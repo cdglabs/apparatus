@@ -7,11 +7,9 @@ SpreadEnv = require "./SpreadEnv"
 
 computationManager = new ComputationManager()
 
-emptySpreadEnv = new SpreadEnv()
-
 dynamicScope = new DynamicScope {
   # The current spread environment.
-  spreadEnv: emptySpreadEnv
+  spreadEnv: SpreadEnv.empty
 
   # Whether or not cells should throw an UnresolvedSpreadError if they
   # encounter a spread that is not in the current spread environment.
@@ -50,7 +48,7 @@ cell = (fn) ->
   # This returns the full value of the cell meaning as a spread (if necessary)
   # and irrespective of the current dynamic scope context.
   evaluateFull = ->
-    dynamicScope.with {shouldThrow: false, spreadEnv: emptySpreadEnv}, asSpread
+    dynamicScope.with {shouldThrow: false, spreadEnv: SpreadEnv.empty}, asSpread
 
   memoizedEvaluateFull = computationManager.memoize(evaluateFull)
 

@@ -1,18 +1,18 @@
-Util = require "../Util/Util"
+Dataflow = require "../Dataflow/Dataflow"
 
 
 module.exports = class ParticularElement
-  constructor: (@element, @indices) ->
+  constructor: (@element, @spreadEnv) ->
 
   isEqualTo: (particularElement) ->
     return @element == particularElement.element and
-      _.isEqual(@indices, particularElement.indices)
+      @spreadEnv.isEqualTo(particularElement.spreadEnv)
 
   isAncestorOf: (particularElement) ->
     return @element.isAncestorOf(particularElement.element) and
-      Util.startsWith(particularElement.indices, @indices)
+      @spreadEnv.contains(particularElement.spreadEnv)
 
 
 ParticularElement.ensure = (element) ->
   return element if element instanceof ParticularElement
-  return new ParticularElement(element, [])
+  return new ParticularElement(element, Dataflow.SpreadEnv.empty)

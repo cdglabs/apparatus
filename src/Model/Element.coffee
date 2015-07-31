@@ -56,7 +56,7 @@ module.exports = Element = Node.createVariant
     graphic = new @graphicClass()
 
     spreadEnv = Dataflow.currentSpreadEnv()
-    graphic.particularElement = new Model.ParticularElement(this, spreadEnv.indices())
+    graphic.particularElement = new Model.ParticularElement(this, spreadEnv)
 
     graphic.matrix = @accumulatedMatrix()
 
