@@ -1,6 +1,6 @@
 test = require("tape")
 
-Dataflow = require("../src/Dataflow/Dataflow2")
+Dataflow = require("../src/Dataflow/Dataflow")
 
 
 test "Values are computed correctly", (t) ->
@@ -32,7 +32,7 @@ test "Cacheing works", (t) ->
   t.end()
 
 test "Spreads work", (t) ->
-  a = Dataflow.cell -> new Dataflow.Spread([0 ... 10])
+  a = Dataflow.cell -> new Dataflow.Spread([0 ... 10], a)
   b = Dataflow.cell -> a() * 2
   c = Dataflow.cell -> a() + b()
   t.deepEqual(a().items, [0 ... 10])
@@ -41,15 +41,15 @@ test "Spreads work", (t) ->
   t.end()
 
 test "Spreads cross product", (t) ->
-  a = Dataflow.cell -> new Dataflow.Spread([0 ... 8])
-  b = Dataflow.cell -> new Dataflow.Spread([10, 20])
+  a = Dataflow.cell -> new Dataflow.Spread([0 ... 8], a)
+  b = Dataflow.cell -> new Dataflow.Spread([10, 20], b)
   c = Dataflow.cell -> a() * b()
   for item, index in c().items
     t.deepEqual(item.items, [index * 10, index * 20])
   t.end()
 
 test "Spreads rejoin", (t) ->
-  a = Dataflow.cell -> new Dataflow.Spread([0 ... 10])
+  a = Dataflow.cell -> new Dataflow.Spread([0 ... 10], a)
   b = Dataflow.cell -> a() * 2
   c = Dataflow.cell -> a() * 3
   d = Dataflow.cell -> c() + b()
@@ -61,7 +61,7 @@ test "Spreads rejoin", (t) ->
   t.end()
 
 test "All spreads should try to resolve as deep as possible", (t) ->
-  a = Dataflow.cell -> new Dataflow.Spread([0, 1])
+  a = Dataflow.cell -> new Dataflow.Spread([0, 1], a)
   b = Dataflow.cell -> a() * 2
   c = Dataflow.cell -> {a: a(), b: b.asSpread()}
   t.deepEqual(c().items, [{a: 0, b: 0}, {a: 1, b: 2}])

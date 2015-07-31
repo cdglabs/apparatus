@@ -16,10 +16,10 @@ computationManager = new ComputationManager()
 # =============================================================================
 
 class SpreadEnv
-  constructor: (@parent, @spread, @index) ->
+  constructor: (@parent, @origin, @index) ->
 
   lookup: (spread) ->
-    if spread.origin == @spread
+    if spread.origin == @origin
       return @index
     return @parent?.lookup(spread)
 
@@ -29,6 +29,7 @@ class SpreadEnv
     return new SpreadEnv(this, spread.origin, index)
 
   indices: ->
+    # TODO: Remove
     if @parent
       return @parent.indices().concat(@index)
     else

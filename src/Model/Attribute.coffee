@@ -84,6 +84,8 @@ module.exports = Attribute = Node.createVariant
       @_setError()
       return
 
+    compiled = @_wrapFunctionInSpreadCheck(compiled)
+
     if !@hasReferences()
       try
         value = compiled()
@@ -120,3 +122,10 @@ module.exports = Attribute = Node.createVariant
 
     result   += "});"
     return result
+
+  _wrapFunctionInSpreadCheck: (fn) ->
+    return =>
+      result = fn(arguments)
+      if result instanceof Dataflow.Spread
+        result.origin = this
+      return result
