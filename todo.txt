@@ -40,7 +40,6 @@ View
 
 
 Hovering and selection
-  Select from the Canvas
   Hover
   Highlight the appropriate spread selection in attribute inspector
 

@@ -1,3 +1,4 @@
+_ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -12,7 +13,7 @@ R.create "Canvas",
       className: "Canvas"
       # style:
       #   cursor: @_cursor()
-      # onMouseDown: @_onMouseDown
+      onMouseDown: @_onMouseDown
       # onMouseEnter: @_onMouseEnter
       # onMouseLeave: @_onMouseLeave
       # onMouseMove: @_onMouseMove
@@ -33,12 +34,34 @@ R.create "Canvas",
 
     renderOpts = {ctx, viewMatrix, highlight}
 
-    # TODO: background grid
+    # TODO: draw background grid
 
     for graphic in element.allGraphics()
       graphic.render(renderOpts)
 
-    # TODO: control points
+    # TODO: draw control points
+
+  _onMouseDown: (mouseDownEvent) ->
+    el = @getDOMNode()
+    rect = el.getBoundingClientRect()
+
+    x = mouseDownEvent.clientX - rect.left
+    y = mouseDownEvent.clientY - rect.top
+
+    # TODO: An optimization would be to save graphics from drawing.
+
+    project = @context.project
+    element = @_viewedElement()
+    viewMatrix = @_viewMatrix()
+
+    hitDetectOpts = {viewMatrix, x, y}
+
+    hit = null
+    for graphic in element.allGraphics()
+      hit = graphic.hitDetect(hitDetectOpts) ? hit
+
+    # TODO: Selection logic
+    project.select(_.last(hit))
 
   _viewedElement: ->
     project = @context.project

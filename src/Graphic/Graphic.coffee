@@ -6,7 +6,11 @@ class Graphic.Element
 
   Each Graphic.Element must have these properties:
 
-  matrix: a Util.Matrix that is the graphic's accumulated transformation.
+  particularElement: The ParticularElement that generated the graphic. This is
+  used for "back tracing" what part of the model generated this graphic, e.g.
+  to implement selection when you click a shape on the canvas.
+
+  matrix: a Util.Matrix that is the graphic's *accumulated* transformation.
 
   components: a list of Graphic.Component's representing the paint operations
   to perform.
@@ -31,9 +35,18 @@ class Graphic.Element
 
   hitDetect: (opts) ->
     ###
+
+    Given (x,y), returns null if there is nothing under (x,y), that is (x,y)
+    is a background pixel. Otherwise returns a list of ParticularElements which are
+    under (x,y). The list goes in order of deepest to shallowest. So assuming
+    there's a hit: the first ParticularElement is the deepest one that is under (x,y)
+    and the last ParticularElement is (necessarily) this.particularElement.
+
     Opts:
 
     x, y: Position to hit detect.
+
+    viewMatrix:
 
     shouldDetectAnchor(anchor): A function that takes in an anchor graphic and
     returns true or false whether to hit detect that anchor.
@@ -43,6 +56,20 @@ class Graphic.Element
 
 
 class Graphic.Group extends Graphic.Element
+  render: (opts) ->
+    throw "TODO"
+
+  hitDetect: (opts) ->
+    # TODO: test
+    latestHit = null
+    for childGraphic in @childGraphics
+      latestHit = childGraphic.hitDetect(opts) ? latestHit
+    if latestHit
+      return latestHit.concat(@particularElement)
+    else
+      return null
+
+
 
 class Graphic.Anchor extends Graphic.Element
 
@@ -54,6 +81,15 @@ class Graphic.Path extends Graphic.Element
     @buildPath(opts)
     @performPaintOps(opts)
     @highlightIfNecessary(opts)
+
+  hitDetect: (opts) ->
+    opts.ctx = getDummyCanvasCtx()
+    {ctx, x, y} = opts
+    @buildPath(opts)
+    if ctx.isPointInPath(x, y)
+      return [@particularElement]
+    else
+      return null
 
   performPaintOps: ({ctx}) ->
     for component in @components
@@ -98,6 +134,10 @@ class Graphic.Path extends Graphic.Element
     return true
 
 
+# =============================================================================
+# Components
+# =============================================================================
+
 class Graphic.Component
 
 class Graphic.PaintOp extends Graphic.Component
@@ -117,3 +157,16 @@ class Graphic.Stroke extends Graphic.PaintOp
     ctx.lineWidth = @lineWidth
     ctx.stroke()
     ctx.restore()
+
+
+# =============================================================================
+# Dummy Canvas
+# =============================================================================
+
+# This dummy canvas is used to perform isPointInPath for hit detection.
+
+dummyCanvasCtx = null
+getDummyCanvasCtx = ->
+  return dummyCanvasCtx if dummyCanvasCtx
+  dummyCanvas = document.createElement("canvas")
+  return dummyCanvasCtx = dummyCanvas.getContext("2d")
