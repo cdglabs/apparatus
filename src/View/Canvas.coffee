@@ -2,11 +2,13 @@ _ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
+HoverManager = require "./Manager/HoverManager"
 
 
 R.create "Canvas",
   contextTypes:
     project: Model.Project
+    hoverManager: HoverManager
 
   render: ->
     R.div {
@@ -25,12 +27,16 @@ R.create "Canvas",
 
   _draw: (ctx) ->
     project = @context.project
+    hoverManager = @context.hoverManager
     element = @_viewedElement()
     viewMatrix = @_viewMatrix()
 
     highlight = (graphic) ->
-      if project.selectedParticularElement?.isAncestorOf(graphic.particularElement)
+      particularElement = graphic.particularElement
+      if project.selectedParticularElement?.isAncestorOf(particularElement)
         return {color: "#09c", lineWidth: 2.5}
+      if hoverManager.hoveredParticularElement?.isAncestorOf(particularElement)
+        return {color: "#0c9", lineWidth: 2.5}
 
     renderOpts = {ctx, viewMatrix, highlight}
 
