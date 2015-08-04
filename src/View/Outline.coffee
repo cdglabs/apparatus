@@ -101,7 +101,7 @@ R.create "OutlineItem",
     element = @props.element
 
     return if dragManager.drag?
-    particularElement = Model.ParticularElement.ensure(element)
+    particularElement = new Model.ParticularElement(element)
     hoverManager.hoveredParticularElement = particularElement
 
   _onMouseLeave: ->

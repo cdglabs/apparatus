@@ -3,6 +3,7 @@ Dataflow = require "../Dataflow/Dataflow"
 
 module.exports = class ParticularElement
   constructor: (@element, @spreadEnv) ->
+    @spreadEnv ?= Dataflow.SpreadEnv.empty
 
   isEqualTo: (particularElement) ->
     return @element == particularElement.element and
@@ -15,4 +16,4 @@ module.exports = class ParticularElement
 
 ParticularElement.ensure = (element) ->
   return element if element instanceof ParticularElement
-  return new ParticularElement(element, Dataflow.SpreadEnv.empty)
+  return new ParticularElement(element)
