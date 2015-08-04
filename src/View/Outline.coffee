@@ -1,6 +1,8 @@
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
+HoverManager = require "./Manager/HoverManager"
+DragManager = require "./Manager/DragManager"
 
 
 R.create "Outline",
@@ -50,13 +52,16 @@ R.create "OutlineItem",
 
   contextTypes:
     project: Model.Project
+    hoverManager: HoverManager
+    dragManager: DragManager
 
   render: ->
     project = @context.project
     element = @props.element
+    hoverManager = @context.hoverManager
 
     isSelected = project.selectedParticularElement?.element == element
-    isHovered = false
+    isHovered = hoverManager.hoveredParticularElement?.element == element
     isController = false
     isExpanded = element.expanded
 
@@ -91,12 +96,20 @@ R.create "OutlineItem",
     @props.element.label = newValue
 
   _onMouseEnter: ->
-    # return if State.UI.dragPayload
-    # State.Editor.setHovered(@element)
+    dragManager = @context.dragManager
+    hoverManager = @context.hoverManager
+    element = @props.element
+
+    return if dragManager.drag?
+    particularElement = Model.ParticularElement.ensure(element)
+    hoverManager.hoveredParticularElement = particularElement
 
   _onMouseLeave: ->
-    # return if State.UI.dragPayload
-    # State.Editor.setHovered(null)
+    dragManager = @context.dragManager
+    hoverManager = @context.hoverManager
+
+    return if dragManager.drag?
+    hoverManager.hoveredParticularElement = null
 
   _onClickTriangle: ->
     element = @props.element
