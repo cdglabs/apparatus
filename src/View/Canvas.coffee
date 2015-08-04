@@ -62,12 +62,13 @@ R.create "Canvas",
 
     hitDetectOpts = {viewMatrix, x, y}
 
-    hit = null
+    hits = null
     for graphic in element.allGraphics()
-      hit = graphic.hitDetect(hitDetectOpts) ? hit
+      hits = graphic.hitDetect(hitDetectOpts) ? hits
 
-    # TODO: Selection logic
-    project.select(_.last(hit))
+    nextSelected = project.getNextSelected(hits, false)
+
+    project.select(nextSelected)
 
   _viewedElement: ->
     project = @context.project
