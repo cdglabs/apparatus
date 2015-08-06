@@ -22,6 +22,23 @@ Documentation
 
 
 
+
+
+
+Get Create Panel in there
+Get it showing all the shapes
+Thumbnail with auto view matrix
+Create by dragging in
+Select a shape to edit it
+
+
+
+
+
+
+
+
+
 View
 
   Outline
@@ -40,25 +57,14 @@ View
 
 
 Hovering and selection
-  Hover
   Highlight the appropriate spread selection in attribute inspector
-
-
-  We need a notion of ParticularElement
-    constructor: (@element, @indices)
-    resolveSpread: (spread)
-      traverses spread by taking the indices in order
-      this is used for drag operations (get accumulatedMatrix.asSpread() then resolve it to the particularElement)
-
-    isEqualTo: (particularElement)
-      needed for selection in canvas logic
-
-    isWithin: (particularElement)
-      for knowing when to highlight graphics
 
 
 
 Test if we even need Dataflow memoization anymore...
+
+
+Need to figure out all the different thumbnails, then refactor view/Picture
 
 
 
@@ -72,6 +78,8 @@ Create panel
 Rename:
   Node.children -> childNodes
   Node.childrenOfType -> childVariantsOf
+  Project.viewedElement -> editingElement
+  Remove requires for managers (use R.manager)
 
 Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
 

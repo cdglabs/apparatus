@@ -4,10 +4,11 @@ Model = require "./Model"
 
 module.exports = class Project
   constructor: ->
-
     @viewedElement = null
-
     @selectedParticularElement = null
+    @createPanelElements = [
+      Model.Rectangle
+    ]
 
   select: (particularElement) ->
     if !particularElement
@@ -42,5 +43,5 @@ module.exports = class Project
     # Find "deepest sibling"
     for hit, index in hits
       nextHit = hits[index + 1]
-      if nextHit.isAncestorOf(@selectedParticularElement)
+      if !nextHit or nextHit.isAncestorOf(@selectedParticularElement)
         return hit

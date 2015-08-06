@@ -62,10 +62,14 @@ desugarPropType = (propType) ->
 
 
 
+R.DragManager = require "./Manager/DragManager"
+R.HoverManager = require "./Manager/HoverManager"
 
 require "./Generic/EditableText"
 require "./Generic/HTMLCanvas"
+require "./Picture"
 require "./Editor"
+require "./CreatePanel"
 require "./Canvas"
 require "./Outline"
 require "./Inspector"

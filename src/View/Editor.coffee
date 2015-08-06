@@ -32,7 +32,7 @@ R.create "Editor",
     },
       # R.DragHintView {}
 
-      # R.CreatePanelView {}
+      R.CreatePanel {}
       R.Outline {}
       R.Inspector {}
       # R.ToolbarView {}
