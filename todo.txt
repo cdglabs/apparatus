@@ -88,6 +88,3 @@ Needs cleanup
   Attribute - error handling throw catches everywhere.
   Get rid of ParticularElement.ensure
 
-Nice to have
-  Would be great if build process were faster. Maybe add a build-vendor step and then when building apparatus exclude those files,
-    https://lincolnloop.com/blog/speedy-browserifying-multiple-bundles/

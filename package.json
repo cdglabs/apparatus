@@ -16,8 +16,9 @@
     "watchify": "^3.2.3"
   },
   "scripts": {
-    "build-js": "browserify src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\"",
-    "watch-js": "watchify src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\" -dv",
+    "build-js-vendor": "browserify -r codemirror -r react -r underscore -o dist/vendor.js",
+    "build-js": "browserify -x codemirror -x react -x underscore src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\"",
+    "watch-js": "watchify -x codemirror -x react -x underscore src/index.coffee -o dist/apparatus.js -t coffeeify --extension=\".coffee\" -dv",
     "build-css": "stylus style/index.styl --out dist/apparatus.css",
     "watch-css": "stylus style/index.styl --out dist/apparatus.css -w",
     "build": "npm run build-js && npm run build-css",
