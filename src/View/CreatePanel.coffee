@@ -1,8 +1,6 @@
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
-HoverManager = require "./Manager/HoverManager"
-DragManager = require "./Manager/DragManager"
 
 
 R.create "CreatePanel",

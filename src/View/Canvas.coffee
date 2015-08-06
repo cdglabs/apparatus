@@ -2,13 +2,12 @@ _ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
-HoverManager = require "./Manager/HoverManager"
 
 
 R.create "Canvas",
   contextTypes:
     project: Model.Project
-    hoverManager: HoverManager
+    hoverManager: R.HoverManager
 
   render: ->
     R.div {

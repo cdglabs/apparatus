@@ -9,8 +9,6 @@ R = require "./R"
 Model = require "../Model/Model"
 Dataflow = require "../Dataflow/Dataflow"
 Util = require "../Util/Util"
-DragManager = require "./Manager/DragManager"
-
 
 
 R.create "Expression",
@@ -30,7 +28,7 @@ R.create "ExpressionCode",
     attribute: Model.Attribute
 
   contextTypes:
-    dragManager: DragManager
+    dragManager: R.DragManager
 
   render: ->
     attribute = @props.attribute

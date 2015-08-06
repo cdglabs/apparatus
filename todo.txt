@@ -79,7 +79,6 @@ Rename:
   Node.children -> childNodes
   Node.childrenOfType -> childVariantsOf
   Project.viewedElement -> editingElement
-  Remove requires for managers (use R.manager)
 
 Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
 

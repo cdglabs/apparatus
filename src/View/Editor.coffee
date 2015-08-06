@@ -1,7 +1,5 @@
 R = require "./R"
 Model = require "../Model/Model"
-DragManager = require "./Manager/DragManager"
-HoverManager = require "./Manager/HoverManager"
 
 
 R.create "Editor",
@@ -10,8 +8,8 @@ R.create "Editor",
 
   childContextTypes:
     project: Model.Project
-    dragManager: DragManager
-    hoverManager: HoverManager
+    dragManager: R.DragManager
+    hoverManager: R.HoverManager
 
   getChildContext: ->
     {
@@ -49,7 +47,7 @@ R.create "Editor",
 
 
   dragManager: ->
-    return @_dragManager ?= new DragManager()
+    return @_dragManager ?= new R.DragManager()
 
   hoverManager: ->
-    return @_hoverManager ?= new HoverManager()
+    return @_hoverManager ?= new R.HoverManager()

@@ -1,8 +1,6 @@
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
-HoverManager = require "./Manager/HoverManager"
-DragManager = require "./Manager/DragManager"
 
 
 R.create "Outline",
@@ -52,8 +50,8 @@ R.create "OutlineItem",
 
   contextTypes:
     project: Model.Project
-    hoverManager: HoverManager
-    dragManager: DragManager
+    hoverManager: R.HoverManager
+    dragManager: R.DragManager
 
   render: ->
     project = @context.project
