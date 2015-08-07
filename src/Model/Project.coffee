@@ -31,7 +31,7 @@ module.exports = class Project
     while element = element.parent()
       element.expanded = true
 
-  getNextSelected: (hits, isDoubleClick) ->
+  getNextSelected: (hits, isSelectThrough) ->
     # TODO: Needs testing, all the cases. And documentation (with figures?).
     return null unless hits
 
@@ -42,7 +42,7 @@ module.exports = class Project
     deepestHit = _.last(hits)
 
     if @selectedParticularElement.isAncestorOf(deepestHit)
-      if isDoubleClick
+      if isSelectThrough
         for hit, index in hits
           nextHit = hits[index + 1]
           if nextHit.isEqualTo(@selectedParticularElement)

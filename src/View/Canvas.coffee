@@ -57,16 +57,13 @@ R.create "Canvas",
   # ===========================================================================
 
   _onMouseDown: (mouseEvent) ->
-    project = @context.project
-    hits = @_hitDetect(mouseEvent)
-    nextSelected = project.getNextSelected(hits, false)
-    project.select(nextSelected)
+    # TODO: Determine whether it was a double click and set isSelectThrough
+    # appropriately.
+    @_updateSelected(mouseEvent, false)
 
   _onMouseMove: (mouseEvent) ->
     dragManager = @context.dragManager
-    if dragManager.drag
-      "TODO"
-    else
+    if !dragManager.drag
       @_updateHoverAndCursor(mouseEvent)
 
   _onMouseEnter: (mouseEvent) ->
@@ -87,6 +84,13 @@ R.create "Canvas",
     hits = @_hitDetect(mouseEvent)
     nextSelected = project.getNextSelected(hits, false)
     hoverManager.hoveredParticularElement = nextSelected
+    # TODO: Deal with controlled elements, set cursor
+
+  _updateSelected: (mouseEvent, isSelectThrough) ->
+    project = @context.project
+    hits = @_hitDetect(mouseEvent)
+    nextSelected = project.getNextSelected(hits, isSelectThrough)
+    project.select(nextSelected)
 
 
   # ===========================================================================
