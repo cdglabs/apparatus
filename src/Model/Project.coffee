@@ -7,6 +7,9 @@ module.exports = class Project
     initialDiagram = Model.Group.createVariant()
     initialDiagram.expanded = true
 
+    initialDiagram.addChild(Model.Rectangle.createVariant())
+    initialDiagram.addChild(Model.Circle.createVariant())
+
     @editingElement = initialDiagram
     @selectedParticularElement = null
 
@@ -33,7 +36,8 @@ module.exports = class Project
     return null unless hits
 
     if !@selectedParticularElement
-      return hits[1] ? hits[0]
+      # Second to last or last element.
+      return hits[hits.length - 2] ? hits[hits.length - 1]
 
     deepestHit = _.last(hits)
 
