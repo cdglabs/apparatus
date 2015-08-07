@@ -77,7 +77,6 @@ Create panel
 Rename:
   Node.children -> childNodes
   Node.childrenOfType -> childVariantsOf
-  Project.viewedElement -> editingElement
 
 Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
 

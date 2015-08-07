@@ -27,7 +27,7 @@ R.create "Canvas",
   _draw: (ctx) ->
     project = @context.project
     hoverManager = @context.hoverManager
-    element = @_viewedElement()
+    element = @_editingElement()
     viewMatrix = @_viewMatrix()
 
     highlight = (graphic) ->
@@ -56,7 +56,7 @@ R.create "Canvas",
     # TODO: An optimization would be to save graphics from drawing.
 
     project = @context.project
-    element = @_viewedElement()
+    element = @_editingElement()
     viewMatrix = @_viewMatrix()
 
     hitDetectOpts = {viewMatrix, x, y}
@@ -69,9 +69,9 @@ R.create "Canvas",
 
     project.select(nextSelected)
 
-  _viewedElement: ->
+  _editingElement: ->
     project = @context.project
-    element = project.viewedElement
+    element = project.editingElement
     return element
 
   _viewMatrix: ->

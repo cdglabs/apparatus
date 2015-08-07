@@ -9,7 +9,7 @@ R.create "Outline",
 
   render: ->
     project = @context.project
-    element = project.viewedElement
+    element = project.editingElement
     R.div {className: "Outline"},
       R.div {className: "Header"}, "Outline"
       R.div {className: "Scroller"},

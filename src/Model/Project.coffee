@@ -4,11 +4,11 @@ Model = require "./Model"
 
 module.exports = class Project
   constructor: ->
-    @viewedElement = null
-    @selectedParticularElement = null
-
     initialDiagram = Model.Group.createVariant()
     initialDiagram.expanded = true
+
+    @editingElement = initialDiagram
+    @selectedParticularElement = null
 
     @createPanelElements = [
       Model.Rectangle

@@ -42,7 +42,7 @@ R.create "CreatePanelItem",
     R.div {
       className: R.cx {
         "CreatePanelItem": true
-        "isEditing": element == project.viewedElement
+        "isEditing": element == project.editingElement
       }
     },
       R.div {className: "CreatePanelThumbnail"},

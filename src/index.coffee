@@ -15,7 +15,6 @@ Apparatus.Util = require "./Util/Util"
 
 
 project = new Model.Project()
-project.viewedElement = Model.Rectangle
 
 
 
