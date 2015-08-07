@@ -134,6 +134,16 @@ class Graphic.Path extends Graphic.Element
     return true
 
 
+class Graphic.Circle extends Graphic.Path
+  buildPath: ({ctx, viewMatrix}) ->
+    ctx.beginPath()
+    ctx.save()
+    matrix = viewMatrix.compose(@matrix)
+    matrix.canvasTransform(ctx)
+    ctx.arc(0, 0, 1, 0, 2 * Math.PI, false)
+    ctx.restore()
+
+
 # =============================================================================
 # Components
 # =============================================================================

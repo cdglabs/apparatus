@@ -8,6 +8,7 @@ module.exports = class Project
     @selectedParticularElement = null
     @createPanelElements = [
       Model.Rectangle
+      Model.Circle
     ]
 
   select: (particularElement) ->

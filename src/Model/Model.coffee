@@ -132,7 +132,7 @@ Model.Path.addChildren [
 
 Model.Circle = Model.Path.createVariant
   label: "Circle"
-  # TODO graphicClass
+  graphicClass: Graphic.Circle
 
 
 Model.Rectangle = Model.Path.createVariant
