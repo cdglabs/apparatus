@@ -6,9 +6,14 @@ module.exports = class Project
   constructor: ->
     @viewedElement = null
     @selectedParticularElement = null
+
+    initialDiagram = Model.Group.createVariant()
+    initialDiagram.expanded = true
+
     @createPanelElements = [
       Model.Rectangle
       Model.Circle
+      initialDiagram
     ]
 
   select: (particularElement) ->

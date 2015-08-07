@@ -25,12 +25,11 @@ Documentation
 
 
 
-Get Create Panel in there
 Get it showing all the shapes
 Thumbnail with auto view matrix
 Create by dragging in
 Select a shape to edit it
-
+Drag to move shape
 
 
 

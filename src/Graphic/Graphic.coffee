@@ -57,7 +57,8 @@ class Graphic.Element
 
 class Graphic.Group extends Graphic.Element
   render: (opts) ->
-    throw "TODO"
+    for childGraphic in @childGraphics
+      childGraphic.render(opts)
 
   hitDetect: (opts) ->
     # TODO: test
