@@ -13,6 +13,12 @@ module.exports = class ParticularElement
     return @element.isAncestorOf(particularElement.element) and
       @spreadEnv.contains(particularElement.spreadEnv)
 
+  accumulatedMatrix: ->
+    accumulatedMatrix = @element.accumulatedMatrix.asSpread()
+    accumulatedMatrix = @spreadEnv.resolve(accumulatedMatrix)
+    if accumulatedMatrix instanceof Dataflow.Spread
+      throw "Unable to fully resolve accumulatedMatrix"
+    return accumulatedMatrix
 
 ParticularElement.ensure = (element) ->
   return element if element instanceof ParticularElement

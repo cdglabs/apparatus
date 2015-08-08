@@ -38,12 +38,7 @@ cell = (fn) ->
   # index.
   resolve = (value) ->
     currentSpreadEnv = dynamicScope.context.spreadEnv
-    if value instanceof Spread
-      index = currentSpreadEnv.lookup(value)
-      if index?
-        value = value.items[index]
-        return resolve(value)
-    return value
+    return currentSpreadEnv.resolve(value)
 
   # This returns the full value of the cell meaning as a spread (if necessary)
   # and irrespective of the current dynamic scope context.
