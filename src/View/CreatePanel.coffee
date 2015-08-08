@@ -13,7 +13,7 @@ R.create "CreatePanel",
       R.div {className: "Header"}, "Symbols"
       R.div {className: "Scroller"},
         for element in project.createPanelElements
-          R.CreatePanelItem {element}
+          R.CreatePanelItem {element, key: Util.getId(element)}
 
         R.div {className: "CreatePanelAddItem"},
           R.button {

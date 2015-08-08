@@ -57,6 +57,9 @@ R.create "Canvas",
   # ===========================================================================
 
   _onMouseDown: (mouseEvent) ->
+    mouseEvent.preventDefault()
+    Util.clearTextFocus()
+
     # TODO: Determine whether it was a double click and set isSelectThrough
     # appropriately.
     @_updateSelected(mouseEvent, false)

@@ -1,5 +1,6 @@
 R = require "./R"
 Model = require "../Model/Model"
+Util = require "../Util/Util"
 
 
 R.create "Inspector",
@@ -32,12 +33,12 @@ R.create "FullAttributesList",
             "Variables"
         R.div {className: "ComponentSectionContent"},
           for attribute in element.variables()
-            R.AttributeRow {attribute}
+            R.AttributeRow {attribute, key: Util.getId(attribute)}
         R.div {className: "AddVariableRow"},
           R.button {className: "AddButton", onClick: @_addVariable}
 
       for component in element.components()
-        R.ComponentSection {component}
+        R.ComponentSection {component, key: Util.getId(component)}
 
   _addVariable: ->
     @props.element.addVariable()
@@ -57,4 +58,4 @@ R.create "ComponentSection",
           component.label
       R.div {className: "ComponentSectionContent"},
         for attribute in component.attributes()
-          R.AttributeRow {attribute}
+          R.AttributeRow {attribute, key: Util.getId(attribute)}

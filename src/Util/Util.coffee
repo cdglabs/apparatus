@@ -45,6 +45,30 @@ Util.mouseDownPreventDefault = (e) ->
   for el in document.querySelectorAll(".CodeMirror-focused")
     el.CodeMirror.getInputField().blur()
 
+Util.clearTextFocus = ->
+  document.activeElement.blur()
+  window.getSelection().removeAllRanges()
+  document.body.focus()
+
+  # Unfocus any focused Code Mirrors
+  for el in document.querySelectorAll(".CodeMirror-focused")
+    el.CodeMirror.getInputField().blur()
+
+
+# =============================================================================
+# IDs
+# =============================================================================
+
+Util.getId = (object) ->
+  return object.id if object.hasOwnProperty("id")
+  return object.id = Util.generateId()
+
+# TODO: Replace with UUID.
+counter = 0
+Util.generateId = ->
+  counter++
+  return "id" + counter
+
 
 # =============================================================================
 # Numeric

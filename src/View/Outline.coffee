@@ -232,7 +232,7 @@ R.create "OutlineChildren",
 
     R.div {className: "OutlineChildren"},
       for childElement in element.childElements()
-        R.OutlineTree {element: childElement}
+        R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
 
 
