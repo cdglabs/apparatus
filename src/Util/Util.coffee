@@ -1,4 +1,5 @@
 _ = require "underscore"
+numeric = require "numeric"
 
 
 module.exports = Util = {}
@@ -43,6 +44,24 @@ Util.mouseDownPreventDefault = (e) ->
   # Unfocus any focused Code Mirrors
   for el in document.querySelectorAll(".CodeMirror-focused")
     el.CodeMirror.getInputField().blur()
+
+
+# =============================================================================
+# Numeric
+# =============================================================================
+
+Util.quadrance = (p1, p2) ->
+  d = numeric['-'](p1, p2)
+  numeric.dot(d, d)
+
+Util.solve = (objective, startArgs) ->
+  uncmin = numeric.uncmin(objective, startArgs)
+  if isNaN(uncmin.f)
+    console.warn "NaN"
+    return startArgs
+  else
+    solution = uncmin.solution
+    return solution
 
 
 # =============================================================================

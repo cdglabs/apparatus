@@ -28,6 +28,24 @@ module.exports = Element = Node.createVariant
 
 
   # ===========================================================================
+  # Attributes to change
+  # ===========================================================================
+
+  attributesToChange: ->
+    # TODO: Deal with controlled attributes
+    return @defaultAttributesToChange()
+
+  defaultAttributesToChange: ->
+    result = []
+    for component in @components()
+      continue unless component.defaultAttributesToChange?
+      for attribute in component.defaultAttributesToChange()
+        if attribute.isNumber()
+          result.push(attribute)
+    return result
+
+
+  # ===========================================================================
   # Geometry
   # ===========================================================================
 

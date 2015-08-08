@@ -29,7 +29,6 @@ Get it showing all the shapes
 Thumbnail with auto view matrix
 Create by dragging in
 Select a shape to edit it
-Drag to move shape
 
 
 
@@ -84,4 +83,4 @@ Needs cleanup
   jsEvaluate, spread - move them into their own folder?
   Attribute - error handling throw catches everywhere.
   Get rid of ParticularElement.ensure
-
+  Fix broken tests

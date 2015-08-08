@@ -60,6 +60,7 @@ R.create "Canvas",
     # TODO: Determine whether it was a double click and set isSelectThrough
     # appropriately.
     @_updateSelected(mouseEvent, false)
+    @_startDrag(mouseEvent)
 
   _onMouseMove: (mouseEvent) ->
     dragManager = @context.dragManager
@@ -92,6 +93,50 @@ R.create "Canvas",
     nextSelected = project.getNextSelected(hits, isSelectThrough)
     project.select(nextSelected)
 
+  _startDrag: (mouseDownEvent) ->
+    {project, dragManager} = @context
+
+    # TODO: Deal with controlled elements
+    particularElementToDrag = project.selectedParticularElement
+    return unless particularElementToDrag
+
+    attributesToChange = particularElementToDrag.element.attributesToChange()
+    viewMatrix = @_viewMatrix()
+    accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
+    originalMousePixel = @_mousePosition(mouseDownEvent)
+    originalMouseLocal = viewMatrix.compose(accumulatedMatrix).toLocal(originalMousePixel)
+
+    dragManager.start mouseDownEvent,
+      onMove: (mouseMoveEvent) =>
+        return unless dragManager.drag.consummated
+        currentMousePixel = @_mousePosition(mouseMoveEvent)
+        initialValues = for attribute in attributesToChange
+          attribute.value()
+        precisions = for attribute in attributesToChange
+          Util.precision(attribute.exprString)
+
+        objective = (trialValues) =>
+          for attribute, index in attributesToChange
+            trialValue = trialValues[index]
+            # Note: Here is a mutation within an objective function that
+            # really ought to be pure (no side effects). But setting the
+            # attributes directly is just the easiest way to test the
+            # trialValues. Maybe if this ever becomes a problem we could have
+            # the objective "clean up" after itself, setting the attributes
+            # back to their original values, to make it pure.
+            attribute.setExpression(trialValue)
+          trialAccumulatedMatrix = particularElementToDrag.accumulatedMatrix()
+          trialMousePixel = viewMatrix.compose(trialAccumulatedMatrix).fromLocal(originalMouseLocal)
+          error = Util.quadrance(trialMousePixel, currentMousePixel)
+          return error
+
+        solvedValues = Util.solve(objective, initialValues)
+        for attribute, index in attributesToChange
+          solvedValue = solvedValues[index]
+          precision = precisions[index]
+          solvedValue = Util.toPrecision(solvedValue, precision)
+          attribute.setExpression(solvedValue)
+
 
   # ===========================================================================
   # Hit Detection
@@ -100,7 +145,7 @@ R.create "Canvas",
   _hitDetect: (mouseEvent) ->
     element = @_editingElement()
     viewMatrix = @_viewMatrix()
-    {x, y} = @_mousePosition(mouseEvent)
+    [x, y] = @_mousePosition(mouseEvent)
 
     hitDetectOpts = {viewMatrix, x, y}
 
@@ -116,7 +161,7 @@ R.create "Canvas",
     rect = el.getBoundingClientRect()
     x = mouseEvent.clientX - rect.left
     y = mouseEvent.clientY - rect.top
-    return {x, y}
+    return [x, y]
 
 
   # ===========================================================================

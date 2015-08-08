@@ -54,6 +54,9 @@ Model.Transform = Model.Component.createVariant
   matrix: ->
     v = @getAttributesValuesByName()
     return Util.Matrix.naturalConstruct(v.x, v.y, v.sx, v.sy, v.rotate)
+  defaultAttributesToChange: ->
+    attributesByName = @getAttributesByName()
+    return [attributesByName.x, attributesByName.y]
 
 Model.Transform.addChildren [
   createAttribute("X", "x", "0.00")
@@ -62,6 +65,7 @@ Model.Transform.addChildren [
   createAttribute("Scale Y", "sy", "1.00")
   createAttribute("Rotate", "rotate", "0.00")
 ]
+
 
 
 Model.Fill = Model.Component.createVariant
