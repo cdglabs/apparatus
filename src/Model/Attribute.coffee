@@ -74,7 +74,7 @@ module.exports = Attribute = Node.createVariant
 
     if @isNumber()
       value = parseFloat(@exprString)
-      @_setFn -> value
+      @_setFnConstant(value)
       return
 
     wrapped = @_wrapped()
@@ -92,7 +92,8 @@ module.exports = Attribute = Node.createVariant
       catch
         @_setError()
         return
-      @_setFn -> value
+      @_setFnConstant(value)
+      return
 
     @_setFn =>
       referenceValues = _.mapObject @references(), (attribute) ->
@@ -103,6 +104,13 @@ module.exports = Attribute = Node.createVariant
     @_isSyntaxError = false
     @_fn = Dataflow.cell(fn)
     @__isDirty = false
+
+  _setFnConstant: (value) ->
+    if value instanceof Dataflow.Spread
+      @_setFn -> value
+    else
+      @_fn = -> value
+      @__isDirty = false
 
   _setError: ->
     @_isSyntaxError = true

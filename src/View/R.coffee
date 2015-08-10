@@ -1,4 +1,4 @@
-React = require "react"
+# React = require "react"
 _ = require "underscore"
 
 Model = require "../Model/Model"
