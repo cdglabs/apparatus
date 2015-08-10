@@ -1,4 +1,4 @@
-This directory contains all the code for rendering the Apparatus editor in the browser. It is built on React.
+`View` contains all the code for rendering the Apparatus editor in the browser. It is built on [React](http://facebook.github.io/react/).
 
 The root of this directory is `R.coffee`. It's named `R` because it's used so often that View would be tedious to write, and because it makes available the React API that we use. It also implements some syntactic sugar that I found to be useful in writing React components in Coffeescript.
 
