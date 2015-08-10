@@ -1,3 +1,13 @@
+Today
+  Get React production going
+  Write some readme's for some directories
+  Organize to-do's better
+    Maybe use Github issues to organize
+  Start thinking about serialization
+  Drag in from the create panel
+
+
+
 
 
 Project
