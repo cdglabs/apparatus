@@ -159,19 +159,20 @@ R.create "ExpressionCode",
 
     marks = []
     for own referenceKey, referenceAttribute of attribute.references()
-      for startChar in Util.stringMatchIndices(value, referenceKey)
-        endChar = startChar + referenceKey.length
-        from = Util.charToLineCh(value, startChar)
-        to = Util.charToLineCh(value, endChar)
-        marks.push {
-          from
-          to
-          render: ->
-            R.AttributeToken {
-              attribute: referenceAttribute
-              # contextAttribute: attribute
-            }
-        }
+      do (referenceKey, referenceAttribute) =>
+        for startChar in Util.stringMatchIndices(value, referenceKey)
+          endChar = startChar + referenceKey.length
+          from = Util.charToLineCh(value, startChar)
+          to = Util.charToLineCh(value, endChar)
+          marks.push {
+            from
+            to
+            render: ->
+              R.AttributeToken {
+                attribute: referenceAttribute
+                # contextAttribute: attribute
+              }
+          }
 
     @_updateMarks(marks)
 
