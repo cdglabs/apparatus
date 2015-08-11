@@ -29,7 +29,6 @@ View
   Create Panel
     Get it showing all the shapes
     Thumbnail with auto view matrix
-    Create by dragging in
     Select a shape to edit it
 
   Outline
@@ -49,6 +48,14 @@ View
   Picture
     Need to figure out all the different thumbnail needs, then refactor
     Add thumbnails everywhere
+
+  Canvas
+    Draw background grid
+    Draw control points
+    Pan
+    Zoom
+    Finish selection logic (double click)
+    Controlled element
 
 Rename
   Node.children -> childNodes

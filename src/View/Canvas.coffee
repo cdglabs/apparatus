@@ -71,7 +71,11 @@ R.create "Canvas",
       @_updateHoverAndCursor(mouseEvent)
 
   _onMouseEnter: (mouseEvent) ->
-    # TODO
+    {dragManager} = @context
+    return unless dragManager.drag?.type == "createElement"
+
+    element = dragManager.drag.element
+    @_createElement(mouseEvent, element)
 
   _onMouseLeave: (mouseEvent) ->
     # TODO
@@ -96,22 +100,26 @@ R.create "Canvas",
     nextSelected = project.getNextSelected(hits, isSelectThrough)
     project.select(nextSelected)
 
-  _startDrag: (mouseDownEvent) ->
+  _startDrag: (mouseDownEvent, startImmediately=null) ->
     {project, dragManager} = @context
 
-    # TODO: Deal with controlled elements
-    particularElementToDrag = project.selectedParticularElement
-    return unless particularElementToDrag
+
+    if startImmediately
+      particularElementToDrag = startImmediately.particularElementToDrag
+      originalMouseLocal = startImmediately.originalMouseLocal
+    else
+      # TODO: Deal with controlled elements
+      particularElementToDrag = project.selectedParticularElement
+      return unless particularElementToDrag
+      accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
+      originalMousePixel = @_mousePosition(mouseDownEvent)
+      originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
 
     attributesToChange = particularElementToDrag.element.attributesToChange()
-    viewMatrix = @_viewMatrix()
-    accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
-    originalMousePixel = @_mousePosition(mouseDownEvent)
-    originalMouseLocal = viewMatrix.compose(accumulatedMatrix).toLocal(originalMousePixel)
 
     dragManager.start mouseDownEvent,
       onMove: (mouseMoveEvent) =>
-        return unless dragManager.drag.consummated
+        return unless startImmediately or dragManager.drag.consummated
         currentMousePixel = @_mousePosition(mouseMoveEvent)
         initialValues = for attribute in attributesToChange
           attribute.value()
@@ -129,7 +137,7 @@ R.create "Canvas",
             # back to their original values, to make it pure.
             attribute.setExpression(trialValue)
           trialAccumulatedMatrix = particularElementToDrag.accumulatedMatrix()
-          trialMousePixel = viewMatrix.compose(trialAccumulatedMatrix).fromLocal(originalMouseLocal)
+          trialMousePixel = @_viewMatrix().compose(trialAccumulatedMatrix).fromLocal(originalMouseLocal)
           error = Util.quadrance(trialMousePixel, currentMousePixel)
           return error
 
@@ -139,6 +147,24 @@ R.create "Canvas",
           precision = precisions[index]
           solvedValue = Util.toPrecision(solvedValue, precision)
           attribute.setExpression(solvedValue)
+
+    if startImmediately
+      dragManager.drag.onMove(mouseDownEvent)
+
+  _createElement: (mouseEvent, element) ->
+    {project} = @context
+
+    parent = @_editingElement()
+    newElement = element.createVariant()
+    parent.addChild(newElement)
+
+    newParticularElement = new Model.ParticularElement(newElement)
+    project.select(newParticularElement)
+
+    @_startDrag(mouseEvent, {
+      particularElementToDrag: newParticularElement
+      originalMouseLocal: [0, 0]
+    })
 
 
   # ===========================================================================

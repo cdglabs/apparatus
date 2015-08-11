@@ -31,6 +31,7 @@ R.create "CreatePanel",
 R.create "CreatePanelItem",
   contextTypes:
     project: Model.Project
+    dragManager: R.DragManager
 
   propTypes:
     element: Model.Element
@@ -44,7 +45,10 @@ R.create "CreatePanelItem",
         "isEditing": element == project.editingElement
       }
     },
-      R.div {className: "CreatePanelThumbnail"},
+      R.div {
+        className: "CreatePanelThumbnail"
+        onMouseDown: @_onMouseDown
+      },
         R.Thumbnail {element}
       R.div {
         className: "CreatePanelItemEditButton icon-pencil"
@@ -64,5 +68,14 @@ R.create "CreatePanelItem",
   _editElement: ->
     # TODO
 
-  _onMouseDown: ->
-    # TODO
+  _onMouseDown: (mouseDownEvent) ->
+    {dragManager} = @context
+    {element} = @props
+
+    mouseDownEvent.preventDefault()
+    Util.clearTextFocus()
+
+    dragManager.start mouseDownEvent,
+      type: "createElement"
+      element: element
+      # cursor
