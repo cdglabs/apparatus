@@ -49,7 +49,10 @@ R.create "Editor",
   #     State.Editor.removeSelectedElement()
 
 
-
+# This wrapper is used in Expression where we need to be able to render
+# ReactElements within a CodeMirror mark. It may not be needed in the future
+# if React migrates from context coming from owner to context coming from
+# parent. See: https://gist.github.com/jimfb/0eb6e61f300a8c1b2ce7
 R.create "ContextWrapper",
   propTypes:
     childRender: Function
