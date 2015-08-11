@@ -23,7 +23,6 @@ module.exports = class Project
     if !particularElement
       @selectedParticularElement = null
       return
-    particularElement = Model.ParticularElement.ensure(particularElement)
     @selectedParticularElement = particularElement
     @_expandToElement(particularElement.element)
 

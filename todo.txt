@@ -56,5 +56,4 @@ Rename
 Cleanup
   jsEvaluate, spread - move them into their own folder?
   Attribute - error handling throw catches everywhere.
-  Get rid of ParticularElement.ensure
   Fix broken tests

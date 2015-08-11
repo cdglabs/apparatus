@@ -119,9 +119,10 @@ R.create "OutlineItem",
     return if Util.closest(target, ".Interactive")
 
     element = @props.element
-    Util.mouseDownPreventDefault(mouseDownEvent)
-    @context.project.select(element)
+    particularElement = new Model.ParticularElement(element)
+    @context.project.select(particularElement)
 
+    Util.mouseDownPreventDefault(mouseDownEvent)
     # @_startDragToReorder(mouseDownEvent)
 
   _startDragToReorder: (mouseDownEvent) ->

@@ -19,7 +19,3 @@ module.exports = class ParticularElement
     if accumulatedMatrix instanceof Dataflow.Spread
       throw "Unable to fully resolve accumulatedMatrix"
     return accumulatedMatrix
-
-ParticularElement.ensure = (element) ->
-  return element if element instanceof ParticularElement
-  return new ParticularElement(element)
