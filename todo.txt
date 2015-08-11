@@ -1,7 +1,6 @@
 Today
-  Start thinking about serialization
-  Drag in from the create panel
-
+  Get Text working
+  Drag an attribute to transclude
 
 
 

@@ -117,7 +117,7 @@ createAnchor = (x, y) ->
 
 Model.PathComponent = Model.Component.createVariant
   label: "Path"
-  # TODO graphicClass
+  graphicClass: Graphic.PathComponent
 
 Model.PathComponent.addChildren [
   createAttribute("Close Path", "closed", "true")
@@ -152,7 +152,7 @@ Model.Rectangle.addChildren [
 
 Model.TextComponent = Model.Component.createVariant
   label: "Text"
-  # TODO graphicClass
+  graphicClass: Graphic.TextComponent
 
 Model.TextComponent.addChildren [
   createAttribute("Text", "text", '"Text"')

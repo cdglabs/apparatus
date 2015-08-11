@@ -1,5 +1,11 @@
+_ = require "underscore"
+
 module.exports = Graphic = {}
 
+
+# =============================================================================
+# Base Element
+# =============================================================================
 
 class Graphic.Element
   ###
@@ -55,6 +61,21 @@ class Graphic.Element
     throw "Not implemented"
 
 
+  # ===========================================================================
+  # Helpers
+  # ===========================================================================
+
+  componentOfType: (type) ->
+    _.find @components, (component) -> component instanceof type
+
+  componentsOfType: (type) ->
+    _.filter @components, (component) -> component instanceof type
+
+
+# =============================================================================
+# Elements
+# =============================================================================
+
 class Graphic.Group extends Graphic.Element
   render: (opts) ->
     for childGraphic in @childGraphics
@@ -93,9 +114,8 @@ class Graphic.Path extends Graphic.Element
       return null
 
   performPaintOps: ({ctx}) ->
-    for component in @components
-      if component instanceof Graphic.PaintOp
-        component.paint(ctx)
+    for component in @componentsOfType(Graphic.PaintOp)
+      component.paint(ctx)
 
   highlightIfNecessary: ({highlight, ctx}) ->
     return unless highlight
@@ -131,8 +151,8 @@ class Graphic.Path extends Graphic.Element
     return anchors
 
   isClosed: ->
-    # TODO
-    return true
+    pathComponent = @componentOfType(Graphic.PathComponent)
+    return pathComponent.closed
 
 
 class Graphic.Circle extends Graphic.Path
@@ -169,6 +189,9 @@ class Graphic.Stroke extends Graphic.PaintOp
     ctx.stroke()
     ctx.restore()
 
+class Graphic.PathComponent extends Graphic.Component
+
+class Graphic.TextComponent extends Graphic.Component
 
 # =============================================================================
 # Dummy Canvas
