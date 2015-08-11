@@ -165,6 +165,91 @@ class Graphic.Circle extends Graphic.Path
     ctx.restore()
 
 
+class Graphic.Text extends Graphic.Path
+  render: (opts) ->
+    ctx = opts.ctx
+    ctx.save()
+    @setupText(opts)
+    @renderText(opts)
+    ctx.restore()
+    if opts.highlight
+      @buildPath(opts)
+      @highlightIfNecessary(opts)
+
+  textComponent: ->
+    @componentOfType(Graphic.TextComponent)
+
+  renderText: ({ctx}) ->
+    {text} = @textComponent()
+    ctx.fillText(text, 0, 0)
+
+  textMultiplier: 100
+
+  # setupText will set the appropriate font styles, color, and transformation
+  # matrix so that text is ready to be rendered (fillText) at 0,0.
+  setupText: ({ctx, viewMatrix}) ->
+    {text, fontFamily, textAlign, textBaseline, color} = @textComponent()
+    matrix = viewMatrix.compose(@matrix)
+    matrix = matrix.scale(1 / @textMultiplier, -1 / @textMultiplier)
+    matrix.canvasTransform(ctx)
+    ctx.font = "#{@textMultiplier}px #{fontFamily}"
+    ctx.textAlign = textAlign
+    ctx.textBaseline = textBaseline
+    ctx.fillStyle = color
+
+  # Text's buildPath just draws a rectangle around the text's bounding
+  # rectangle.
+  buildPath: (opts) ->
+    {ctx, viewMatrix} = opts
+    ctx.save()
+    @setupText(opts)
+
+    {text, fontFamily, textAlign, textBaseline, color} = @textComponent()
+
+    width = ctx.measureText(text).width / @textMultiplier
+    height = 1
+    ctx.restore()
+
+    # TODO: Deal properly with ltr/rtl text.
+    if textAlign == "left" or textAlign == "start"
+      minX = 0
+      maxX = width
+    else if textAlign == "right" or textAlign == "end"
+      minX = -width
+      maxX = 0
+    else if textAlign == "center"
+      minX = -width / 2
+      maxX =  width / 2
+
+    # TODO: This 0.25 is hard-coded. How can this baseline value be determined
+    # programmatically based on the font?
+    baseline = 0.25
+    if textBaseline == "top"
+      minY = -height - baseline
+      maxY = -baseline
+    else if textBaseline == "middle"
+      minY = (-height - baseline) / 2
+      maxY = ( height + baseline) / 2
+    else if textBaseline == "alphabetic"
+      minY = -baseline
+      maxY = height - baseline
+    else if textBaseline == "bottom"
+      minY = 0
+      maxY = height
+
+    # Draw the text bounding rectangle.
+    ctx.save()
+    matrix = viewMatrix.compose(@matrix)
+    matrix.canvasTransform(ctx)
+    ctx.beginPath()
+    ctx.moveTo(minX, minY)
+    ctx.lineTo(minX, maxY)
+    ctx.lineTo(maxX, maxY)
+    ctx.lineTo(maxX, minY)
+    ctx.closePath()
+    ctx.restore()
+
+
 # =============================================================================
 # Components
 # =============================================================================

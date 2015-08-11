@@ -1,5 +1,4 @@
 Today
-  Get Text working
   Drag an attribute to transclude
 
 
@@ -26,7 +25,6 @@ Model
 
 View
   Create Panel
-    Get it showing all the shapes
     Thumbnail with auto view matrix
     Select a shape to edit it
 

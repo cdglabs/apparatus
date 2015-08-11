@@ -16,6 +16,7 @@ module.exports = class Project
     @createPanelElements = [
       Model.Rectangle
       Model.Circle
+      Model.Text
       initialElement
     ]
 

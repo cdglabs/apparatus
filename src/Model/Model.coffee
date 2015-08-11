@@ -164,7 +164,7 @@ Model.TextComponent.addChildren [
 
 Model.Text = Model.Shape.createVariant
   label: "Text"
-  # TODO graphicClass
+  graphicClass: Graphic.Text
 
 Model.Text.addChildren [
   Model.TextComponent.createVariant()
