@@ -92,9 +92,19 @@ R.create "AttributeLabel",
       onMove: (mouseMoveEvent) ->
         dragManager.drag.x = mouseMoveEvent.clientX
         dragManager.drag.y = mouseMoveEvent.clientY
-      onUp: ->
+      onDrop: ->
         hoverManager.hoveredAttribute = null
       # cursor
+      onCancel: =>
+        @_transcludeIntoFocusedExpression()
+
+  _transcludeIntoFocusedExpression: ->
+    {attribute} = @props
+    focusedCodeMirrorEl = document.querySelector(".CodeMirror-focused")
+    return unless focusedCodeMirrorEl
+    expressionCodeEl = Util.closest(focusedCodeMirrorEl, ".ExpressionCode")
+    expressionCode = expressionCodeEl.component
+    expressionCode.transcludeAttribute(attribute)
 
   _onMouseEnter: (e) ->
     {attribute} = @props

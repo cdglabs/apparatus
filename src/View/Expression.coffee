@@ -32,7 +32,7 @@ R.create "ExpressionCode",
     dragManager: R.DragManager
     hoverManager: R.HoverManager
     # Note: we need to include all the context variables to pass down to
-    # CodeMirror marks.
+    # ContextWrapper (for CodeMirror marks).
 
   render: ->
     attribute = @props.attribute
@@ -44,6 +44,11 @@ R.create "ExpressionCode",
 
   componentDidMount: ->
     el = @getDOMNode()
+
+    # We annotate the dom node to support the "click an attribute to
+    # transclude it" feature.
+    el.component = this
+
     @mirror = CodeMirror(el, {
       mode: "javascript"
 
@@ -82,7 +87,7 @@ R.create "ExpressionCode",
     {attribute} = @props
     {dragManager} = @context
     if dragManager.drag?.type == "transcludeAttribute"
-      @_transcludeAttribute(dragManager.drag.attribute)
+      @transcludeAttribute(dragManager.drag.attribute)
 
 
   # ===========================================================================
@@ -105,7 +110,8 @@ R.create "ExpressionCode",
       oldReferences = attribute.references()
       newReferences = {}
       for own referenceKey, referenceNode of oldReferences
-        if newExprString.indexOf(referenceKey) != -1
+        isUsed = (newExprString.indexOf(referenceKey) != -1)
+        if isUsed
           newReferences[referenceKey] = referenceNode
       attribute.setExpression(newExprString, newReferences)
 
@@ -114,56 +120,29 @@ R.create "ExpressionCode",
   # Transcluding an attribute (creating a reference)
   # ===========================================================================
 
-  _transcludeAttribute: (referenceAttribute) ->
+  transcludeAttribute: (referenceAttribute) ->
     if @mirror.hasFocus()
       @_replaceSelectionWithReference(referenceAttribute)
     else
       @_replaceAllWithReference(referenceAttribute)
 
   _replaceSelectionWithReference: (referenceAttribute) ->
-    # TODO
+    {attribute} = @props
+    references = attribute.references()
+    referenceKey = Util.generateId()
+    references[referenceKey] = referenceAttribute
+    exprString = attribute.exprString
+    attribute.setExpression(exprString, references)
+    @mirror.replaceSelection(referenceKey)
 
   _replaceAllWithReference: (referenceAttribute) ->
     {attribute} = @props
-    referenceKey = Util.generateId()
-    exprString = referenceKey
     references = {}
+    referenceKey = Util.generateId()
     references[referenceKey] = referenceAttribute
+    exprString = referenceKey
     attribute.setExpression(exprString, references)
 
-
-
-
-  # _onMouseUp: (e) ->
-  #   return unless State.UI.dragPayload?.type == "transcludeAttribute"
-
-  #   targetNode = State.UI.dragPayload.attribute
-
-  #   mirror = @refs.CodeMirror.mirror
-  #   if mirror.hasFocus()
-  #     @_replaceSelectionWithAttributeToken(targetNode)
-  #   else
-  #     @_replaceAllWithAttributeToken(targetNode)
-
-  # _replaceSelectionWithAttributeToken: (attribute) ->
-  #   mirror = @refs.CodeMirror.mirror
-  #   references = @attribute.references()
-
-  #   referenceKey = null
-  #   for own key, referenceAttribute of references
-  #     if referenceAttribute == attribute
-  #       referenceKey = key
-  #       break
-  #   referenceKey ?= @attribute.generateReferenceKey()
-
-  #   references[referenceKey] = attribute
-
-  #   # Note: this is a little convoluted in that it ends up calling
-  #   # @attribute.setExpression here...
-  #   exprString = @attribute.exprString
-  #   @attribute.setExpression(exprString, references)
-  #   # ... and then again here:
-  #   mirror.replaceSelection(referenceKey)
 
   # ===========================================================================
   # Displaying reference tokens

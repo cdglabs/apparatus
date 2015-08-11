@@ -47,8 +47,6 @@ View
     color picker
     autocomplete
     arrow keys between them and EditableText
-    drag an attribute to transclude
-    click an attribute to transclude
     become multi-line if there's a \n
     disable CodeMirror undo (once Apparatus undo works)
     displaying expression values
