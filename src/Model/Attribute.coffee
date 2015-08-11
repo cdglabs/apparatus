@@ -133,7 +133,7 @@ module.exports = Attribute = Node.createVariant
 
   _wrapFunctionInSpreadCheck: (fn) ->
     return =>
-      result = fn(arguments)
+      result = fn(arguments...)
       if result instanceof Dataflow.Spread
         result.origin = this
       return result
