@@ -17,13 +17,19 @@ Storage
   localStorage autosave
   undo/redo
 
+Misc
+  Import JSON
+  Keyboard shortcuts
+
 Model
   Project
   Element
     Add viewMatrix to "create panel" shapes
-  Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
+  Image Element
 
 View
+  Menubar
+
   Create Panel
     Thumbnail with auto view matrix
     Select a shape to edit it
