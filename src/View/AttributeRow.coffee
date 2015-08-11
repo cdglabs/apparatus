@@ -51,14 +51,19 @@ R.create "AttributeLabel",
   propTypes:
     attribute: Model.Attribute
 
+  contextTypes:
+    dragManager: R.DragManager
+    hoverManager: R.HoverManager
+
   render: ->
-    attribute = @props.attribute
+    {attribute} = @props
+    {hoverManager} = @context
 
     R.div {
       className: R.cx {
         AttributeLabel: true
         Interactive: true
-        # Hovered: State.UI.isAttributeHovered(@node)
+        isHovered: hoverManager.hoveredAttribute == attribute
         # Variable: @node.parent().isVariantOf(Element)
       }
       onMouseDown: @_onMouseDown
@@ -91,12 +96,15 @@ R.create "AttributeLabel",
     #   sticky: true
 
   _onMouseOver: (e) ->
-    # return if State.UI.dragPayload
-    # State.UI.setAttributeHovered(@node)
+    {attribute} = @props
+    {dragManager, hoverManager} = @context
+    return if dragManager.drag?
+    hoverManager.hoveredAttribute = attribute
 
   _onMouseOut: (e) ->
-    # return if State.UI.dragPayload
-    # State.UI.setAttributeHovered(null)
+    {dragManager, hoverManager} = @context
+    return if dragManager.drag?
+    hoverManager.hoveredAttribute = null
 
 
 # R.create "AttributeToken",

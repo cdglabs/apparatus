@@ -268,9 +268,6 @@ canvas {
   padding: 0 0.75em;
   cursor: -webkit-grab;
 }
-.AttributeLabel.Hovered {
-  background-color: #def;
-}
 .AttributeLabel.Editing {
   cursor: text;
 }
@@ -282,8 +279,8 @@ canvas {
   background-color: #ddd;
   background-image: linear-gradient(to bottom, #eee, #ccc);
 }
-.AttributeLabel.Hovered,
-.ReferenceToken.Hovered {
+.AttributeLabel.isHovered,
+.ReferenceToken.isHovered {
   background-color: #def;
   background-image: linear-gradient(to bottom, #f99, #d77);
 }
