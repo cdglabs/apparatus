@@ -114,6 +114,7 @@ R.create "AttributeToken",
     # contextAttribute: {optional: Model.Attribute}
 
   contextTypes:
+    dragManager: R.DragManager
     hoverManager: R.HoverManager
 
   render: ->

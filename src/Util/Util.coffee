@@ -114,3 +114,27 @@ Util.roundToPrecision = (x, precision) ->
   multiplier = Math.pow(10, precision)
   x = Math.round(x * multiplier) / multiplier
   return x
+
+
+# =============================================================================
+# String
+# =============================================================================
+
+# stringMatchIndices searches haystack string for the needle string and
+# returns all of the indices where it's found.
+Util.stringMatchIndices = (haystack, needle) ->
+  indices = []
+  cursor = -1
+  while true
+    cursor = haystack.indexOf(needle, cursor+1)
+    break if cursor == -1
+    indices.push(cursor)
+  return indices
+
+# CodeMirror likes working with {line, ch} objects but sometimes it's easier
+# to work with just a straight character index. This function converts a
+# character index to a {line, ch} by counting new lines in the string.
+Util.charToLineCh = (string, char) ->
+  stringUpToChar = string.substr(0, char)
+  lines = stringUpToChar.split("\n")
+  return {line: lines.length-1, ch: _.last(lines).length}

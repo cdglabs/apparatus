@@ -50,6 +50,23 @@ R.create "Editor",
 
 
 
+R.create "ContextWrapper",
+  propTypes:
+    childRender: Function
+    context: Object
+
+  childContextTypes:
+    project: Model.Project
+    dragManager: R.DragManager
+    hoverManager: R.HoverManager
+
+  getChildContext: ->
+    @props.context
+
+  render: -> @props.childRender()
+
+
+
 R.create "DragHint",
   contextTypes:
     dragManager: R.DragManager

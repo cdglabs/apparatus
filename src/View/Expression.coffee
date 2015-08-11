@@ -28,7 +28,11 @@ R.create "ExpressionCode",
     attribute: Model.Attribute
 
   contextTypes:
+    project: Model.Project
     dragManager: R.DragManager
+    hoverManager: R.HoverManager
+    # Note: we need to include all the context variables to pass down to
+    # CodeMirror marks.
 
   render: ->
     attribute = @props.attribute
@@ -75,7 +79,10 @@ R.create "ExpressionCode",
       @_startNumberScrub(mouseDownEvent)
 
   _onMouseUp: (mouseUpEvent) ->
-    # if dragging an attribute, transclude it
+    {attribute} = @props
+    {dragManager} = @context
+    if dragManager.drag?.type == "transcludeAttribute"
+      @_transcludeAttribute(dragManager.drag.attribute)
 
 
   # ===========================================================================
@@ -104,6 +111,61 @@ R.create "ExpressionCode",
 
 
   # ===========================================================================
+  # Transcluding an attribute (creating a reference)
+  # ===========================================================================
+
+  _transcludeAttribute: (referenceAttribute) ->
+    if @mirror.hasFocus()
+      @_replaceSelectionWithReference(referenceAttribute)
+    else
+      @_replaceAllWithReference(referenceAttribute)
+
+  _replaceSelectionWithReference: (referenceAttribute) ->
+    # TODO
+
+  _replaceAllWithReference: (referenceAttribute) ->
+    {attribute} = @props
+    referenceKey = Util.generateId()
+    exprString = referenceKey
+    references = {}
+    references[referenceKey] = referenceAttribute
+    attribute.setExpression(exprString, references)
+
+
+
+
+  # _onMouseUp: (e) ->
+  #   return unless State.UI.dragPayload?.type == "transcludeAttribute"
+
+  #   targetNode = State.UI.dragPayload.attribute
+
+  #   mirror = @refs.CodeMirror.mirror
+  #   if mirror.hasFocus()
+  #     @_replaceSelectionWithAttributeToken(targetNode)
+  #   else
+  #     @_replaceAllWithAttributeToken(targetNode)
+
+  # _replaceSelectionWithAttributeToken: (attribute) ->
+  #   mirror = @refs.CodeMirror.mirror
+  #   references = @attribute.references()
+
+  #   referenceKey = null
+  #   for own key, referenceAttribute of references
+  #     if referenceAttribute == attribute
+  #       referenceKey = key
+  #       break
+  #   referenceKey ?= @attribute.generateReferenceKey()
+
+  #   references[referenceKey] = attribute
+
+  #   # Note: this is a little convoluted in that it ends up calling
+  #   # @attribute.setExpression here...
+  #   exprString = @attribute.exprString
+  #   @attribute.setExpression(exprString, references)
+  #   # ... and then again here:
+  #   mirror.replaceSelection(referenceKey)
+
+  # ===========================================================================
   # Displaying reference tokens
   # ===========================================================================
 
@@ -125,10 +187,11 @@ R.create "ExpressionCode",
         marks.push {
           from
           to
-          view: R.AttributeTokenView {
-            attribute: referenceAttribute
-            contextAttribute: attribute
-          }
+          render: ->
+            R.AttributeToken {
+              attribute: referenceAttribute
+              # contextAttribute: attribute
+            }
         }
 
     @_updateMarks(marks)
@@ -150,7 +213,7 @@ R.create "ExpressionCode",
             range.to.ch == mark.to.ch)
           if corresponds
             # Update the existing mark.
-            React.render(mark.view, existingMark.el)
+            @_renderMark(mark, existingMark.el)
             # Let CodeMirror know that the mark might have changed size.
             existingMark.changed()
             updatedMarks.push(mark)
@@ -167,12 +230,19 @@ R.create "ExpressionCode",
       unless mark in updatedMarks
         # Add a new mark
         el = document.createElement("span")
-        React.render(mark.view, el)
+        @_renderMark(mark, el)
         newMark = @mirror.markText(mark.from, mark.to, {
           replacedWith: el
         })
         newMark.el = el
         @_existingMarks.push(newMark)
+
+  _renderMark: (mark, el) ->
+    wrappedReactElement = R.ContextWrapper {
+      context: @context
+      childRender: mark.render
+    }
+    React.render(wrappedReactElement, el)
 
 
   # ===========================================================================

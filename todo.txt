@@ -76,3 +76,4 @@ Cleanup
   Fix broken tests
   Build process needs cleanup since React is off on its own, vendor is hard-coded, etc.
   Can AttributeLabel and AttributeToken be merged?
+  Make consistent: first get @props, then @context in views
