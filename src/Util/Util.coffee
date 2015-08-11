@@ -63,11 +63,12 @@ Util.getId = (object) ->
   return object.id if object.hasOwnProperty("id")
   return object.id = Util.generateId()
 
-# TODO: Replace with UUID.
 counter = 0
 Util.generateId = ->
-  counter++
-  return "id" + counter
+  return "id" +
+    Math.random().toString(36).substr(2, 6) +
+    Date.now().toString(36) +
+    (counter++).toString(36)
 
 
 # =============================================================================

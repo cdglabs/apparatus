@@ -34,6 +34,10 @@ View
   Outline
     Reorder with drag
     Show "relevant" attributes
+      has a dependency
+      is depended on
+      is controlled
+      is a variable
 
   Expression
     Maybe factor a Code view
@@ -42,6 +46,8 @@ View
     arrow keys between them and EditableText
     drag an attribute to transclude
     click an attribute to transclude
+    become multi-line if there's a \n
+    disable CodeMirror undo (once Apparatus undo works)
     displaying expression values
       highlight the appropriate spread selection
 
