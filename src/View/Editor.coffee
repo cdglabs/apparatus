@@ -11,16 +11,19 @@ R.create "Editor",
     dragManager: R.DragManager
     hoverManager: R.HoverManager
 
+  componentWillMount: ->
+    @_dragManager = new R.DragManager()
+    @_hoverManager = new R.HoverManager()
+
   getChildContext: ->
     {
       project: @props.project
-      dragManager: @dragManager()
-      hoverManager: @hoverManager()
+      dragManager: @_dragManager
+      hoverManager: @_hoverManager
     }
 
   render: ->
-    dragManager = @dragManager()
-    cursor = dragManager.drag?.cursor
+    cursor = @_dragManager.drag?.cursor
 
     R.div {
       className: R.cx {
@@ -28,7 +31,7 @@ R.create "Editor",
       }
       style: {cursor: cursor ? ""}
     },
-      # R.DragHintView {}
+      R.DragHint {}
 
       R.CreatePanel {}
       R.Outline {}
@@ -46,8 +49,24 @@ R.create "Editor",
   #     State.Editor.removeSelectedElement()
 
 
-  dragManager: ->
-    return @_dragManager ?= new R.DragManager()
 
-  hoverManager: ->
-    return @_hoverManager ?= new R.HoverManager()
+R.create "DragHint",
+  contextTypes:
+    dragManager: R.DragManager
+
+  render: ->
+    {dragManager} = @context
+
+    drag = dragManager.drag
+
+    R.div {className: "DragHintContainer"},
+      if drag?.type == "transcludeAttribute" and drag.consummated
+        R.div {
+          className: "DragHint"
+          style:
+            left: drag.x + 5
+            top:  drag.y + 5
+        },
+          R.AttributeToken {attribute: drag.attribute}
+
+

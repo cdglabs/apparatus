@@ -1,5 +1,6 @@
 R = require "./R"
 Model = require "../Model/Model"
+Util = require "../Util/Util"
 
 
 R.create "AttributeRow",
@@ -67,8 +68,8 @@ R.create "AttributeLabel",
         # Variable: @node.parent().isVariantOf(Element)
       }
       onMouseDown: @_onMouseDown
-      onMouseOver: @_onMouseOver
-      onMouseOut:  @_onMouseOut
+      onMouseEnter: @_onMouseEnter
+      onMouseLeave: @_onMouseLeave
     },
       R.EditableText {
         className: "EditableTextInline Interactive"
@@ -77,75 +78,83 @@ R.create "AttributeLabel",
           attribute.label = newValue
       }
 
-  _onMouseDown: (e) ->
-    # return if util.dom.closest(e.target, ".EditableTextInline")
+  _onMouseDown: (mouseDownEvent) ->
+    return if Util.closest(mouseDownEvent.target, ".EditableTextInline")
 
-    # # Note: we do a normal preventDefault instead of
-    # # util.mouseDownPreventDefault because we don't want to lose text focus
-    # # (for transcluding an attribute to a certain location in code).
-    # e.preventDefault()
+    {attribute} = @props
+    {dragManager, hoverManager} = @context
+    mouseDownEvent.preventDefault()
+    dragManager.start mouseDownEvent,
+      type: "transcludeAttribute"
+      attribute: attribute
+      x: mouseDownEvent.clientX
+      y: mouseDownEvent.clientY
+      onMove: (mouseMoveEvent) ->
+        dragManager.drag.x = mouseMoveEvent.clientX
+        dragManager.drag.y = mouseMoveEvent.clientY
+      onUp: ->
+        hoverManager.hoveredAttribute = null
+      # cursor
 
-    # payload = {
-    #   type: "transcludeAttribute"
-    #   attribute: @node
-    # }
-
-    # State.UI.startDrag e,
-    #   payload: payload
-    #   cursor: util.cursor("grabbing")
-    #   sticky: true
-
-  _onMouseOver: (e) ->
+  _onMouseEnter: (e) ->
     {attribute} = @props
     {dragManager, hoverManager} = @context
     return if dragManager.drag?
     hoverManager.hoveredAttribute = attribute
 
-  _onMouseOut: (e) ->
+  _onMouseLeave: (e) ->
     {dragManager, hoverManager} = @context
     return if dragManager.drag?
     hoverManager.hoveredAttribute = null
 
 
-# R.create "AttributeToken",
-#   propTypes:
-#     attribute: Model.Attribute
-#     contextAttribute: {optional: Model.Attribute}
+R.create "AttributeToken",
+  propTypes:
+    attribute: Model.Attribute
+    # contextAttribute: {optional: Model.Attribute}
 
-#   render: ->
-#     R.span {
-#       className: R.cx {
-#         ReferenceToken: true
-#         Hovered: State.UI.isAttributeHovered(@attribute)
-#       }
-#       onMouseEnter: @_onMouseEnter
-#       onMouseLeave: @_onMouseLeave
-#     },
-#       @_label()
-#       # R.Value {value: @attribute.evaluate()}
+  contextTypes:
+    hoverManager: R.HoverManager
 
-#   # TODO: This helper should be moved somewhere else (Node?)
-#   _parentElement: (node) ->
-#     return null if !node?
-#     return node if node.isVariantOf(Model.Element)
-#     return @_parentElement(node.parent())
+  render: ->
+    {attribute} = @props
+    {hoverManager} = @context
 
-#   _label: ->
-#     if @contextAttribute
-#       contextElement = @_parentElement(@contextAttribute)
-#       element = @_parentElement(@attribute)
-#       isSameContext = element.isAncestorOf(contextElement)
-#       if !isSameContext
-#         return @attribute.parent().label + "’s " + @attribute.label
-#     return @attribute.label
+    R.span {
+      className: R.cx {
+        ReferenceToken: true
+        isHovered: hoverManager.hoveredAttribute == attribute
+      }
+      onMouseEnter: @_onMouseEnter
+      onMouseLeave: @_onMouseLeave
+    },
+      attribute.label
 
-#   _onMouseEnter: ->
-#     return if State.UI.dragPayload
-#     State.UI.setAttributeHovered(@attribute)
+  # # TODO: This helper should be moved somewhere else (Node?)
+  # _parentElement: (node) ->
+  #   return null if !node?
+  #   return node if node.isVariantOf(Model.Element)
+  #   return @_parentElement(node.parent())
 
-#   _onMouseLeave: ->
-#     return if State.UI.dragPayload
-#     State.UI.setAttributeHovered(null)
+  # _label: ->
+  #   if @contextAttribute
+  #     contextElement = @_parentElement(@contextAttribute)
+  #     element = @_parentElement(@attribute)
+  #     isSameContext = element.isAncestorOf(contextElement)
+  #     if !isSameContext
+  #       return @attribute.parent().label + "’s " + @attribute.label
+  #   return @attribute.label
+
+  _onMouseEnter: (e) ->
+    {attribute} = @props
+    {dragManager, hoverManager} = @context
+    return if dragManager.drag?
+    hoverManager.hoveredAttribute = attribute
+
+  _onMouseLeave: (e) ->
+    {dragManager, hoverManager} = @context
+    return if dragManager.drag?
+    hoverManager.hoveredAttribute = null
 
 
 

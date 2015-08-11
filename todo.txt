@@ -75,3 +75,4 @@ Cleanup
   Attribute - error handling throw catches everywhere.
   Fix broken tests
   Build process needs cleanup since React is off on its own, vendor is hard-coded, etc.
+  Can AttributeLabel and AttributeToken be merged?

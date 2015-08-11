@@ -47,6 +47,7 @@ module.exports = class DragManager
       @drag.onDrop?(mouseUpEvent)
     else
       @drag.onCancel?(mouseUpEvent)
+    @drag.onUp?(mouseUpEvent)
     @drag = null
 
   _consummate: (mouseMoveEvent) ->
