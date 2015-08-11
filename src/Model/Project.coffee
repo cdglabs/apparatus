@@ -4,20 +4,29 @@ Model = require "./Model"
 
 module.exports = class Project
   constructor: ->
-    initialDiagram = Model.Group.createVariant()
-    initialDiagram.expanded = true
+    initialElement = @createNewElement()
 
-    initialDiagram.addChild(Model.Rectangle.createVariant())
-    initialDiagram.addChild(Model.Circle.createVariant())
+    # Testing
+    initialElement.addChild(Model.Rectangle.createVariant())
+    initialElement.addChild(Model.Circle.createVariant())
 
-    @editingElement = initialDiagram
+    @editingElement = initialElement
     @selectedParticularElement = null
 
     @createPanelElements = [
       Model.Rectangle
       Model.Circle
-      initialDiagram
+      initialElement
     ]
+
+
+  # ===========================================================================
+  # Selection
+  # ===========================================================================
+
+  setEditing: (element) ->
+    @editingElement = element
+    @selectedParticularElement = null
 
   select: (particularElement) ->
     if !particularElement
@@ -54,3 +63,12 @@ module.exports = class Project
       nextHit = hits[index + 1]
       if !nextHit or nextHit.isAncestorOf(@selectedParticularElement)
         return hit
+
+  # ===========================================================================
+  # Create
+  # ===========================================================================
+
+  createNewElement: ->
+    element = Model.Group.createVariant()
+    element.expanded = true
+    return element

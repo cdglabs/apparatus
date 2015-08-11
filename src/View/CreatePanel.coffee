@@ -21,12 +21,11 @@ R.create "CreatePanel",
             onClick: @_createNewElement
           }
 
-
   _createNewElement: ->
-    # shape = Model.Group.createVariant()
-    # State.Editor.definitions.push(shape)
-    # State.Editor.setSelected(shape)
-    # shape.setExpanded(true)
+    project = @context.project
+    element = project.createNewElement()
+    project.createPanelElements.push(element)
+    project.setEditing(element)
 
 
 R.create "CreatePanelItem",

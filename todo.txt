@@ -7,6 +7,7 @@ Today
 
 Root
   get stylus to convert -vendor stuff so it works in Safari, etc.
+  Figure out how icons will work
 
 Dataflow
   Test if we even need Dataflow memoization anymore...
