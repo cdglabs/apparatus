@@ -1,52 +1,35 @@
 Today
-  Get React production going
-  Write some readme's for some directories
-  Organize to-do's better
-    Maybe use Github issues to organize
   Start thinking about serialization
   Drag in from the create panel
 
 
 
 
+Root
+  get stylus to convert -vendor stuff so it works in Safari, etc.
 
-Project
-  keep track of the "toolbox" (create panel) and also what is selected.
-  serialize
-  load serialized stuff
+Dataflow
+  Test if we even need Dataflow memoization anymore...
+  Thoughts on optimization
+    Nested spreads seem to slow things down considerably. I'm not sure if it's all the nested try-catch statements or what. One way to avoid having try-catch to determine spread dependencies would be if cells manually declared their cell dependencies. That is, each cell would have a function for running it and a function that would return a list of cells it depends on. Then when you evaluate, you'd first evaluate the dependencies and if any of those were spreads you would spread the function in question.
 
 Storage
+  serialization (or maybe this goes in Model.Project)
   localStorage autosave
   undo/redo
 
-CSS
-  get stylus to convert -vendor stuff so it works in Safari, etc.
-
-
-
-
-
-Documentation
-  summary descriptions of modules
-
-
-
-
-
-
-
-Get it showing all the shapes
-Thumbnail with auto view matrix
-Create by dragging in
-Select a shape to edit it
-
-
-
-
-
-
+Model
+  Project
+  Element
+    Add viewMatrix to "create panel" shapes
+  Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
 
 View
+  Create Panel
+    Get it showing all the shapes
+    Thumbnail with auto view matrix
+    Create by dragging in
+    Select a shape to edit it
 
   Outline
     Reorder with drag
@@ -60,36 +43,17 @@ View
     drag an attribute to transclude
     click an attribute to transclude
     displaying expression values
+      highlight the appropriate spread selection
 
+  Picture
+    Need to figure out all the different thumbnail needs, then refactor
+    Add thumbnails everywhere
 
-
-Hovering and selection
-  Highlight the appropriate spread selection in attribute inspector
-
-
-
-Test if we even need Dataflow memoization anymore...
-
-
-Need to figure out all the different thumbnails, then refactor view/Picture
-
-
-
-
-
-Add thumbnails everywhere
-Add view matrix to shapes (instead of modifying the root shape)
-Create panel
-
-
-Rename:
+Rename
   Node.children -> childNodes
   Node.childrenOfType -> childVariantsOf
 
-Maybe move PathComponent attributes into Path element and TextComponent attributes into Text element
-
-
-Needs cleanup
+Cleanup
   jsEvaluate, spread - move them into their own folder?
   Attribute - error handling throw catches everywhere.
   Get rid of ParticularElement.ensure
