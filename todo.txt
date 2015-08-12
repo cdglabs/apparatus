@@ -1,6 +1,9 @@
 Today
   Show relevant attributes in Outline
   Controlled elements
+  viewMatrix
+  panning
+  zooming
 
 
 
@@ -20,7 +23,6 @@ Storage
 
 Misc
   Import JSON
-  Keyboard shortcuts
 
 Model
   Project
