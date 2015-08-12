@@ -104,10 +104,16 @@ canvas {
   top: 0;
   border-bottom: 1px #ccc solid;
   padding: 6px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 .Toolbar .ToolbarRight {
-  flex-grow: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
   text-align: right;
 }
 .Header {
@@ -121,6 +127,7 @@ canvas {
   color: #666;
   text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
   background-color: #eee;
+  background-image: -webkit-linear-gradient(top, #fff, #ddd);
   background-image: linear-gradient(to bottom, #fff, #ddd);
   border-top: 1px solid #e6e6e6;
   border-bottom: 1px solid #d3d3d3;
@@ -138,6 +145,7 @@ canvas {
 }
 .CreatePanelThumbnail {
   cursor: -webkit-grab;
+  cursor: grab;
   position: relative;
   width: 108px;
   height: 108px;
@@ -179,6 +187,9 @@ canvas {
   color: #c66;
 }
 .ElementRow {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
   padding: 0.175em 0;
 }
@@ -186,7 +197,10 @@ canvas {
   width: 1.5em;
 }
 .ElementRow .ElementRowLabel {
-  flex-grow: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
 }
 .DisclosureTriangle {
   width: 0;
@@ -196,10 +210,13 @@ canvas {
   border-top: 0.5em solid transparent;
   border-bottom: 0.5em solid transparent;
   border-left: 0.866em solid #ccc;
-  transition: -webkit-transform 0.05s;
+  -webkit-transition: -webkit-transform 0.05s;
+          transition: transform 0.05s;
 }
 .DisclosureTriangle.isExpanded {
   -webkit-transform: rotate(90deg);
+      -ms-transform: rotate(90deg);
+          transform: rotate(90deg);
 }
 .DisclosureTriangle.Hidden {
   display: none;
@@ -231,13 +248,19 @@ canvas {
 }
 .AttributeRow {
   padding: 0.175em 0;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 .AttributeRow .AttributeRowLabel {
   width: 9em;
 }
 .AttributeRow .AttributeRowExpression {
-  flex-grow: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
 }
 .AttributeRow .AttributeRowControl {
   width: 1.5em;
@@ -267,6 +290,7 @@ canvas {
   border-radius: 20px;
   padding: 0 0.75em;
   cursor: -webkit-grab;
+  cursor: grab;
 }
 .AttributeLabel.Editing {
   cursor: text;
@@ -277,11 +301,13 @@ canvas {
 .AttributeLabel,
 .ReferenceToken {
   background-color: #ddd;
+  background-image: -webkit-linear-gradient(top, #eee, #ccc);
   background-image: linear-gradient(to bottom, #eee, #ccc);
 }
 .AttributeLabel.isHovered,
 .ReferenceToken.isHovered {
   background-color: #def;
+  background-image: -webkit-linear-gradient(top, #f99, #d77);
   background-image: linear-gradient(to bottom, #f99, #d77);
 }
 .ExpressionValue {
@@ -345,6 +371,7 @@ canvas {
   font-weight: bold;
   text-shadow: 0 1px 0 rgba(255,255,255,0.5);
   background-color: #ddd;
+  background-image: -webkit-linear-gradient(top, #eee, #ccc);
   background-image: linear-gradient(to bottom, #eee, #ccc);
   box-shadow: 0 2px 1px rgba(0,0,0,0.16), 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.55);
   border-radius: 20px;
@@ -354,9 +381,11 @@ canvas {
   content: "+";
 }
 .AddButton:hover {
+  background-image: -webkit-linear-gradient(top, #f3f3f3, #d3d3d3);
   background-image: linear-gradient(to bottom, #f3f3f3, #d3d3d3);
 }
 .AddButton:active {
+  background-image: -webkit-linear-gradient(top, #cacaca, #d5d5d5);
   background-image: linear-gradient(to bottom, #cacaca, #d5d5d5);
   box-shadow: 0 1px 1px rgba(255,255,255,0.35), inset 0 0 1px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4);
 }

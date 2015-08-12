@@ -181,7 +181,7 @@ HeaderSize = 18px
   margin 6px 6px 18px 6px
 
 .CreatePanelThumbnail
-  cursor -webkit-grab
+  cursor grab
   position relative
   width CreatePanelWidth - 12px
   height CreatePanelWidth - 12px
@@ -254,9 +254,9 @@ HeaderSize = 18px
   border-top: 0.5em solid transparent
   border-bottom: 0.5em solid transparent
   border-left: 0.866em solid #ccc
-  transition -webkit-transform 0.05s
+  transition transform 0.05s
   &.isExpanded
-    -webkit-transform: rotate(90deg)
+    transform: rotate(90deg)
   &.Hidden
     // visibility hidden
     display none
@@ -356,7 +356,7 @@ HeaderSize = 18px
   border-radius 20px
   padding 0 0.75em
   // color #aaa
-  cursor -webkit-grab
+  cursor grab
   &.Editing
     cursor text
     // background-color transparent

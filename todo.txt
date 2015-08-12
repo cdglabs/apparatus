@@ -5,7 +5,6 @@ Today
 
 
 Styling
-  get stylus to convert -vendor stuff so it works in Safari, etc.
   look into flex box with attribute / expression, don't let the column size change
   figure out how icons will work
 
