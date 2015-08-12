@@ -80,5 +80,6 @@ cell = (fn) ->
 module.exports = Dataflow = {
   run: (callback) -> computationManager.run(callback)
   currentSpreadEnv: -> dynamicScope.context.spreadEnv
+  memoize: (fn) -> computationManager.memoize(fn)
   cell, Spread, SpreadEnv, UnresolvedSpreadError
 }

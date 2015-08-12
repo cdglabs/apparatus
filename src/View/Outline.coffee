@@ -1,3 +1,4 @@
+_ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -88,7 +89,7 @@ R.create "OutlineItem",
             value: element.label
             setValue: @_setLabelValue
           }
-      # R.PartialAttributesList {element: @element}
+      R.RelevantAttributesList {element}
 
   _setLabelValue: (newValue) ->
     @props.element.label = newValue
@@ -237,23 +238,32 @@ R.create "OutlineChildren",
 
 
 
-# R.create "PartialAttributesList",
-#   propTypes:
-#     element: Model.Element
+R.create "RelevantAttributesList",
+  propTypes:
+    element: Model.Element
 
-#   render: ->
-#     # Show only variables.
-#     visibleAttributes = @element.attributes()
+  contextTypes:
+    project: Model.Project
 
-#     R.div {className: "AttributesList"},
-#       for attribute in visibleAttributes
-#         R.AttributeRow {attribute}
-#       if @element == State.Editor.topSelected()
-#         R.div {className: "AddVariableRow"},
-#           R.button {className: "AddButton", onClick: @_addVariable}
+  render: ->
+    {element} = @props
+    {project} = @context
 
-#   _addVariable: ->
-#     @element.addVariable()
+    relevantAttributes = []
+    allRelevantAttributes = project.allRelevantAttributes()
+    for attribute in element.attributes()
+      if _.contains(allRelevantAttributes, attribute)
+        relevantAttributes.push(attribute)
+
+    R.div {className: "AttributesList"},
+      for attribute in relevantAttributes
+        R.AttributeRow {attribute}
+      # if @element == State.Editor.topSelected()
+      #   R.div {className: "AddVariableRow"},
+      #     R.button {className: "AddButton", onClick: @_addVariable}
+
+  # _addVariable: ->
+  #   @element.addVariable()
 
 
 

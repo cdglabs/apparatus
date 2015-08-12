@@ -1,5 +1,5 @@
 Today
-  Show relevant attributes in Outline
+  variables
   Controlled elements
   viewMatrix
   panning
@@ -44,11 +44,6 @@ View
 
   Outline
     Reorder with drag
-    Show "relevant" attributes
-      has a dependency
-      is depended on
-      is controlled
-      is a variable
 
   Expression
     color picker

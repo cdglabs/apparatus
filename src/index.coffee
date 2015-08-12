@@ -16,6 +16,9 @@ Apparatus.Util = require "./Util/Util"
 
 project = new Model.Project()
 
+# For debugging
+Apparatus.project = project
+
 
 
 

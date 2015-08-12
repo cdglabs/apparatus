@@ -26,6 +26,21 @@ module.exports = Element = Node.createVariant
 
   components: -> @childrenOfType(Model.Component)
 
+  attributes: ->
+    result = []
+    for variable in @variables()
+      result.push(variable)
+    for component in @components()
+      for attribute in component.attributes()
+        result.push(attribute)
+    return result
+
+  collectAllAttributes: ->
+    result = @attributes()
+    for childElement in @childElements()
+      result.push(childElement.collectAllAttributes()...)
+    return result
+
 
   # ===========================================================================
   # Attributes to change
