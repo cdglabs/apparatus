@@ -272,13 +272,13 @@ canvas {
   border-radius: 1em;
   border: 1px solid #ddd;
 }
-.AttributeRow .AttributeControl.Controllable {
+.AttributeRow .AttributeControl.isControllable {
   border-color: #c66;
 }
-.AttributeRow .AttributeControl.ImplicitlyControlled {
+.AttributeRow .AttributeControl.isImplicitlyControlled {
   background-color: rgba(204,102,102,0.4);
 }
-.AttributeRow .AttributeControl.Controlled {
+.AttributeRow .AttributeControl.isControlled {
   background-color: #c66;
 }
 .AddVariableRow {

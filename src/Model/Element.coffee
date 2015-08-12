@@ -6,6 +6,8 @@ Dataflow = require "../Dataflow/Dataflow"
 Util = require "../Util/Util"
 
 
+ControlledAttributeLink = Link.createVariant()
+
 module.exports = Element = Node.createVariant
   constructor: ->
     # Call "super" constructor
@@ -19,6 +21,10 @@ module.exports = Element = Node.createVariant
     @graphic = Dataflow.cell(@_graphic.bind(this))
     @accumulatedMatrix = Dataflow.cell(@_accumulatedMatrix.bind(this))
 
+
+  # ===========================================================================
+  # Getters
+  # ===========================================================================
 
   childElements: -> @childrenOfType(Element)
 
@@ -41,11 +47,39 @@ module.exports = Element = Node.createVariant
       result.push(childElement.collectAllAttributes()...)
     return result
 
+
+  # ===========================================================================
+  # Actions
+  # ===========================================================================
+
   addVariable: ->
     variable = Model.Variable.createVariant()
     variable.setExpression("0.00")
     @addChild(variable)
     return variable
+
+
+  # ===========================================================================
+  # Controlled Attributes
+  # ===========================================================================
+
+  controlledAttributes: ->
+    controlledAttributes = []
+    for controlledAttributeLink in @childrenOfType(ControlledAttributeLink)
+      attribute = controlledAttributeLink.target()
+      controlledAttributes.push(attribute)
+    return controlledAttributes
+
+  addControlledAttribute: (attributeToAdd) ->
+    controlledAttributeLink = ControlledAttributeLink.createVariant()
+    controlledAttributeLink.setTarget(attributeToAdd)
+    @addChild(controlledAttributeLink)
+
+  removeControlledAttribute: (attributeToRemove) ->
+    for controlledAttributeLink in @childrenOfType(ControlledAttributeLink)
+      attribute = controlledAttributeLink.target()
+      if attribute == attributeToRemove
+        @removeChild(controlledAttributeLink)
 
 
   # ===========================================================================

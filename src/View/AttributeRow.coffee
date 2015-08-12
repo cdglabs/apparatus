@@ -1,3 +1,4 @@
+_ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -6,6 +7,9 @@ Util = require "../Util/Util"
 R.create "AttributeRow",
   propTypes:
     attribute: Model.Attribute
+
+  contextTypes:
+    project: Model.Project
 
   render: ->
     attribute = @props.attribute
@@ -19,19 +23,23 @@ R.create "AttributeRow",
             AttributeControl: true
             Interactive: true
             # Controllable: @_isControllable()
-            # Controlled: @_isControlled()
+            isControlled: @_isControlled()
             # ImplicitlyControlled: @_isImplicityControlled()
           }
-          # onClick: @_toggleControl
+          onClick: @_toggleControl
         }
       R.div {className: "AttributeRowLabel"},
         R.AttributeLabel {attribute}
       R.div {className: "AttributeRowExpression"},
         R.Expression {attribute}
 
-  # _isControlled: ->
-  #   controlledAttributes = State.Editor.getSelectedElement().getControlledAttributes()
-  #   return _.contains(controlledAttributes, @attribute)
+  _isControlled: ->
+    {attribute} = @props
+    {project} = @context
+    selectedElement = project.selectedParticularElement?.element
+    return false unless selectedElement
+    controlledAttributes = selectedElement.controlledAttributes()
+    return _.contains(controlledAttributes, attribute)
 
   # _isImplicityControlled: ->
   #   implicitlyControlledAttributes = State.Editor.getSelectedElement().getImplicitlyControlledAttributes()
@@ -41,11 +49,15 @@ R.create "AttributeRow",
   #   controllableAttributes = State.Editor.getSelectedElement().getControllableAttributes()
   #   return _.contains(controllableAttributes, @attribute)
 
-  # _toggleControl: ->
-  #   if @_isControlled()
-  #     State.Editor.getSelectedElement().removeControlledAttribute(@attribute)
-  #   else
-  #     State.Editor.getSelectedElement().addControlledAttribute(@attribute)
+  _toggleControl: ->
+    {attribute} = @props
+    {project} = @context
+    selectedElement = project.selectedParticularElement?.element
+    return unless selectedElement
+    if @_isControlled()
+      selectedElement.removeControlledAttribute(attribute)
+    else
+      selectedElement.addControlledAttribute(attribute)
 
 
 R.create "AttributeLabel",
