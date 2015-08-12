@@ -37,8 +37,12 @@ Model.Component = Model.Node.createVariant
     _.indexBy @attributes(), "name"
 
   getAttributesValuesByName: ->
-    _.mapObject @getAttributesByName(), (attribute) ->
-      attribute.value()
+    result = {}
+    for attribute in @attributes()
+      name = attribute.name
+      value = attribute.value()
+      result[name] = value
+    return result
 
   graphicClass: Graphic.Component
 

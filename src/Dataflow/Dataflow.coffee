@@ -22,57 +22,57 @@ class UnresolvedSpreadError
 
 cell = (fn) ->
 
-  cellFn = ->
-    # Ensure that a computation is running.
-    unless computationManager.isRunning
-      return computationManager.run(cellFn)
+  # These are the workhorse functions that together evaluate the cell.
 
-    value = memoizedEvaluateFull()
-    value = resolve(value)
-    if value instanceof Spread and dynamicScope.context.shouldThrow
-      throw new UnresolvedSpreadError(value)
-    return value
+  runFn = ->
+    try
+      return fn() if dynamicScope.context.shouldThrow
+      return dynamicScope.with {shouldThrow: true}, fn
+    catch error
+      if error instanceof UnresolvedSpreadError
+        return distributeAcrossSpread(error.spread)
+      else
+        throw error
 
-  # Given a spread, resolve will recursively try to lookup an index in the
-  # current spread environment and return the item in the spread at that
-  # index.
+  distributeAcrossSpread = (spread) ->
+    currentSpreadEnv = dynamicScope.context.spreadEnv
+    items = _.map spread.items, (item, index) ->
+      spreadEnv = currentSpreadEnv.assign(spread, index)
+      return dynamicScope.with {spreadEnv}, runFn
+    return new Spread(items, spread.origin)
+
+
+  evaluateFull = ->
+    return dynamicScope.with {spreadEnv: SpreadEnv.empty}, runFn
+
+  evaluateFull = computationManager.memoize(evaluateFull)
+
+
+  # resolve will recursively try to resolve value in the current spread
+  # environment until it gets to a non-Spread or a Spread that is not in the
+  # environment.
   resolve = (value) ->
     currentSpreadEnv = dynamicScope.context.spreadEnv
     return currentSpreadEnv.resolve(value)
 
-  # This returns the full value of the cell meaning as a spread (if necessary)
-  # and irrespective of the current dynamic scope context.
-  evaluateFull = ->
-    dynamicScope.with {shouldThrow: false, spreadEnv: SpreadEnv.empty}, asSpread
 
-  memoizedEvaluateFull = computationManager.memoize(evaluateFull)
-
-  # This returns the value of the cell as a spread (if necessary) within the
-  # current dynamic scope context. It evaluates fn, telling it to throw an
-  # UnresolvedSpreadError if it encounters a spread which is not in the
-  # current spread environment. It then catches this and evaluates fn across
-  # the encountered spread.
+  # "Public" methods.
   asSpread = ->
-    # Ensure that a computation is running.
-    unless computationManager.isRunning
+    if !computationManager.isRunning
       return computationManager.run(asSpread)
+    value = evaluateFull()
+    value = resolve(value)
+    return value
 
-    try
-      return dynamicScope.with {shouldThrow: true}, fn
-    catch error
-      if error instanceof Dataflow.UnresolvedSpreadError
-        spread = error.spread
-        return evaluateAcrossSpread(spread)
-      else
-        throw error
+  cellFn = ->
+    if !computationManager.isRunning
+      return computationManager.run(cellFn)
+    value = asSpread()
+    if dynamicScope.context.shouldThrow and value instanceof Spread
+      throw new UnresolvedSpreadError(value)
+    return value
 
-  evaluateAcrossSpread = (spread) ->
-    currentSpreadEnv = dynamicScope.context.spreadEnv
-    items = _.map spread.items, (item, index) ->
-      spreadEnv = currentSpreadEnv.assign(spread, index)
-      return dynamicScope.with {spreadEnv}, asSpread
-    return new Spread(items, spread.origin)
-
+  # Package it up.
   cellFn.asSpread = asSpread
   return cellFn
 
