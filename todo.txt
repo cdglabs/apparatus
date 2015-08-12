@@ -50,7 +50,6 @@ View
       is a variable
 
   Expression
-    Maybe factor a Code view
     color picker
     autocomplete
     arrow keys between them and EditableText
