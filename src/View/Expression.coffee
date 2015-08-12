@@ -61,6 +61,10 @@ R.create "ExpressionCode",
       tabSize: 2
       indentWithTabs: true
 
+      # Disable scrolling
+      lineWrapping: true
+      scrollbarStyle: "null"
+
       # # Extra key handlers
       # extraKeys: @extraKeys
     })
