@@ -1,11 +1,13 @@
 Today
-  Drag an attribute to transclude
+  Show relevant attributes in Outline
+  Controlled elements
 
 
 
-Root
+Styling
   get stylus to convert -vendor stuff so it works in Safari, etc.
-  Figure out how icons will work
+  look into flex box with attribute / expression, don't let the column size change
+  figure out how icons will work
 
 Dataflow
   Test if we even need Dataflow memoization anymore...
@@ -29,6 +31,11 @@ Model
 
 View
   Menubar
+
+  Keyboard events
+    backspace to delete selection
+    cmd+z to undo
+    other shortcuts based on menubar
 
   Create Panel
     Thumbnail with auto view matrix
@@ -63,10 +70,11 @@ View
     Zoom
     Finish selection logic (double click)
     Controlled element
+    Control text on the canvas (scrubbable numbers text on canvas)
 
 Rename
   Node.children -> childNodes
-  Node.childrenOfType -> childVariantsOf
+  Node.childrenOfType -> childNodesVarying
 
 Cleanup
   jsEvaluate, spread - move them into their own folder?
