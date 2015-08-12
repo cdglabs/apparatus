@@ -99,7 +99,7 @@ R.create "ExpressionCode",
     value = attribute.exprString ? ""
     if @mirror.getValue() != value
       @mirror.setValue(value)
-    @_markAttributeTokens()
+    @_updateMarks()
 
   _updateAttributeFromMirror: ->
     attribute = @props.attribute
@@ -153,10 +153,13 @@ R.create "ExpressionCode",
   #
   # http://codemirror.net/doc/manual.html#api_marker
 
-  _markAttributeTokens: ->
+  _marks: ->
+    # TODO: Add other marks (color picker, boolean checkbox, etc)
+    return @_attributeTokenMarks()
+
+  _attributeTokenMarks: ->
     attribute = @props.attribute
     value = @mirror.getValue()
-
     marks = []
     for own referenceKey, referenceAttribute of attribute.references()
       startChar = value.indexOf(referenceKey)
@@ -171,10 +174,11 @@ R.create "ExpressionCode",
             # contextAttribute: attribute
           }
         marks.push {from, to, render}
+    return marks
 
-    @_updateMarks(marks)
+  _updateMarks: ->
+    marks = @_marks()
 
-  _updateMarks: (marks) ->
     @_existingMarks ?= []
     updatedMarks = []
     existingMarksToRemove = []
