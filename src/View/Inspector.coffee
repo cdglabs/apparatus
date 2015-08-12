@@ -41,7 +41,10 @@ R.create "FullAttributesList",
         R.ComponentSection {component, key: Util.getId(component)}
 
   _addVariable: ->
-    @props.element.addVariable()
+    {element} = @props
+    element.addVariable()
+    # TODO: auto-focus
+
 
 
 

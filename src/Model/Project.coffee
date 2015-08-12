@@ -95,7 +95,10 @@ module.exports = class Project
       relevantAttributes.push(attribute) if referenceAttributes.length > 0
       for referenceAttribute in referenceAttributes
         relevantAttributes.push(referenceAttribute)
-      # TODO: controlled, variable
+      # Variables are always relevant
+      if attribute.isVariantOf(Model.Variable)
+        relevantAttributes.push attribute
+      # TODO: controlled
 
-    return relevantAttributes
+    return _.unique(relevantAttributes)
 

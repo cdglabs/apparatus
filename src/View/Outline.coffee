@@ -258,75 +258,14 @@ R.create "RelevantAttributesList",
     R.div {className: "AttributesList"},
       for attribute in relevantAttributes
         R.AttributeRow {attribute}
-      # if @element == State.Editor.topSelected()
-      #   R.div {className: "AddVariableRow"},
-      #     R.button {className: "AddButton", onClick: @_addVariable}
+      if element == project.editingElement
+        R.div {className: "AddVariableRow"},
+          R.button {className: "AddButton Interactive", onClick: @_addVariable}
 
-  # _addVariable: ->
-  #   @element.addVariable()
-
-
-
-
-
-# R.create "Inspector",
-#   propTypes:
-#     element: Model.Element
-
-#   render: ->
-#     R.div {className: "Inspector"},
-#       R.div {className: "Header"},
-#         @element.label
-#       R.div {className: "Scroller"},
-#         R.FullAttributesList {element: @element}
-
-
-
-
-
-# R.create "FullAttributesList",
-#   propTypes:
-#     element: Model.Element
-
-#   render: ->
-#     R.div {className: "InspectorList"},
-#       R.div {className: "ComponentSection"},
-#         R.div {className: "ComponentSectionTitle"},
-#           R.span {},
-#             "Variables"
-#         R.div {className: "ComponentSectionContent"},
-#           for attribute in @element.attributes()
-#             R.AttributeRow {attribute}
-#         R.div {className: "AddVariableRow"},
-#           R.button {className: "AddButton", onClick: @_addVariable}
-
-
-#       for component in @element.components()
-#         R.ComponentSection {component}
-
-#   _addVariable: ->
-#     @element.addVariable()
-
-
-
-
-
-
-# R.create "ComponentSection",
-#   propTypes:
-#     component: Model.Component
-
-#   render: ->
-#     R.div {className: "ComponentSection"},
-#       R.div {className: "ComponentSectionTitle"},
-#         R.span,
-#           @component.label
-#       R.div {className: "ComponentSectionContent"},
-#         for attribute in @component.attributes()
-#           R.AttributeRow {attribute}
-
-
-
+  _addVariable: ->
+    {element} = @props
+    element.addVariable()
+    # TODO: auto-focus
 
 
 

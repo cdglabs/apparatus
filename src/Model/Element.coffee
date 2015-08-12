@@ -41,6 +41,12 @@ module.exports = Element = Node.createVariant
       result.push(childElement.collectAllAttributes()...)
     return result
 
+  addVariable: ->
+    variable = Model.Variable.createVariant()
+    variable.setExpression("0.00")
+    @addChild(variable)
+    return variable
+
 
   # ===========================================================================
   # Attributes to change
