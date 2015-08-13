@@ -1,5 +1,4 @@
 Today
-  Controlled elements
   viewMatrix
   panning
   zooming
@@ -41,6 +40,9 @@ View
     Thumbnail with auto view matrix
     Select a shape to edit it
 
+  AttributeRow
+    Highlight attributes that will change when you hover an element in canvas
+
   Outline
     Reorder with drag
     Autofocus label when adding a variable
@@ -63,8 +65,8 @@ View
     Draw control points
     Pan
     Zoom
+    Controlled elements
     Finish selection logic (double click)
-    Controlled element
     Control text on the canvas (scrubbable numbers text on canvas)
 
 Rename

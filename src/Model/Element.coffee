@@ -81,22 +81,37 @@ module.exports = Element = Node.createVariant
       if attribute == attributeToRemove
         @removeChild(controlledAttributeLink)
 
+  # An implicitly controlled attribute is a controlled attribute or a
+  # dependency of a controlled attribute.
+  implicitlyControlledAttributes: ->
+    result = []
+    controlledAttributes = @controlledAttributes()
+    for attribute in controlledAttributes
+      result.push(attribute)
+      result.push(attribute.dependencies()...)
+    result = _.unique(result)
+    return result
 
   # ===========================================================================
   # Attributes to change
   # ===========================================================================
 
   attributesToChange: ->
-    # TODO: Deal with controlled attributes
-    return @defaultAttributesToChange()
+    attributesToChange = @implicitlyControlledAttributes()
+    if attributesToChange.length == 0
+      attributesToChange = @defaultAttributesToChange()
+
+    # We can only change numbers.
+    attributesToChange = _.filter attributesToChange, (attribute) ->
+      attribute.isNumber()
+
+    return attributesToChange
 
   defaultAttributesToChange: ->
     result = []
     for component in @components()
       continue unless component.defaultAttributesToChange?
-      for attribute in component.defaultAttributesToChange()
-        if attribute.isNumber()
-          result.push(attribute)
+      result.push(component.defaultAttributesToChange()...)
     return result
 
 

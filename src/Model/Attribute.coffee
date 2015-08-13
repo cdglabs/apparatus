@@ -63,6 +63,18 @@ module.exports = Attribute = Node.createVariant
     # TODO
     return @isNumber()
 
+  # Returns all referenced attributes recursively. In other words every
+  # attribute which, if it changed, would affect me.
+  dependencies: ->
+    dependencies = []
+    recurse = (attribute) ->
+      for referenceAttribute in _.values(attribute.references())
+        dependencies.push(referenceAttribute)
+        recurse(referenceAttribute)
+    recurse(this)
+    dependencies = _.unique(dependencies)
+    return dependencies
+
   # ===========================================================================
   # Compiling
   # ===========================================================================
