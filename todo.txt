@@ -1,4 +1,6 @@
 Today
+  controlled elements in canvas
+  selection logic
   viewMatrix
   panning
   zooming
@@ -79,4 +81,14 @@ Cleanup
   Build process needs cleanup since React is off on its own, vendor is hard-coded, etc.
   Can AttributeLabel and AttributeToken be merged?
   Make consistent: first get @props, then @context in views
-  Element is getting unwieldy
+  Write a style guide
+    views
+      get props and context
+      use space to call, "jsx" style
+    use space for functions that end in an anonymous function
+    comments
+      periods, TODO
+      separators
+    naming
+    css naming
+
