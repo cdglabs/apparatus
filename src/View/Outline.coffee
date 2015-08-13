@@ -61,7 +61,7 @@ R.create "OutlineItem",
 
     isSelected = project.selectedParticularElement?.element == element
     isHovered = hoverManager.hoveredParticularElement?.element == element
-    isController = false
+    isController = (element.controlledAttributes().length > 0)
     isExpanded = element.expanded
 
     R.div {
