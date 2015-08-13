@@ -30,9 +30,7 @@ R.create "Canvas",
   # ===========================================================================
 
   _draw: (ctx) ->
-    project = @context.project
-    hoverManager = @context.hoverManager
-    element = @_editingElement()
+    {project, hoverManager} = @context
     viewMatrix = @_viewMatrix()
 
     highlight = (graphic) ->
@@ -46,7 +44,7 @@ R.create "Canvas",
 
     # TODO: draw background grid
 
-    for graphic in element.allGraphics()
+    for graphic in @_graphics()
       graphic.render(renderOpts)
 
     # TODO: draw control points
@@ -172,15 +170,13 @@ R.create "Canvas",
   # ===========================================================================
 
   _hitDetect: (mouseEvent) ->
-    element = @_editingElement()
     viewMatrix = @_viewMatrix()
     [x, y] = @_mousePosition(mouseEvent)
 
     hitDetectOpts = {viewMatrix, x, y}
 
     hits = null
-    # TODO: An optimization would be to save graphics from drawing.
-    for graphic in element.allGraphics()
+    for graphic in @_graphics(true)
       hits = graphic.hitDetect(hitDetectOpts) ? hits
 
     return hits
@@ -201,6 +197,12 @@ R.create "Canvas",
     project = @context.project
     element = project.editingElement
     return element
+
+  _graphics: (useCached=false) ->
+    if useCached and @_cachedGraphics
+      return @_cachedGraphics
+    element = @_editingElement()
+    return @_cachedGraphics = element.allGraphics()
 
   _viewMatrix: ->
     el = @getDOMNode()

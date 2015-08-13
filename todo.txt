@@ -41,9 +41,14 @@ View
   Create Panel
     Thumbnail with auto view matrix
     Select a shape to edit it
+    Remove from create panel
 
   AttributeRow
+    Highlight implicitly controlled attributes
     Highlight attributes that will change when you hover an element in canvas
+    Remove a variable
+    Reorder/reparent variables
+    Constrain a variable within a range
 
   Outline
     Reorder with drag
@@ -70,6 +75,7 @@ View
     Controlled elements
     Finish selection logic (double click)
     Control text on the canvas (scrubbable numbers text on canvas)
+    (Multi-)Touch support
 
 Rename
   Node.children -> childNodes
