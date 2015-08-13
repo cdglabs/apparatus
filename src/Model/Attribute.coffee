@@ -3,9 +3,8 @@ Util = require "../Util/Util"
 Dataflow = require "../Dataflow/Dataflow"
 Node = require "./Node"
 Link = require "./Link"
+Model = require "./Model"
 
-
-ReferenceLink = Link.createVariant()
 
 module.exports = Attribute = Node.createVariant
   constructor: ->
@@ -34,12 +33,12 @@ module.exports = Attribute = Node.createVariant
     @exprString = String(exprString)
 
     # Remove all existing reference links
-    for referenceLink in @childrenOfType(ReferenceLink)
+    for referenceLink in @childrenOfType(Model.ReferenceLink)
       @removeChild(referenceLink)
 
     # Create appropriate reference links
     for own key, attribute of references
-      referenceLink = ReferenceLink.createVariant()
+      referenceLink = Model.ReferenceLink.createVariant()
       referenceLink.key = key
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
@@ -48,7 +47,7 @@ module.exports = Attribute = Node.createVariant
 
   references: ->
     references = {}
-    for referenceLink in @childrenOfType(ReferenceLink)
+    for referenceLink in @childrenOfType(Model.ReferenceLink)
       key = referenceLink.key
       attribute = referenceLink.target()
       references[key] = attribute

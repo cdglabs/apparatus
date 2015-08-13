@@ -6,8 +6,6 @@ Dataflow = require "../Dataflow/Dataflow"
 Util = require "../Util/Util"
 
 
-ControlledAttributeLink = Link.createVariant()
-
 module.exports = Element = Node.createVariant
   constructor: ->
     # Call "super" constructor
@@ -65,18 +63,18 @@ module.exports = Element = Node.createVariant
 
   controlledAttributes: ->
     controlledAttributes = []
-    for controlledAttributeLink in @childrenOfType(ControlledAttributeLink)
+    for controlledAttributeLink in @childrenOfType(Model.ControlledAttributeLink)
       attribute = controlledAttributeLink.target()
       controlledAttributes.push(attribute)
     return controlledAttributes
 
   addControlledAttribute: (attributeToAdd) ->
-    controlledAttributeLink = ControlledAttributeLink.createVariant()
+    controlledAttributeLink = Model.ControlledAttributeLink.createVariant()
     controlledAttributeLink.setTarget(attributeToAdd)
     @addChild(controlledAttributeLink)
 
   removeControlledAttribute: (attributeToRemove) ->
-    for controlledAttributeLink in @childrenOfType(ControlledAttributeLink)
+    for controlledAttributeLink in @childrenOfType(Model.ControlledAttributeLink)
       attribute = controlledAttributeLink.target()
       if attribute == attributeToRemove
         @removeChild(controlledAttributeLink)

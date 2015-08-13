@@ -18,6 +18,12 @@ Model.Element = require "./Element"
 
 Model.Variable = Model.Attribute.createVariant()
 
+# Links an Element to the Attributes it controls.
+Model.ControlledAttributeLink = Model.Link.createVariant()
+
+# Links an Attribute to the Attributes it references in its expression.
+Model.ReferenceLink = Model.Link.createVariant()
+
 createAttribute = (label, name, exprString) ->
   attribute = Model.Attribute.createVariant
     label: label
