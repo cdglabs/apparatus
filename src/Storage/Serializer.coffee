@@ -12,7 +12,9 @@ module.exports = Serializer = new class
       @builtIn[id] = object
 
 
-
+  # ===========================================================================
+  # Serialization
+  # ===========================================================================
 
   shouldSerializeProperty: (key, value) ->
     # Can't serialize functions. Skip them.
@@ -63,4 +65,50 @@ module.exports = Serializer = new class
     return {objects, root}
 
 
+  # ===========================================================================
+  # Deserialization
+  # ===========================================================================
 
+  dejsonify: ({objects, root}) ->
+    # First construct all the objects with appropriate prototype chain.
+    constructedObjects = {} # id : object
+
+    constructObject = (id) =>
+      return constructedObjects[id] if constructedObjects[id]?
+      return @builtIn[id] if @builtIn[id]?
+      objectJson = objects[id]
+      protoRef = objectJson.__proto
+      if protoRef
+        proto = constructObject(protoRef.__ref)
+        constructedObject = Object.create(proto)
+        constructedObject.constructor?()
+      else
+        constructedObject = {}
+      return constructedObjects[id] = constructedObject
+
+    for own id, object of objects
+      constructObject(id)
+
+    # Assign key/values.
+    assignKeyValues = (id, spec) =>
+      constructedObject = constructedObjects[id]
+      for own key, value of spec
+        continue if key == "__proto"
+        constructedObject[key] = deref(value)
+
+    deref = (value) =>
+      if _.isArray(value)
+        return _.map value, deref
+      if _.isObject(value)
+        if value.__ref?
+          id = value.__ref
+          return @builtIn[id] ? constructedObjects[id]
+        else
+          return _.mapObject value, deref
+      else
+        return value
+
+    for own id, object of objects
+      assignKeyValues(id, object)
+
+    return deref(root)

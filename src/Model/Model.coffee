@@ -1,5 +1,5 @@
 _ = require "underscore"
-
+Dataflow = require "../Dataflow/Dataflow"
 Graphic = require "../Graphic/Graphic"
 Util = require "../Util/Util"
 
@@ -23,6 +23,9 @@ Model.ControlledAttributeLink = Model.Link.createVariant()
 
 # Links an Attribute to the Attributes it references in its expression.
 Model.ReferenceLink = Model.Link.createVariant()
+
+# TODO: Maybe move SpreadEnv from Dataflow? Or move Dataflow into Model?
+Model.SpreadEnv = Dataflow.SpreadEnv
 
 createAttribute = (label, name, exprString) ->
   attribute = Model.Attribute.createVariant
