@@ -88,14 +88,4 @@ Cleanup
   Can AttributeLabel and AttributeToken be merged?
   Make consistent: first get @props, then @context in views
   Clean up Model
-  Write a style guide
-    views
-      get props and context
-      use space to call, "jsx" style
-    use space for functions that end in an anonymous function
-    comments
-      periods, TODO
-      separators
-    naming
-    css naming
 

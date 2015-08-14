@@ -1,0 +1,9 @@
+views
+  get props and context
+  use space to call, "jsx" style
+use space for functions that end in an anonymous function (e.g. underscore functions)
+comments
+  periods, TODO
+  separators
+naming
+css naming

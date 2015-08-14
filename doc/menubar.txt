@@ -1,0 +1,26 @@
+File
+  New
+  Open
+  Open Recent
+  Save
+  Save As
+  Save to URL
+  Import
+    JSON
+    Image
+    Video
+  Export
+    SVG
+    Animated GIF
+Edit
+  Undo (Cmd-Z)
+  Redo (Cmd-Shift-Z)
+  Deselect (Esc)
+  Delete (Backspace)
+  Group (Cmd-G)
+  Duplicate (Cmd-D)
+  Create Symbol
+View
+  Zoom In (+)
+  Zoom Out (-)
+  Show/Hide Grid
