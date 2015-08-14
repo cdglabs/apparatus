@@ -13,6 +13,10 @@ inline(va)
 shadow(size, opacity)
   box-shadow 0px size 2*size rgba(0, 0, 0, opacity)
 
+forceWidth(width)
+  width width
+  min-width width
+  max-width width
 
 // ============================================================================
 // Generic
@@ -316,15 +320,14 @@ HeaderSize = 18px
   padding: 0.175em 0
   display flex
 
+  .AttributeRowControl
+    forceWidth(1.5em)
+
   .AttributeRowLabel
-    width 9em
+    forceWidth(9em)
 
   .AttributeRowExpression
     flex-grow 1
-
-  .AttributeRowControl
-    width 1.5em
-
 
   .AttributeControl
     color #c66

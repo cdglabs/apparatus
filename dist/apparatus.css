@@ -253,17 +253,21 @@ canvas {
   display: -ms-flexbox;
   display: flex;
 }
+.AttributeRow .AttributeRowControl {
+  width: 1.5em;
+  min-width: 1.5em;
+  max-width: 1.5em;
+}
 .AttributeRow .AttributeRowLabel {
   width: 9em;
+  min-width: 9em;
+  max-width: 9em;
 }
 .AttributeRow .AttributeRowExpression {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;
           flex-grow: 1;
-}
-.AttributeRow .AttributeRowControl {
-  width: 1.5em;
 }
 .AttributeRow .AttributeControl {
   color: #c66;
