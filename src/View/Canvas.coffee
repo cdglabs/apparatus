@@ -58,14 +58,7 @@ R.create "Canvas",
     mouseEvent.preventDefault()
     Util.clearTextFocus()
 
-    isDoubleClick = false
-    if @_lastMouseDownTime
-      doubleClickThreshold = 400
-      dt = Date.now() - @_lastMouseDownTime
-      if dt < doubleClickThreshold
-        isDoubleClick = true
-    @_lastMouseDownTime = Date.now()
-
+    isDoubleClick = @_isDoubleClick()
     @_updateSelected(mouseEvent, isDoubleClick)
     @_updateHoverAndCursor(mouseEvent)
     @_startDrag(mouseEvent)
@@ -87,6 +80,14 @@ R.create "Canvas",
 
   _onWheel: (wheelEvent) ->
     # TODO
+
+  _isDoubleClick: ->
+    doubleClickThreshold = 400
+    @_lastMouseDownTime ?= 0
+    currentTime = Date.now()
+    isDoubleClick = (currentTime - @_lastMouseDownTime < doubleClickThreshold)
+    @_lastMouseDownTime = currentTime
+    return isDoubleClick
 
   # ===========================================================================
   # Actions
