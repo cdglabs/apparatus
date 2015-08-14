@@ -4,9 +4,10 @@ Model = require "../Model/Model"
 
 R.create "Editor",
   propTypes:
-    project: Model.Project
+    editor: Model.Editor
 
   childContextTypes:
+    editor: Model.Editor
     project: Model.Project
     dragManager: R.DragManager
     hoverManager: R.HoverManager
@@ -16,8 +17,10 @@ R.create "Editor",
     @_hoverManager = new R.HoverManager()
 
   getChildContext: ->
+    {editor} = @props
     {
-      project: @props.project
+      editor: editor
+      project: editor.project
       dragManager: @_dragManager
       hoverManager: @_hoverManager
     }
@@ -59,6 +62,7 @@ R.create "ContextWrapper",
     context: Object
 
   childContextTypes:
+    editor: Model.Editor
     project: Model.Project
     dragManager: R.DragManager
     hoverManager: R.HoverManager

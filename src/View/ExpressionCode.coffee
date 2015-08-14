@@ -13,11 +13,14 @@ R.create "ExpressionCode",
     attribute: Model.Attribute
 
   contextTypes:
-    project: Model.Project
+    editor: Model.Editor # extraneous
+    project: Model.Project # extraneous
     dragManager: R.DragManager
-    hoverManager: R.HoverManager
+    hoverManager: R.HoverManager # extraneous
     # Note: we need to include all the context variables to pass down to
-    # ContextWrapper (for CodeMirror marks).
+    # ContextWrapper (for CodeMirror marks). Maybe the next version of React
+    # won't need ContextWrapper so we can get rid of the ones marked
+    # extraneous.
 
   render: ->
     attribute = @props.attribute

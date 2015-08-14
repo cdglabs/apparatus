@@ -2,11 +2,9 @@ _ = require "underscore"
 Util = require "../Util/Util"
 
 
-module.exports = Serializer = new class
-  constructor: ->
-    @builtIn = {} # id : Object
-
-  loadBuiltInObjects: (builtInObjects) ->
+module.exports = class Serializer
+  constructor: (builtInObjects) ->
+    @builtIn = {}
     for object in builtInObjects
       id = Util.getId(object)
       @builtIn[id] = object
@@ -17,9 +15,9 @@ module.exports = Serializer = new class
   # ===========================================================================
 
   shouldSerializeProperty: (key, value) ->
-    # Can't serialize functions. Skip them.
+    # Won't serialize functions.
     return false if _.isFunction(value)
-    # A key starting with __ should not be serialized.
+    # Won't serialize a key starting with __
     return false if key.slice(0, 2) == "__"
     return true
 

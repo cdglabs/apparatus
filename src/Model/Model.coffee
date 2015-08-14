@@ -16,6 +16,10 @@ Model.Link = require "./Link"
 Model.Attribute = require "./Attribute"
 Model.Element = require "./Element"
 
+
+Model.Editor = require "./Editor"
+
+
 Model.Variable = Model.Attribute.createVariant()
 
 # Links an Element to the Attributes it controls.
