@@ -50,10 +50,11 @@ R.create "CreatePanelItem",
         onMouseDown: @_onMouseDown
       },
         R.Thumbnail {element}
-      R.div {
-        className: "CreatePanelItemEditButton icon-pencil"
-        onClick: @_editElement
-      }
+      # TODO
+      # R.div {
+      #   className: "CreatePanelItemEditButton icon-pencil"
+      #   onClick: @_editElement
+      # }
       R.div {
         className: "CreatePanelLabel"
       },
@@ -66,7 +67,9 @@ R.create "CreatePanelItem",
     @props.element.label = newValue
 
   _editElement: ->
-    # TODO
+    {element} = @props
+    {project} = @context
+    project.setEditing(element)
 
   _onMouseDown: (mouseDownEvent) ->
     {dragManager} = @context
@@ -78,4 +81,7 @@ R.create "CreatePanelItem",
     dragManager.start mouseDownEvent,
       type: "createElement"
       element: element
+      onCancel: =>
+        # TODO: remove once there's the pencil icon?
+        @_editElement()
       # cursor

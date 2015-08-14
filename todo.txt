@@ -37,7 +37,7 @@ View
 
   Create Panel
     Thumbnail with auto view matrix
-    Select a shape to edit it
+    Pencil icon
     Remove from create panel
 
   AttributeRow
