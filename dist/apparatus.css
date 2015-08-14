@@ -269,6 +269,15 @@ canvas {
       -ms-flex-positive: 1;
           flex-grow: 1;
 }
+.AttributeRow.isWrapped {
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+}
+.AttributeRow.isWrapped .AttributeRowExpression {
+  padding-left: 3.25em;
+  width: 100%;
+}
 .AttributeRow .AttributeControl {
   color: #c66;
   width: 1em;

@@ -137,7 +137,7 @@ module.exports = Attribute = Node.createVariant
     if @exprString.indexOf("return") == -1
       result += "  return #{@exprString};\n"
     else
-      result += "\n\n#{exprString}\n\n"
+      result += "\n\n#{@exprString}\n\n"
 
     result   += "});"
     return result

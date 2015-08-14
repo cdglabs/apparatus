@@ -16,6 +16,7 @@ R.create "AttributeRow",
 
     R.div {className: R.cx {
       AttributeRow: true
+      isWrapped: @_isWrapped()
     }},
       R.div {className: "AttributeRowControl"},
         R.div {
@@ -32,6 +33,10 @@ R.create "AttributeRow",
         R.AttributeLabel {attribute}
       R.div {className: "AttributeRowExpression"},
         R.Expression {attribute}
+
+  _isWrapped: ->
+    {attribute} = @props
+    return attribute.exprString.indexOf("\n") != -1
 
   _isControlled: ->
     {attribute} = @props
