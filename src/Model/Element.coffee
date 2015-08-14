@@ -90,6 +90,23 @@ module.exports = Element = Node.createVariant
     result = _.unique(result)
     return result
 
+  # A controllable attribute is one which, if changed, would affect my
+  # geometry. Thus all attributes within Transform components, their
+  # dependencies, as well as all controllable attributes up my parent chain.
+  controllableAttributes: ->
+    _.unique(@_controllableAttributes())
+  _controllableAttributes: ->
+    result = []
+    transformComponents = @childrenOfType(Model.Transform)
+    for transformComponent in transformComponents
+      for attribute in transformComponent.children()
+        result.push(attribute)
+        result.push(attribute.dependencies()...)
+    if @parent()
+      result.push(@parent()._controllableAttributes()...)
+    return result
+
+
   # ===========================================================================
   # Attributes to change
   # ===========================================================================

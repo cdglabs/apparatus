@@ -23,7 +23,7 @@ R.create "AttributeRow",
           className: R.cx {
             AttributeControl: true
             Interactive: true
-            # Controllable: @_isControllable()
+            isControllable: @_isControllable()
             isControlled: @_isControlled()
             isImplicitlyControlled: @_isImplicityControlled()
           }
@@ -38,21 +38,31 @@ R.create "AttributeRow",
     {attribute} = @props
     return attribute.exprString.indexOf("\n") != -1
 
+  _selectedElement: ->
+    {project} = @context
+    return selectedElement = project.selectedParticularElement?.element
+
   _isControlled: ->
     {attribute} = @props
-    {project} = @context
-    selectedElement = project.selectedParticularElement?.element
+    selectedElement = @_selectedElement()
     return false unless selectedElement
     controlledAttributes = selectedElement.controlledAttributes()
     return _.contains(controlledAttributes, attribute)
 
   _isImplicityControlled: ->
     {attribute} = @props
-    {project} = @context
-    selectedElement = project.selectedParticularElement?.element
+    selectedElement = @_selectedElement()
     return false unless selectedElement
     implicitlyControlledAttributes = selectedElement.implicitlyControlledAttributes()
     return _.contains(implicitlyControlledAttributes, attribute)
+
+  _isControllable: ->
+    {attribute} = @props
+    selectedElement = @_selectedElement()
+    return false unless selectedElement
+    controllableAttributes = selectedElement.controllableAttributes()
+    return _.contains(controllableAttributes, attribute)
+
 
   # _isImplicityControlled: ->
   #   implicitlyControlledAttributes = State.Editor.getSelectedElement().getImplicitlyControlledAttributes()

@@ -41,7 +41,6 @@ View
     Remove from create panel
 
   AttributeRow
-    Highlight controllable attributes
     Highlight attributes that will change when you hover an element in canvas
     Remove a variable
     Reorder/reparent variables
