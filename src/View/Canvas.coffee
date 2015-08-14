@@ -58,9 +58,16 @@ R.create "Canvas",
     mouseEvent.preventDefault()
     Util.clearTextFocus()
 
-    # TODO: Determine whether it was a double click and set isSelectThrough
-    # appropriately.
-    @_updateSelected(mouseEvent, false)
+    isDoubleClick = false
+    if @_lastMouseDownTime
+      doubleClickThreshold = 400
+      dt = Date.now() - @_lastMouseDownTime
+      if dt < doubleClickThreshold
+        isDoubleClick = true
+    @_lastMouseDownTime = Date.now()
+
+    @_updateSelected(mouseEvent, isDoubleClick)
+    @_updateHoverAndCursor(mouseEvent)
     @_startDrag(mouseEvent)
 
   _onMouseMove: (mouseEvent) ->
