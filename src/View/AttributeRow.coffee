@@ -25,7 +25,7 @@ R.create "AttributeRow",
             Interactive: true
             # Controllable: @_isControllable()
             isControlled: @_isControlled()
-            # ImplicitlyControlled: @_isImplicityControlled()
+            isImplicitlyControlled: @_isImplicityControlled()
           }
           onClick: @_toggleControl
         }
@@ -45,6 +45,14 @@ R.create "AttributeRow",
     return false unless selectedElement
     controlledAttributes = selectedElement.controlledAttributes()
     return _.contains(controlledAttributes, attribute)
+
+  _isImplicityControlled: ->
+    {attribute} = @props
+    {project} = @context
+    selectedElement = project.selectedParticularElement?.element
+    return false unless selectedElement
+    implicitlyControlledAttributes = selectedElement.implicitlyControlledAttributes()
+    return _.contains(implicitlyControlledAttributes, attribute)
 
   # _isImplicityControlled: ->
   #   implicitlyControlledAttributes = State.Editor.getSelectedElement().getImplicitlyControlledAttributes()
