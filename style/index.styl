@@ -18,6 +18,12 @@ forceWidth(width)
   min-width width
   max-width width
 
+defaultFont()
+  font-family "Lucida Sans Unicode", "Lucida Grande", sans-serif
+
+codeFont()
+  font-family menlo, monospace
+
 // ============================================================================
 // Generic
 // ============================================================================
@@ -33,7 +39,7 @@ html, body
   cursor text
 
 body
-  font-family "Lucida Sans Unicode", "Lucida Grande", sans-serif
+  defaultFont()
   font-size 12px
   color #333
 
@@ -379,6 +385,7 @@ HeaderSize = 18px
 //   color #000
 
 .AttributeLabel, .ReferenceToken
+  defaultFont()
   background-color #ddd
   background-image linear-gradient(to bottom, #eee, #ccc)
   &.isHovered
@@ -390,6 +397,9 @@ HeaderSize = 18px
 // ============================================================================
 // Expression
 // ============================================================================
+
+.Expression
+  codeFont()
 
 .ExpressionValue
   color #ccc

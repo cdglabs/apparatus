@@ -313,6 +313,7 @@ canvas {
 }
 .AttributeLabel,
 .ReferenceToken {
+  font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   background-color: #ddd;
   background-image: -webkit-linear-gradient(top, #eee, #ccc);
   background-image: linear-gradient(to bottom, #eee, #ccc);
@@ -322,6 +323,9 @@ canvas {
   background-color: #def;
   background-image: -webkit-linear-gradient(top, #f99, #d77);
   background-image: linear-gradient(to bottom, #f99, #d77);
+}
+.Expression {
+  font-family: menlo, monospace;
 }
 .ExpressionValue {
   color: #ccc;
