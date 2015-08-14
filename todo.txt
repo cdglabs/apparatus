@@ -16,8 +16,6 @@ Dataflow
     Nested spreads seem to slow things down considerably. I'm not sure if it's all the nested try-catch statements or what. One way to avoid having try-catch to determine spread dependencies would be if cells manually declared their cell dependencies. That is, each cell would have a function for running it and a function that would return a list of cells it depends on. Then when you evaluate, you'd first evaluate the dependencies and if any of those were spreads you would spread the function in question.
 
 Storage
-  serialization (or maybe this goes in Model.Project)
-  localStorage autosave
   undo/redo
 
 Misc

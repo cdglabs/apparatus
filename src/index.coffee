@@ -35,15 +35,30 @@ render = ->
 render()
 
 
+
+shouldCheckpoint = false
+
+document.addEventListener "mouseup", ->
+  shouldCheckpoint = true
+
+debouncedShouldCheckpoint = _.debounce(->
+  shouldCheckpoint = true
+, 500)
+document.addEventListener "keydown", ->
+  debouncedShouldCheckpoint()
+
+
+
+
 willRefreshNextFrame = false
 refresh = ->
   return if willRefreshNextFrame
   willRefreshNextFrame = true
   requestAnimationFrame ->
     render()
-    # if shouldCheckpoint and !State.UI.dragPayload?
-    #   State.checkpoint()
-    #   shouldCheckpoint = false
+    if shouldCheckpoint
+      editor.checkpoint()
+      shouldCheckpoint = false
     willRefreshNextFrame = false
 
 refreshEventNames = [
