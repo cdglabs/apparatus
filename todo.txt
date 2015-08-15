@@ -20,10 +20,10 @@ Misc
   Import JSON
 
 Model
-  Project
   Element
     Add viewMatrix to "create panel" shapes
   Image Element
+  Better naming/labeling system (Figure A, Rectangle 3, etc.)
 
 View
   Menubar
