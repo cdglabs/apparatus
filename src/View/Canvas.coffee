@@ -22,8 +22,13 @@ R.create "Canvas",
       onWheel: @_onWheel
     },
       R.HTMLCanvas {
+        ref: "HTMLCanvas"
         draw: @_draw
       }
+
+  componentDidMount: ->
+    window.addEventListener "resize", =>
+      @refs.HTMLCanvas.resize()
 
   # ===========================================================================
   # Drawing

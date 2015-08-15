@@ -110,7 +110,9 @@ module.exports = Element = Node.createVariant
     result = []
     for component in @components()
       continue unless component.controllableAttributes?
-      result.push(component.controllableAttributes()...)
+      for attribute in component.controllableAttributes()
+        result.push(attribute)
+        result.push(attribute.dependencies()...)
     if @parent()
       result.push(@parent()._controllableAttributes()...)
     return result

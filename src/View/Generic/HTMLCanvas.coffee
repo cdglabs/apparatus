@@ -22,13 +22,17 @@ R.create "HTMLCanvas",
   componentDidMount: -> @_refresh()
   componentDidUpdate: -> @_refresh()
 
+  resize: ->
+    @_canvasIsSized = false
+
   _refresh: ->
     canvas = @getDOMNode()
 
-    # TODO: For speed we should only sizeCanvas when it mounts or when it
-    # really needs to be resized because getBoundingClientRect is expensive.
-    # Instead we should just clear the canvas here.
-    sizeCanvas(canvas)
+    if @_canvasIsSized
+      canvas.width = canvas.width
+    else
+      sizeCanvas(canvas)
+      @_canvasIsSized = true
 
     ctx = canvas.getContext("2d")
     ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0)
