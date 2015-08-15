@@ -43,34 +43,13 @@ R.create "AttributeRow",
     return selectedElement = project.selectedParticularElement?.element
 
   _isControlled: ->
-    {attribute} = @props
-    selectedElement = @_selectedElement()
-    return false unless selectedElement
-    controlledAttributes = selectedElement.controlledAttributes()
-    return _.contains(controlledAttributes, attribute)
+    return _.contains(@context.project.controlledAttributes(), @props.attribute)
 
   _isImplicityControlled: ->
-    {attribute} = @props
-    selectedElement = @_selectedElement()
-    return false unless selectedElement
-    implicitlyControlledAttributes = selectedElement.implicitlyControlledAttributes()
-    return _.contains(implicitlyControlledAttributes, attribute)
+    return _.contains(@context.project.implicitlyControlledAttributes(), @props.attribute)
 
   _isControllable: ->
-    {attribute} = @props
-    selectedElement = @_selectedElement()
-    return false unless selectedElement
-    controllableAttributes = selectedElement.controllableAttributes()
-    return _.contains(controllableAttributes, attribute)
-
-
-  # _isImplicityControlled: ->
-  #   implicitlyControlledAttributes = State.Editor.getSelectedElement().getImplicitlyControlledAttributes()
-  #   return _.contains(implicitlyControlledAttributes, @attribute)
-
-  # _isControllable: ->
-  #   controllableAttributes = State.Editor.getSelectedElement().getControllableAttributes()
-  #   return _.contains(controllableAttributes, @attribute)
+    return _.contains(@context.project.controllableAttributes(), @props.attribute)
 
   _toggleControl: ->
     {attribute} = @props

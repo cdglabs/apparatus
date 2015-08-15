@@ -69,11 +69,14 @@ Model.Component = Model.Node.createVariant
 Model.Transform = Model.Component.createVariant
   label: "Transform"
   matrix: ->
-    v = @getAttributesValuesByName()
-    return Util.Matrix.naturalConstruct(v.x, v.y, v.sx, v.sy, v.rotate)
+    {x, y, sx, sy, rotate} = @getAttributesValuesByName()
+    return Util.Matrix.naturalConstruct(x, y, sx, sy, rotate)
   defaultAttributesToChange: ->
-    attributesByName = @getAttributesByName()
-    return [attributesByName.x, attributesByName.y]
+    {x, y} = @getAttributesByName()
+    return [x, y]
+  controllableAttributes: ->
+    {x, y, sx, sy, rotate} = @getAttributesByName()
+    return [x, y, sx, sy, rotate]
 
 Model.Transform.addChildren [
   createAttribute("X", "x", "0.00")

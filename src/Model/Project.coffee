@@ -21,7 +21,14 @@ module.exports = class Project
       initialElement
     ]
 
-    @allRelevantAttributes = Dataflow.memoize(@allRelevantAttributes.bind(this))
+    propsToMemoize = [
+      "allRelevantAttributes"
+      "controlledAttributes"
+      "implicitlyControlledAttributes"
+      "controllableAttributes"
+    ]
+    for prop in propsToMemoize
+      this[prop] = Dataflow.memoize(this[prop].bind(this))
 
 
   # ===========================================================================
@@ -55,7 +62,7 @@ module.exports = class Project
 
 
   # ===========================================================================
-  # Relevant attributes
+  # Memoized attribute sets
   # ===========================================================================
 
   # An attribute is relevant (should be shown in the outline) if it has a
@@ -77,3 +84,11 @@ module.exports = class Project
 
     return _.unique(relevantAttributes)
 
+  controlledAttributes: ->
+    return @selectedParticularElement?.element.controlledAttributes() ? []
+
+  implicitlyControlledAttributes: ->
+    return @selectedParticularElement?.element.implicitlyControlledAttributes() ? []
+
+  controllableAttributes: ->
+    return @selectedParticularElement?.element.controllableAttributes() ? []

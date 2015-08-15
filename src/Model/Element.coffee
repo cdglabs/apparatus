@@ -108,13 +108,9 @@ module.exports = Element = Node.createVariant
     _.unique(@_controllableAttributes())
   _controllableAttributes: ->
     result = []
-    # TODO: This logic should live in the Component, not here. Like how
-    # defaultAttributesToChange is done.
-    transformComponents = @childrenOfType(Model.Transform)
-    for transformComponent in transformComponents
-      for attribute in transformComponent.children()
-        result.push(attribute)
-        result.push(attribute.dependencies()...)
+    for component in @components()
+      continue unless component.controllableAttributes?
+      result.push(component.controllableAttributes()...)
     if @parent()
       result.push(@parent()._controllableAttributes()...)
     return result
