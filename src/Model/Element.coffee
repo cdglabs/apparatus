@@ -79,6 +79,9 @@ module.exports = Element = Node.createVariant
       if attribute == attributeToRemove
         @removeChild(controlledAttributeLink)
 
+  isController: ->
+    return @controlledAttributes().length > 0
+
   # An implicitly controlled attribute is a controlled attribute or a
   # dependency of a controlled attribute.
   implicitlyControlledAttributes: ->

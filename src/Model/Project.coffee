@@ -43,26 +43,6 @@ module.exports = class Project
     while element = element.parent()
       element.expanded = true
 
-  # hits is a list from deepest to shallowest of hit detected
-  # ParticularElements.
-  getNextSelected: (hits, isSelectThrough) ->
-    # TODO: Needs testing, all the cases. And documentation (with figures?).
-    return null unless hits
-
-    if !@selectedParticularElement
-      # Second to last or last element.
-      return hits[hits.length - 2] ? hits[hits.length - 1]
-
-    deepestHit = hits[0]
-    if !isSelectThrough and @selectedParticularElement.isAncestorOf(deepestHit)
-      return @selectedParticularElement
-
-    # Find "deepest sibling"
-    for hit, index in hits
-      nextHit = hits[index + 1]
-      if !nextHit or nextHit.isAncestorOf(@selectedParticularElement)
-        return hit
-
 
   # ===========================================================================
   # Create

@@ -180,6 +180,9 @@ canvas {
 .OutlineItem.isHovered {
   background-color: rgba(0,204,153,0.1);
 }
+.OutlineItem.isActiveController {
+  background-color: rgba(204,0,0,0.1);
+}
 .OutlineItem.isSelected {
   background-color: rgba(0,153,204,0.1);
 }

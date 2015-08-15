@@ -1,6 +1,4 @@
 Today
-  controlled elements in canvas
-  selection logic
   viewMatrix
   panning
   zooming
@@ -67,8 +65,6 @@ View
     Draw control points
     Pan
     Zoom
-    Controlled elements
-    Finish selection logic (double click)
     Control text on the canvas (scrubbable numbers text on canvas)
     (Multi-)Touch support
 

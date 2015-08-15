@@ -35,6 +35,8 @@ R.create "Canvas",
 
     highlight = (graphic) ->
       particularElement = graphic.particularElement
+      if hoverManager.controllerParticularElement?.isAncestorOf(particularElement)
+        return {color: "#c00", lineWidth: 2.5}
       if project.selectedParticularElement?.isAncestorOf(particularElement)
         return {color: "#09c", lineWidth: 2.5}
       if hoverManager.hoveredParticularElement?.isAncestorOf(particularElement)
@@ -61,7 +63,7 @@ R.create "Canvas",
     isDoubleClick = @_isDoubleClick()
     @_updateSelected(mouseEvent, isDoubleClick)
     @_updateHoverAndCursor(mouseEvent)
-    @_startDrag(mouseEvent)
+    @_startAppropriateDrag(mouseEvent)
 
   _onMouseMove: (mouseEvent) ->
     dragManager = @context.dragManager
@@ -93,33 +95,72 @@ R.create "Canvas",
   # Actions
   # ===========================================================================
 
+  _intent: (mouseEvent) ->
+    {project} = @context
+    hits = @_hitDetect(mouseEvent)
+
+    selectedParticularElement = project.selectedParticularElement
+    selectedElement = selectedParticularElement?.element
+
+    # What to control.
+    controller = do ->
+      return null unless hits
+      for hit in hits
+        return hit if hit.element.isController()
+      return null
+
+    # What to select if it's a double click.
+    nextSelectDouble = do ->
+      return null unless hits
+
+      if !selectedParticularElement
+        # Second to last or last element.
+        return hits[hits.length - 2] ? hits[hits.length - 1]
+
+      # Find "deepest sibling"
+      for hit, index in hits
+        nextHit = hits[index + 1]
+        if !nextHit or nextHit.isAncestorOf(selectedParticularElement)
+          return hit
+
+    # What to select if it's a single click.
+    nextSelectSingle = do ->
+      return null if !nextSelectDouble
+      return selectedParticularElement if controller
+      if selectedParticularElement?.isAncestorOf(nextSelectDouble)
+        return selectedParticularElement
+      else
+        return nextSelectDouble
+
+    return {controller, nextSelectDouble, nextSelectSingle}
+
   _updateHoverAndCursor: (mouseEvent) ->
-    {hoverManager, project} = @context
-    hits = @_hitDetect(mouseEvent)
-    nextSelected = project.getNextSelected(hits, false)
-    hoverManager.hoveredParticularElement = nextSelected
-    # TODO: Deal with controlled elements, set cursor
+    {hoverManager} = @context
+    {controller, nextSelectSingle} = @_intent(mouseEvent)
+    hoverManager.hoveredParticularElement = nextSelectSingle
+    hoverManager.controllerParticularElement = controller
+    # TODO: set cursor
 
-  _updateSelected: (mouseEvent, isSelectThrough) ->
-    project = @context.project
-    hits = @_hitDetect(mouseEvent)
-    nextSelected = project.getNextSelected(hits, isSelectThrough)
-    project.select(nextSelected)
-
-  _startDrag: (mouseDownEvent, startImmediately=null) ->
-    {project, dragManager} = @context
-
-
-    if startImmediately
-      particularElementToDrag = startImmediately.particularElementToDrag
-      originalMouseLocal = startImmediately.originalMouseLocal
+  _updateSelected: (mouseEvent, isDoubleClick) ->
+    {project} = @context
+    {nextSelectDouble, nextSelectSingle} = @_intent(mouseEvent)
+    if isDoubleClick
+      project.select(nextSelectDouble)
     else
-      # TODO: Deal with controlled elements
-      particularElementToDrag = project.selectedParticularElement
-      return unless particularElementToDrag
-      accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
-      originalMousePixel = @_mousePosition(mouseDownEvent)
-      originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
+      project.select(nextSelectSingle)
+
+  _startAppropriateDrag: (mouseDownEvent) ->
+    {project} = @context
+    {controller, nextSelectSingle} = @_intent(mouseDownEvent)
+    particularElementToDrag = controller ? nextSelectSingle
+    return unless particularElementToDrag
+    accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
+    originalMousePixel = @_mousePosition(mouseDownEvent)
+    originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
+    @_startDrag(mouseDownEvent, particularElementToDrag, originalMouseLocal)
+
+  _startDrag: (mouseDownEvent, particularElementToDrag, originalMouseLocal, startImmediately=false) ->
+    {dragManager} = @context
 
     attributesToChange = particularElementToDrag.element.attributesToChange()
 
@@ -167,10 +208,7 @@ R.create "Canvas",
     newParticularElement = new Model.ParticularElement(newElement)
     project.select(newParticularElement)
 
-    @_startDrag(mouseEvent, {
-      particularElementToDrag: newParticularElement
-      originalMouseLocal: [0, 0]
-    })
+    @_startDrag(mouseEvent, newParticularElement, [0, 0], true)
 
 
   # ===========================================================================

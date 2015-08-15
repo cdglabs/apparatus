@@ -61,13 +61,14 @@ R.create "OutlineItem",
 
     isSelected = project.selectedParticularElement?.element == element
     isHovered = hoverManager.hoveredParticularElement?.element == element
-    isController = (element.controlledAttributes().length > 0)
+    isActiveController = hoverManager.controllerParticularElement?.element == element
+    isController = element.isController()
     isExpanded = element.expanded
 
     R.div {
       className: R.cx {
         OutlineItem: true
-        isSelected, isHovered, isController
+        isSelected, isHovered, isActiveController, isController
       }
       onMouseDown: @_select
       onMouseEnter: @_onMouseEnter
