@@ -282,11 +282,10 @@ canvas {
   width: 100%;
 }
 .AttributeRow .AttributeControl {
-  color: #c66;
   width: 1em;
   height: 1em;
   border-radius: 1em;
-  border: 1px solid #ddd;
+  border: 1px solid transparent;
 }
 .AttributeRow .AttributeControl.isControllable {
   border-color: #c66;

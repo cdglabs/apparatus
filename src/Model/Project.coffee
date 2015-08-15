@@ -62,18 +62,18 @@ module.exports = class Project
   # dependency, is depended on, is controlled, or is a variable.
   allRelevantAttributes: ->
     relevantAttributes = []
-    allAttributes = @editingElement.collectAllAttributes()
-    allAttributes = _.unique(allAttributes)
-    for attribute in allAttributes
+    for attribute in @editingElement.descendantAttributes()
       # Attributes are relevant if they have a dependency or are depended on.
       referenceAttributes = _.values(attribute.references())
       relevantAttributes.push(attribute) if referenceAttributes.length > 0
       for referenceAttribute in referenceAttributes
         relevantAttributes.push(referenceAttribute)
-      # Variables are always relevant
+      # Variables are relevant.
       if attribute.isVariantOf(Model.Variable)
         relevantAttributes.push attribute
-      # TODO: controlled
+    for element in @editingElement.descendantElements()
+      # Controlled attributes are relevant.
+      relevantAttributes.push(element.controlledAttributes()...)
 
     return _.unique(relevantAttributes)
 

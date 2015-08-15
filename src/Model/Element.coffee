@@ -39,10 +39,18 @@ module.exports = Element = Node.createVariant
         result.push(attribute)
     return result
 
-  collectAllAttributes: ->
-    result = @attributes()
+  # descendantElements are all the childElements in my descendant tree,
+  # including myself.
+  descendantElements: ->
+    result = [this]
     for childElement in @childElements()
-      result.push(childElement.collectAllAttributes()...)
+      result.push(childElement.descendantElements()...)
+    return result
+
+  descendantAttributes: ->
+    result = []
+    for element in @descendantElements()
+      result.push(element.attributes()...)
     return result
 
 
@@ -100,6 +108,8 @@ module.exports = Element = Node.createVariant
     _.unique(@_controllableAttributes())
   _controllableAttributes: ->
     result = []
+    # TODO: This logic should live in the Component, not here. Like how
+    # defaultAttributesToChange is done.
     transformComponents = @childrenOfType(Model.Transform)
     for transformComponent in transformComponents
       for attribute in transformComponent.children()
