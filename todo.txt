@@ -46,7 +46,6 @@ View
 
   Outline
     Reorder with drag
-    Autofocus label when adding a variable
 
   Expression
     color picker

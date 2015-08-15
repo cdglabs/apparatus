@@ -18,8 +18,14 @@ R.create "EditableText",
     _.defaults(props, @props)
     R.div props
 
-  componentDidMount: -> @_refresh()
-  componentDidUpdate: -> @_refresh()
+  componentDidMount: ->
+    @_refresh()
+    # Autofocus if empty string value.
+    if @props.value == "" or !@props.value
+      @getDOMNode().focus()
+
+  componentDidUpdate: ->
+    @_refresh()
 
   _refresh: ->
     el = @getDOMNode()

@@ -43,7 +43,6 @@ R.create "FullAttributesList",
   _addVariable: ->
     {element} = @props
     element.addVariable()
-    # TODO: auto-focus
 
 
 
