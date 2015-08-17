@@ -12,16 +12,23 @@ module.exports = Element = Node.createVariant
     Node.constructor.apply(this, arguments)
 
     # Because the expanded properly is not inherited, it is initialized in
-    # this constructor for every Element.
+    # the constructor for every Element.
     @expanded = false
 
-    # TODO: Should more methods be cell'ed? Should these all be _private?
-    @graphic = Dataflow.cell(@_graphic.bind(this))
-    @contextMatrix = Dataflow.cell(@_contextMatrix.bind(this))
-    @accumulatedMatrix = Dataflow.cell(@_accumulatedMatrix.bind(this))
+    # These methods need to be cells because we want to be able to call their
+    # asSpread version. Note that we need to keep the original method around
+    # (as the _version) so that inheritance doesn't try to make a cell out of
+    # a cell.
+    propsToCellify = [
+      "graphic"
+      "contextMatrix"
+      "accumulatedMatrix"
+    ]
+    for prop in propsToCellify
+      this[prop] = Dataflow.cell(this["_" + prop].bind(this))
 
   # viewMatrix determines the pan and zoom of an Element. It is only used for
-  # Elements that can be a Project.editingElement (i.e. Elemens within the
+  # Elements that can be a Project.editingElement (i.e. Elements within the
   # create panel). The default is zoomed to 100 pixels per unit.
   viewMatrix: new Util.Matrix(100, 0, 0, 100, 0, 0)
 
