@@ -48,9 +48,12 @@ R.create "Picture",
       graphic.render(renderOpts)
 
   _viewMatrix: ->
+    {width, height} = @_size()
+    return new Util.Matrix(10, 0, 0, -10, width / 2, height / 2)
+
+  _size: ->
+    return @_cachedSize if @_cachedSize
     el = @getDOMNode()
     rect = el.getBoundingClientRect()
     {width, height} = rect
-
-    return new Util.Matrix(10, 0, 0, -10, width / 2, height / 2)
-
+    return @_cachedSize = {width, height}

@@ -27,8 +27,7 @@ R.create "Canvas",
       }
 
   componentDidMount: ->
-    window.addEventListener "resize", =>
-      @refs.HTMLCanvas.resize()
+    window.addEventListener "resize", @_onResize
 
   # ===========================================================================
   # Drawing
@@ -95,6 +94,10 @@ R.create "Canvas",
     isDoubleClick = (currentTime - @_lastMouseDownTime < doubleClickThreshold)
     @_lastMouseDownTime = currentTime
     return isDoubleClick
+
+  _onResize: ->
+    @refs.HTMLCanvas.resize()
+    @_rectCached = null
 
   # ===========================================================================
   # Actions
@@ -233,8 +236,7 @@ R.create "Canvas",
     return hits
 
   _mousePosition: (mouseEvent) ->
-    el = @getDOMNode()
-    rect = el.getBoundingClientRect()
+    rect = @_rect()
     x = mouseEvent.clientX - rect.left
     y = mouseEvent.clientY - rect.top
     return [x, y]
@@ -243,6 +245,11 @@ R.create "Canvas",
   # ===========================================================================
   # Helpers
   # ===========================================================================
+
+  _rect: ->
+    return @_rectCached if @_rectCached?
+    el = @getDOMNode()
+    return @_rectCached = el.getBoundingClientRect()
 
   _editingElement: ->
     project = @context.project
@@ -256,7 +263,6 @@ R.create "Canvas",
     return @_cachedGraphics = element.allGraphics()
 
   _viewMatrix: ->
-    el = @getDOMNode()
-    rect = el.getBoundingClientRect()
+    rect = @_rect()
     {width, height} = rect
     return new Util.Matrix(100, 0, 0, -100, width / 2, height / 2)
