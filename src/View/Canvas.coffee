@@ -143,8 +143,9 @@ R.create "Canvas",
     @refs.HTMLCanvas.resize()
     @_rectCached = null
 
+
   # ===========================================================================
-  # Actions
+  # Hover and Selection
   # ===========================================================================
 
   _intent: (mouseEvent) ->
@@ -200,6 +201,11 @@ R.create "Canvas",
       project.select(nextSelectDouble)
     else
       project.select(nextSelectSingle)
+
+
+  # ===========================================================================
+  # Dragging and Creating Elements
+  # ===========================================================================
 
   _startAppropriateDrag: (mouseDownEvent) ->
     {project} = @context
@@ -263,6 +269,11 @@ R.create "Canvas",
     project.select(newParticularElement)
 
     @_startDrag(mouseEvent, newParticularElement, [0, 0], true)
+
+
+  # ===========================================================================
+  # Pan and Zoom
+  # ===========================================================================
 
   _startPan: (mouseDownEvent) ->
     {dragManager} = @context
