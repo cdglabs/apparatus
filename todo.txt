@@ -19,6 +19,7 @@ Misc
 Model
   Image Element
   Better naming/labeling system (Figure A, Rectangle 3, etc.)
+  Integrate control points into e.g. Model.Shape
 
 View
   Menubar

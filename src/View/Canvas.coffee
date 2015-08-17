@@ -54,7 +54,18 @@ R.create "Canvas",
     for graphic in @_graphics()
       graphic.render(renderOpts)
 
-    # TODO: draw control points
+    @_drawControlPoints(ctx)
+
+  _drawControlPoints: (ctx) ->
+    for controlPoint in @_controlPoints()
+      ctx.save()
+      ctx.beginPath()
+      [x, y] = controlPoint.point
+      ctx.arc(x, y, @_controlPointRadius, 0, 2 * Math.PI, false)
+      ctx.fillStyle = if controlPoint.filled then "#09c" else "#fff"
+      ctx.fill()
+      ctx.strokeStyle = "#09c"
+      ctx.stroke()
 
   _drawBackgroundGrid: (ctx) ->
     {project} = @context
@@ -98,6 +109,57 @@ R.create "Canvas",
     ctx.lineWidth = 1
     ctx.stroke()
     ctx.restore()
+
+
+  # ===========================================================================
+  # Control Points
+  # ===========================================================================
+
+  # Note: control points are not to be confused with controllers. However, in
+  # a future iteration I would like to unify these, so that control points
+  # really *are* controllers. This would allow more flexible control points to
+  # be developed, for example for manipulating beziers or for creating custom
+  # control points for certain elements.
+
+  _controlPointRadius: 5
+
+  _controlPoints: ->
+    {project} = @context
+    selectedParticularElement = project.selectedParticularElement
+    return [] unless selectedParticularElement
+
+    # TODO: This stuff should be in Model
+    transformComponent = selectedParticularElement.element.childOfType(Model.Transform)
+    {x, y, sx, sy} = transformComponent.getAttributesByName()
+
+    matrix = selectedParticularElement.accumulatedMatrix()
+    matrix = @_viewMatrix().compose(matrix)
+    return [
+      {
+        point: matrix.fromLocal([0, 0])
+        attributesToChange: [x, y]
+        filled: true
+      }
+      {
+        point: matrix.fromLocal([1, 0])
+        attributesToChange: [sx]
+        filled: false
+      }
+      {
+        point: matrix.fromLocal([0, 1])
+        attributesToChange: [sy]
+        filled: false
+      }
+    ]
+
+  _hitDetectControlPoint: (mouseEvent) ->
+    mousePixel = @_mousePosition(mouseEvent)
+    controlPoints = @_controlPoints()
+    quadrance = @_controlPointRadius * @_controlPointRadius
+    for controlPoint in controlPoints
+      if Util.quadrance(mousePixel, controlPoint.point) <= quadrance
+        return controlPoint
+    return null
 
 
   # ===========================================================================
@@ -151,10 +213,16 @@ R.create "Canvas",
 
   _intent: (mouseEvent) ->
     {project} = @context
+    selectedParticularElement = project.selectedParticularElement
+
+    if controlPoint = @_hitDetectControlPoint(mouseEvent)
+      controller = null
+      nextSelectSingle = nextSelectDouble = selectedParticularElement
+      return {controlPoint, controller, nextSelectDouble, nextSelectSingle}
+
     hits = @_hitDetect(mouseEvent)
 
-    selectedParticularElement = project.selectedParticularElement
-    selectedElement = selectedParticularElement?.element
+    controlPoint = null
 
     # What to control.
     controller = do ->
@@ -186,7 +254,7 @@ R.create "Canvas",
       else
         return nextSelectDouble
 
-    return {controller, nextSelectDouble, nextSelectSingle}
+    return {controlPoint, controller, nextSelectDouble, nextSelectSingle}
 
   _updateHoverAndCursor: (mouseEvent) ->
     {hoverManager} = @context
@@ -210,20 +278,25 @@ R.create "Canvas",
 
   _startAppropriateDrag: (mouseDownEvent) ->
     {project} = @context
-    {controller, nextSelectSingle} = @_intent(mouseDownEvent)
-    particularElementToDrag = controller ? nextSelectSingle
+    {controlPoint, controller, nextSelectSingle} = @_intent(mouseDownEvent)
+
+    if controlPoint
+      particularElementToDrag = project.selectedParticularElement
+      attributesToChange = controlPoint.attributesToChange
+    else
+      particularElementToDrag = controller ? nextSelectSingle
+      attributesToChange = particularElementToDrag?.element.attributesToChange()
+
     if particularElementToDrag
       accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
       originalMousePixel = @_mousePosition(mouseDownEvent)
       originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
-      @_startDrag(mouseDownEvent, particularElementToDrag, originalMouseLocal)
+      @_startDrag(mouseDownEvent, particularElementToDrag, attributesToChange, originalMouseLocal)
     else
       @_startPan(mouseDownEvent)
 
-  _startDrag: (mouseDownEvent, particularElementToDrag, originalMouseLocal, startImmediately=false) ->
+  _startDrag: (mouseDownEvent, particularElementToDrag, attributesToChange, originalMouseLocal, startImmediately=false) ->
     {dragManager} = @context
-
-    attributesToChange = particularElementToDrag.element.attributesToChange()
 
     dragManager.start mouseDownEvent,
       onMove: (mouseMoveEvent) =>
@@ -269,7 +342,9 @@ R.create "Canvas",
     newParticularElement = new Model.ParticularElement(newElement)
     project.select(newParticularElement)
 
-    @_startDrag(mouseEvent, newParticularElement, [0, 0], true)
+    attributesToChange = newParticularElement.element.attributesToChange()
+
+    @_startDrag(mouseEvent, newParticularElement, attributesToChange, [0, 0], true)
 
 
   # ===========================================================================
