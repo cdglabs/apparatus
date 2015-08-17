@@ -57,7 +57,6 @@ View
     Add thumbnails everywhere
 
   Canvas
-    Draw background grid
     Draw control points
     Zoom
     Control text on the canvas (scrubbable numbers text on canvas)

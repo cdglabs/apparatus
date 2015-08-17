@@ -49,12 +49,55 @@ R.create "Canvas",
 
     renderOpts = {ctx, viewMatrix, highlight}
 
-    # TODO: draw background grid
+    @_drawBackgroundGrid(ctx)
 
     for graphic in @_graphics()
       graphic.render(renderOpts)
 
     # TODO: draw control points
+
+  _drawBackgroundGrid: (ctx) ->
+    {project} = @context
+
+    matrix = project.selectedParticularElement?.contextMatrix()
+    matrix ?= new Util.Matrix()
+
+    matrix = @_viewMatrix().compose(matrix)
+
+    ctx.save()
+    ctx.beginPath()
+    matrix.canvasTransform(ctx)
+
+    for x in [-10 .. 10]
+      ctx.moveTo(x, -10)
+      ctx.lineTo(x,  10)
+    for y in [-10 .. 10]
+      ctx.moveTo(-10, y)
+      ctx.lineTo( 10, y)
+
+    ctx.restore()
+
+    ctx.save()
+    ctx.strokeStyle = "#eee"
+    ctx.lineWidth = 0.5
+    ctx.stroke()
+    ctx.restore()
+
+    ctx.save()
+    ctx.beginPath()
+    matrix.canvasTransform(ctx)
+
+    ctx.moveTo(-10, 0)
+    ctx.lineTo( 10, 0)
+    ctx.moveTo(0, -10)
+    ctx.lineTo(0,  10)
+    ctx.restore()
+
+    ctx.save()
+    ctx.strokeStyle = "#ccc"
+    ctx.lineWidth = 1
+    ctx.stroke()
+    ctx.restore()
 
 
   # ===========================================================================

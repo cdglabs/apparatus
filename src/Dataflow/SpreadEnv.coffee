@@ -20,6 +20,15 @@ module.exports = class SpreadEnv
         return @resolve(value)
     return value
 
+  # Like resolve, but will take index 0 if the spread cannot be found.
+  resolveWithDefault: (value) ->
+    if value instanceof Spread
+      index = @lookup(value) ? 0
+      value = value.items[index]
+      return @resolveWithDefault(value)
+    return value
+
+
   # Note: assign is not a mutation, it returns a new SpreadEnv where spread is
   # assigned to index.
   assign: (spread, index) ->

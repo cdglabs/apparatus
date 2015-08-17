@@ -17,6 +17,7 @@ module.exports = Element = Node.createVariant
 
     # TODO: Should more methods be cell'ed? Should these all be _private?
     @graphic = Dataflow.cell(@_graphic.bind(this))
+    @contextMatrix = Dataflow.cell(@_contextMatrix.bind(this))
     @accumulatedMatrix = Dataflow.cell(@_accumulatedMatrix.bind(this))
 
   # viewMatrix determines the pan and zoom of an Element. It is only used for
@@ -156,7 +157,7 @@ module.exports = Element = Node.createVariant
       matrix = matrix.compose(transform.matrix())
     return matrix
 
-  contextMatrix: ->
+  _contextMatrix: ->
     parent = @parent()
     if parent and parent.isVariantOf(Element)
       return parent.accumulatedMatrix()

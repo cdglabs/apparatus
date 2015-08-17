@@ -15,7 +15,10 @@ module.exports = class ParticularElement
 
   accumulatedMatrix: ->
     accumulatedMatrix = @element.accumulatedMatrix.asSpread()
-    accumulatedMatrix = @spreadEnv.resolve(accumulatedMatrix)
-    if accumulatedMatrix instanceof Dataflow.Spread
-      throw "Unable to fully resolve accumulatedMatrix"
+    accumulatedMatrix = @spreadEnv.resolveWithDefault(accumulatedMatrix)
     return accumulatedMatrix
+
+  contextMatrix: ->
+    contextMatrix = @element.contextMatrix.asSpread()
+    contextMatrix = @spreadEnv.resolveWithDefault(contextMatrix)
+    return contextMatrix
