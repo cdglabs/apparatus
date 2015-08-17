@@ -53,7 +53,8 @@ View
     arrow keys between them and EditableText
     disable CodeMirror undo (once Apparatus undo works)
     displaying expression values
-      highlight the appropriate spread selection
+      highlight the appropriate spread selection (and hover)
+      click to select that particularElement
 
   Picture
     Need to figure out all the different thumbnail needs, then refactor
