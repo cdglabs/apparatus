@@ -48,8 +48,11 @@ R.create "Picture",
       graphic.render(renderOpts)
 
   _viewMatrix: ->
+    {element} = @props
     {width, height} = @_size()
-    return new Util.Matrix(10, 0, 0, -10, width / 2, height / 2)
+    screenMatrix = new Util.Matrix(0.1, 0, 0, -0.1, width / 2, height / 2)
+    elementViewMatrix = element.viewMatrix
+    return screenMatrix.compose(elementViewMatrix)
 
   _size: ->
     return @_cachedSize if @_cachedSize

@@ -263,6 +263,9 @@ R.create "Canvas",
     return @_cachedGraphics = element.allGraphics()
 
   _viewMatrix: ->
+    element = @_editingElement()
     rect = @_rect()
     {width, height} = rect
-    return new Util.Matrix(100, 0, 0, -100, width / 2, height / 2)
+    screenMatrix = new Util.Matrix(1, 0, 0, -1, width / 2, height / 2)
+    elementViewMatrix = element.viewMatrix
+    return screenMatrix.compose(elementViewMatrix)

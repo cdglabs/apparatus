@@ -19,6 +19,11 @@ module.exports = Element = Node.createVariant
     @graphic = Dataflow.cell(@_graphic.bind(this))
     @accumulatedMatrix = Dataflow.cell(@_accumulatedMatrix.bind(this))
 
+  # viewMatrix determines the pan and zoom of an Element. It is only used for
+  # Elements that can be a Project.editingElement (i.e. Elemens within the
+  # create panel). The default is zoomed to 100 pixels per unit.
+  viewMatrix: new Util.Matrix(100, 0, 0, 100, 0, 0)
+
 
   # ===========================================================================
   # Getters
