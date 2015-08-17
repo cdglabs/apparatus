@@ -129,7 +129,8 @@ R.create "Canvas",
     # TODO
 
   _onWheel: (wheelEvent) ->
-    # TODO
+    wheelEvent.preventDefault()
+    @_zoom(wheelEvent)
 
   _isDoubleClick: ->
     doubleClickThreshold = 400
@@ -287,6 +288,18 @@ R.create "Canvas",
         currentMouseLocal = @_viewMatrix().toLocal(currentMousePixel)
         offset = numeric.sub(currentMouseLocal, originalMouseLocal)
         element.viewMatrix = element.viewMatrix.translate(offset...)
+
+  _zoom: (wheelEvent) ->
+    element = @_editingElement()
+    scaleFactor = Math.pow(1.001, -wheelEvent.deltaY)
+    mousePixel = @_mousePosition(wheelEvent)
+    [x, y] = @_viewMatrix().toLocal(mousePixel)
+
+    matrix = element.viewMatrix
+    matrix = matrix.translate(x, y)
+    matrix = matrix.scale(scaleFactor, scaleFactor)
+    matrix = matrix.translate(-x, -y)
+    element.viewMatrix = matrix
 
 
   # ===========================================================================

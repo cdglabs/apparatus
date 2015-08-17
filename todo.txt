@@ -1,5 +1,4 @@
 Today
-  zooming
 
 
 
@@ -58,7 +57,6 @@ View
 
   Canvas
     Draw control points
-    Zoom
     Control text on the canvas (scrubbable numbers text on canvas)
     (Multi-)Touch support
 
