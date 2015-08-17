@@ -1,4 +1,5 @@
 _ = require "underscore"
+numeric = require "numeric"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -161,11 +162,13 @@ R.create "Canvas",
     {project} = @context
     {controller, nextSelectSingle} = @_intent(mouseDownEvent)
     particularElementToDrag = controller ? nextSelectSingle
-    return unless particularElementToDrag
-    accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
-    originalMousePixel = @_mousePosition(mouseDownEvent)
-    originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
-    @_startDrag(mouseDownEvent, particularElementToDrag, originalMouseLocal)
+    if particularElementToDrag
+      accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
+      originalMousePixel = @_mousePosition(mouseDownEvent)
+      originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
+      @_startDrag(mouseDownEvent, particularElementToDrag, originalMouseLocal)
+    else
+      @_startPan(mouseDownEvent)
 
   _startDrag: (mouseDownEvent, particularElementToDrag, originalMouseLocal, startImmediately=false) ->
     {dragManager} = @context
@@ -217,6 +220,19 @@ R.create "Canvas",
     project.select(newParticularElement)
 
     @_startDrag(mouseEvent, newParticularElement, [0, 0], true)
+
+  _startPan: (mouseDownEvent) ->
+    {dragManager} = @context
+    element = @_editingElement()
+    originalMousePixel = @_mousePosition(mouseDownEvent)
+    originalMouseLocal = @_viewMatrix().toLocal(originalMousePixel)
+    dragManager.start mouseDownEvent,
+      onMove: (mouseMoveEvent) =>
+        return unless dragManager.drag.consummated
+        currentMousePixel = @_mousePosition(mouseMoveEvent)
+        currentMouseLocal = @_viewMatrix().toLocal(currentMousePixel)
+        offset = numeric.sub(currentMouseLocal, originalMouseLocal)
+        element.viewMatrix = element.viewMatrix.translate(offset...)
 
 
   # ===========================================================================

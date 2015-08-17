@@ -1,6 +1,4 @@
 Today
-  viewMatrix
-  panning
   zooming
 
 
@@ -20,8 +18,6 @@ Misc
   Import JSON
 
 Model
-  Element
-    Add viewMatrix to "create panel" shapes
   Image Element
   Better naming/labeling system (Figure A, Rectangle 3, etc.)
 
@@ -63,7 +59,6 @@ View
   Canvas
     Draw background grid
     Draw control points
-    Pan
     Zoom
     Control text on the canvas (scrubbable numbers text on canvas)
     (Multi-)Touch support
