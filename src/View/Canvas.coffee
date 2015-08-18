@@ -207,17 +207,13 @@ R.create "Canvas",
     {project} = @context
     selectedParticularElement = project.selectedParticularElement
 
-    if controlPoint = @_hitDetectControlPoint(mouseEvent)
-      controller = null
-      nextSelectSingle = nextSelectDouble = selectedParticularElement
-      return {controlPoint, controller, nextSelectDouble, nextSelectSingle}
-
     hits = @_hitDetect(mouseEvent)
 
-    controlPoint = null
+    controlPoint = @_hitDetectControlPoint(mouseEvent)
 
     # What to control.
     controller = do ->
+      return null if controlPoint
       return null unless hits
       for hit in hits
         return hit if hit.element.isController()
@@ -225,6 +221,7 @@ R.create "Canvas",
 
     # What to select if it's a double click.
     nextSelectDouble = do ->
+      return selectedParticularElement if controlPoint
       return null unless hits
 
       if !selectedParticularElement
@@ -240,7 +237,7 @@ R.create "Canvas",
     # What to select if it's a single click.
     nextSelectSingle = do ->
       return null if !nextSelectDouble
-      return selectedParticularElement if controller
+      return selectedParticularElement if controller or controlPoint
       if selectedParticularElement?.isAncestorOf(nextSelectDouble)
         return selectedParticularElement
       else
