@@ -1,3 +1,4 @@
+_ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -37,12 +38,11 @@ R.create "CreatePanelItem",
     element: Model.Element
 
   render: ->
-    project = @context.project
     element = @props.element
     R.div {
       className: R.cx {
         "CreatePanelItem": true
-        "isEditing": element == project.editingElement
+        "isEditing": @_isEditing()
       }
     },
       R.div {
@@ -50,11 +50,19 @@ R.create "CreatePanelItem",
         onMouseDown: @_onMouseDown
       },
         R.Thumbnail {element}
-      # TODO
-      # R.div {
-      #   className: "CreatePanelItemEditButton icon-pencil"
-      #   onClick: @_editElement
-      # }
+
+      unless @_isBuiltIn()
+        R.span {},
+          R.div {
+            className: "CreatePanelItemEditButton icon-pencil"
+            onClick: @_editElement
+          }
+      unless @_isBuiltIn() or @_isEditing()
+          R.div {
+            className: "CreatePanelItemRemoveButton icon-x"
+            onClick: @_remove
+          }
+
       R.div {
         className: "CreatePanelLabel"
       },
@@ -63,6 +71,16 @@ R.create "CreatePanelItem",
           setValue: @_setLabelValue
         }
 
+  _isEditing: ->
+    {element} = @props
+    {project} = @context
+    return element == project.editingElement
+
+  _isBuiltIn: ->
+    {element} = @props
+    builtIn = _.values(Model)
+    return _.contains(builtIn, element)
+
   _setLabelValue: (newValue) ->
     @props.element.label = newValue
 
@@ -70,6 +88,11 @@ R.create "CreatePanelItem",
     {element} = @props
     {project} = @context
     project.setEditing(element)
+
+  _remove: ->
+    {element} = @props
+    {project} = @context
+    project.createPanelElements = _.without(project.createPanelElements, element)
 
   _onMouseDown: (mouseDownEvent) ->
     {dragManager} = @context
@@ -81,7 +104,4 @@ R.create "CreatePanelItem",
     dragManager.start mouseDownEvent,
       type: "createElement"
       element: element
-      onCancel: =>
-        # TODO: remove once there's the pencil icon?
-        @_editElement()
       # cursor

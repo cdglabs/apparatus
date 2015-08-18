@@ -187,35 +187,44 @@ HeaderSize = 18px
 // CreatePanel
 // ============================================================================
 
-.CreatePanelItem
-  margin 6px 6px 18px 6px
-
-.CreatePanelThumbnail
-  cursor grab
-  position relative
-  width CreatePanelWidth - 12px
-  height CreatePanelWidth - 12px
-  background-color white
-  margin-bottom 6px
-  shadow 1px 0.5
-
-.CreatePanelLabel
-  // text-align center
-
 .Thumbnail
   width 100%
   height 100%
 
-.CreatePanelItem.isEditing
+.CreatePanelItem
+  padding 6px 6px 18px 6px
+  position relative
+
   .CreatePanelThumbnail
-    outline 2px solid #09c
+    cursor grab
+    position relative
+    width CreatePanelWidth - 12px
+    height CreatePanelWidth - 12px
+    background-color white
+    margin-bottom 6px
+    shadow 1px 0.5
+
   .CreatePanelItemEditButton
-    color #09c
-
-
-.CreatePanelItemEditButton
-    color #aaa
+    color transparent
     float right
+  .CreatePanelItemRemoveButton
+    position absolute
+    top 7px
+    right 7px
+    font-size 16px
+    color transparent
+
+  &:hover
+    .CreatePanelItemEditButton, .CreatePanelItemRemoveButton
+      color rgba(0, 0, 0, 0.25)
+      &:hover
+        color rgba(0, 0, 0, 0.6)
+
+  &.isEditing
+    .CreatePanelThumbnail
+      outline 2px solid #09c
+    .CreatePanelItemEditButton
+      color #09c !important
 
 .CreatePanelAddItem
   font-size 18px

@@ -140,10 +140,15 @@ canvas {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.CreatePanelItem {
-  margin: 6px 6px 18px 6px;
+.Thumbnail {
+  width: 100%;
+  height: 100%;
 }
-.CreatePanelThumbnail {
+.CreatePanelItem {
+  padding: 6px 6px 18px 6px;
+  position: relative;
+}
+.CreatePanelItem .CreatePanelThumbnail {
   cursor: -webkit-grab;
   cursor: grab;
   position: relative;
@@ -153,19 +158,30 @@ canvas {
   margin-bottom: 6px;
   box-shadow: 0px 1px 2px rgba(0,0,0,0.5);
 }
-.Thumbnail {
-  width: 100%;
-  height: 100%;
+.CreatePanelItem .CreatePanelItemEditButton {
+  color: transparent;
+  float: right;
+}
+.CreatePanelItem .CreatePanelItemRemoveButton {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  font-size: 16px;
+  color: transparent;
+}
+.CreatePanelItem:hover .CreatePanelItemEditButton,
+.CreatePanelItem:hover .CreatePanelItemRemoveButton {
+  color: rgba(0,0,0,0.25);
+}
+.CreatePanelItem:hover .CreatePanelItemEditButton:hover,
+.CreatePanelItem:hover .CreatePanelItemRemoveButton:hover {
+  color: rgba(0,0,0,0.6);
 }
 .CreatePanelItem.isEditing .CreatePanelThumbnail {
   outline: 2px solid #09c;
 }
 .CreatePanelItem.isEditing .CreatePanelItemEditButton {
-  color: #09c;
-}
-.CreatePanelItemEditButton {
-  color: #aaa;
-  float: right;
+  color: #09c !important;
 }
 .CreatePanelAddItem {
   font-size: 18px;

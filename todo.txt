@@ -1,9 +1,8 @@
 Today
+  Remove
+    variable
+    element
 
-
-
-Styling
-  figure out how icons will work
 
 Dataflow
   Test if we even need Dataflow memoization anymore...
@@ -31,8 +30,6 @@ View
 
   Create Panel
     Thumbnail with auto view matrix
-    Pencil icon
-    Remove from create panel
 
   AttributeRow
     Remove a variable
@@ -66,7 +63,7 @@ Rename
 Cleanup
   jsEvaluate, spread - move them into their own folder?
   Attribute - error handling throw catches everywhere.
-  Build process needs cleanup since React is off on its own, vendor is hard-coded, etc.
+  Build process needs cleanup since React is off on its own, vendor is hard-coded, font css is separate, etc.
   Can AttributeLabel and AttributeToken be merged?
   Make consistent: first get @props, then @context in views
   Clean up Model
