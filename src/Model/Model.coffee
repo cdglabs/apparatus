@@ -74,6 +74,13 @@ Model.Transform = Model.Component.createVariant
   controllableAttributes: ->
     {x, y, sx, sy, rotate} = @getAttributesByName()
     return [x, y, sx, sy, rotate]
+  controlPoints: ->
+    {x, y, sx, sy} = @getAttributesByName()
+    return [
+      {point: [0, 0], attributesToChange: [x, y], filled: true}
+      {point: [1, 0], attributesToChange: [sx], filled: false}
+      {point: [0, 1], attributesToChange: [sy], filled: false}
+    ]
 
 Model.Transform.addChildren [
   createAttribute("X", "x", "0.00")

@@ -10,6 +10,7 @@ R.create "AttributeRow",
 
   contextTypes:
     project: Model.Project
+    hoverManager: R.HoverManager
 
   render: ->
     attribute = @props.attribute
@@ -17,6 +18,7 @@ R.create "AttributeRow",
     R.div {className: R.cx {
       AttributeRow: true
       isWrapped: @_isWrapped()
+      isGoingToChange: @_isGoingToChange()
     }},
       R.div {className: "AttributeRowControl"},
         R.div {
@@ -37,6 +39,11 @@ R.create "AttributeRow",
   _isWrapped: ->
     {attribute} = @props
     return attribute.exprString.indexOf("\n") != -1
+
+  _isGoingToChange: ->
+    {attribute} = @props
+    {hoverManager} = @context
+    return _.contains(hoverManager.attributesToChange, attribute)
 
   _selectedElement: ->
     {project} = @context

@@ -57,14 +57,21 @@ R.create "Canvas",
     @_drawControlPoints(ctx)
 
   _drawControlPoints: (ctx) ->
+    {hoverManager} = @context
     for controlPoint in @_controlPoints()
       ctx.save()
       ctx.beginPath()
       [x, y] = controlPoint.point
       ctx.arc(x, y, @_controlPointRadius, 0, 2 * Math.PI, false)
-      ctx.fillStyle = if controlPoint.filled then "#09c" else "#fff"
+
+      color = "#09c"
+      if controlPoint.attributesToChange.length > 0
+        if _.intersection(controlPoint.attributesToChange, hoverManager.attributesToChange).length > 0
+          color = "#c00"
+
+      ctx.fillStyle = if controlPoint.filled then color else "#fff"
       ctx.fill()
-      ctx.strokeStyle = "#09c"
+      ctx.strokeStyle = color
       ctx.stroke()
 
   _drawBackgroundGrid: (ctx) ->
@@ -128,29 +135,14 @@ R.create "Canvas",
     selectedParticularElement = project.selectedParticularElement
     return [] unless selectedParticularElement
 
-    # TODO: This stuff should be in Model
-    transformComponent = selectedParticularElement.element.childOfType(Model.Transform)
-    {x, y, sx, sy} = transformComponent.getAttributesByName()
-
     matrix = selectedParticularElement.accumulatedMatrix()
     matrix = @_viewMatrix().compose(matrix)
-    return [
-      {
-        point: matrix.fromLocal([0, 0])
-        attributesToChange: [x, y]
-        filled: true
-      }
-      {
-        point: matrix.fromLocal([1, 0])
-        attributesToChange: [sx]
-        filled: false
-      }
-      {
-        point: matrix.fromLocal([0, 1])
-        attributesToChange: [sy]
-        filled: false
-      }
-    ]
+
+    controlPoints = selectedParticularElement.element.controlPoints()
+    for controlPoint in controlPoints
+      controlPoint.point = matrix.fromLocal(controlPoint.point)
+
+    return controlPoints
 
   _hitDetectControlPoint: (mouseEvent) ->
     mousePixel = @_mousePosition(mouseEvent)
@@ -258,9 +250,17 @@ R.create "Canvas",
 
   _updateHoverAndCursor: (mouseEvent) ->
     {hoverManager} = @context
-    {controller, nextSelectSingle} = @_intent(mouseEvent)
+    {controlPoint, controller, nextSelectSingle} = @_intent(mouseEvent)
     hoverManager.hoveredParticularElement = nextSelectSingle
     hoverManager.controllerParticularElement = controller
+    if controlPoint
+      hoverManager.attributesToChange = controlPoint.attributesToChange
+    else if controller
+      hoverManager.attributesToChange = controller.element.attributesToChange()
+    else if nextSelectSingle
+      hoverManager.attributesToChange = nextSelectSingle.element.attributesToChange()
+    else
+      hoverManager.attributesToChange = []
     # TODO: set cursor
 
   _updateSelected: (mouseEvent, isDoubleClick) ->

@@ -256,6 +256,10 @@ canvas {
   display: -ms-flexbox;
   display: flex;
 }
+.AttributeRow.isGoingToChange .cm-number,
+.AttributeRow.isGoingToChange .cm-operator {
+  color: #c00;
+}
 .AttributeRow .AttributeRowControl {
   width: 1.5em;
   min-width: 1.5em;

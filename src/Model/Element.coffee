@@ -106,13 +106,7 @@ module.exports = Element = Node.createVariant
   # An implicitly controlled attribute is a controlled attribute or a
   # dependency of a controlled attribute.
   implicitlyControlledAttributes: ->
-    result = []
-    controlledAttributes = @controlledAttributes()
-    for attribute in controlledAttributes
-      result.push(attribute)
-      result.push(attribute.dependencies()...)
-    result = _.unique(result)
-    return result
+    return @allDependencies(@controlledAttributes())
 
   # A controllable attribute is one which, if changed, would affect my
   # geometry. Thus all attributes within Transform components, their
@@ -139,11 +133,7 @@ module.exports = Element = Node.createVariant
     attributesToChange = @implicitlyControlledAttributes()
     if attributesToChange.length == 0
       attributesToChange = @defaultAttributesToChange()
-
-    # We can only change numbers.
-    attributesToChange = _.filter attributesToChange, (attribute) ->
-      attribute.isNumber()
-
+    attributesToChange = @onlyNumbers(attributesToChange)
     return attributesToChange
 
   defaultAttributesToChange: ->
@@ -152,6 +142,40 @@ module.exports = Element = Node.createVariant
       continue unless component.defaultAttributesToChange?
       result.push(component.defaultAttributesToChange()...)
     return result
+
+
+  # ===========================================================================
+  # Control Points
+  # ===========================================================================
+
+  controlPoints: ->
+    result = []
+    for component in @components()
+      continue unless component.controlPoints?
+      controlPoints = component.controlPoints()
+      for controlPoint in controlPoints
+        attributesToChange = controlPoint.attributesToChange
+        attributesToChange = @allDependencies(attributesToChange)
+        attributesToChange = @onlyNumbers(attributesToChange)
+        controlPoint.attributesToChange = attributesToChange
+      result.push(controlPoints...)
+    return result
+
+
+  # ===========================================================================
+  # Attribute List Helpers
+  # ===========================================================================
+
+  allDependencies: (attributes) ->
+    result = []
+    for attribute in attributes
+      result.push(attribute)
+      result.push(attribute.dependencies()...)
+    return _.unique(result)
+
+  onlyNumbers: (attributes) ->
+    _.filter attributes, (attribute) ->
+      attribute.isNumber()
 
 
   # ===========================================================================

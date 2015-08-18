@@ -35,7 +35,6 @@ View
     Remove from create panel
 
   AttributeRow
-    Highlight attributes that will change when you hover an element in canvas
     Remove a variable
     Reorder/reparent variables
     Constrain a variable within a range
@@ -57,7 +56,6 @@ View
     Add thumbnails everywhere
 
   Canvas
-    Draw control points
     Control text on the canvas (scrubbable numbers text on canvas)
     (Multi-)Touch support
 
@@ -72,4 +70,6 @@ Cleanup
   Can AttributeLabel and AttributeToken be merged?
   Make consistent: first get @props, then @context in views
   Clean up Model
+  Get rid of get in get* methods
+  ControlPoints needs cleanup. Smells: returning {} object, mutating it at Element and Canvas.
 
