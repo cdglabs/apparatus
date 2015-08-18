@@ -1,7 +1,6 @@
 Today
   Remove
     variable
-    element
 
 
 Dataflow
@@ -24,7 +23,6 @@ View
   Menubar
 
   Keyboard events
-    backspace to delete selection
     cmd+z to undo
     other shortcuts based on menubar
 

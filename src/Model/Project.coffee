@@ -52,13 +52,21 @@ module.exports = class Project
 
 
   # ===========================================================================
-  # Create
+  # Actions
   # ===========================================================================
 
   createNewElement: ->
     element = Model.Group.createVariant()
     element.expanded = true
     return element
+
+  removeSelectedElement: ->
+    return unless @selectedParticularElement
+    selectedElement = @selectedParticularElement.element
+    parent = selectedElement.parent()
+    return unless parent
+    parent.removeChild(selectedElement)
+    @select(null)
 
 
   # ===========================================================================

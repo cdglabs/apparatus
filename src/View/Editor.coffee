@@ -1,3 +1,4 @@
+key = require "keymaster"
 R = require "./R"
 Model = require "../Model/Model"
 
@@ -43,13 +44,25 @@ R.create "Editor",
       R.Canvas {}
       # R.EditorCanvasView {shape: State.Editor.topSelected()}
 
-  # componentDidMount: ->
-  #   @_setupKeyboardListeners()
+  componentDidMount: ->
+    @_setupKeyboardListeners()
 
-  # _setupKeyboardListeners: ->
-  #   key "backspace", (e) ->
-  #     e.preventDefault()
-  #     State.Editor.removeSelectedElement()
+  _setupKeyboardListeners: ->
+    key "backspace", (e) =>
+      e.preventDefault()
+      @_removeSelectedElement()
+
+  _removeSelectedElement: ->
+    {editor} = @props
+    project = editor.project
+    project.removeSelectedElement()
+
+
+
+
+
+
+
 
 
 # This wrapper is used in Expression where we need to be able to render
