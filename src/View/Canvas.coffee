@@ -243,21 +243,23 @@ R.create "Canvas",
       else
         return nextSelectDouble
 
-    return {controlPoint, controller, nextSelectDouble, nextSelectSingle}
+    if controlPoint
+      attributesToChange = controlPoint.attributesToChange
+    else if controller
+      attributesToChange = controller.element.attributesToChange()
+    else if nextSelectSingle
+      attributesToChange = nextSelectSingle.element.attributesToChange()
+    else
+      attributesToChange = []
+
+    return {controlPoint, controller, nextSelectDouble, nextSelectSingle, attributesToChange}
 
   _updateHoverAndCursor: (mouseEvent) ->
     {hoverManager} = @context
-    {controlPoint, controller, nextSelectSingle} = @_intent(mouseEvent)
+    {controlPoint, controller, nextSelectSingle, attributesToChange} = @_intent(mouseEvent)
     hoverManager.hoveredParticularElement = nextSelectSingle
     hoverManager.controllerParticularElement = controller
-    if controlPoint
-      hoverManager.attributesToChange = controlPoint.attributesToChange
-    else if controller
-      hoverManager.attributesToChange = controller.element.attributesToChange()
-    else if nextSelectSingle
-      hoverManager.attributesToChange = nextSelectSingle.element.attributesToChange()
-    else
-      hoverManager.attributesToChange = []
+    hoverManager.attributesToChange = attributesToChange
     # TODO: set cursor
 
   _updateSelected: (mouseEvent, isDoubleClick) ->
@@ -275,14 +277,12 @@ R.create "Canvas",
 
   _startAppropriateDrag: (mouseDownEvent) ->
     {project} = @context
-    {controlPoint, controller, nextSelectSingle} = @_intent(mouseDownEvent)
+    {controlPoint, controller, nextSelectSingle, attributesToChange} = @_intent(mouseDownEvent)
 
     if controlPoint
       particularElementToDrag = project.selectedParticularElement
-      attributesToChange = controlPoint.attributesToChange
     else
       particularElementToDrag = controller ? nextSelectSingle
-      attributesToChange = particularElementToDrag?.element.attributesToChange()
 
     if particularElementToDrag
       accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
