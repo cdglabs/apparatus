@@ -282,6 +282,9 @@ canvas {
   display: -ms-flexbox;
   display: flex;
 }
+.AttributeRow.isInherited {
+  opacity: 0.5;
+}
 .AttributeRow.isGoingToChange .cm-number,
 .AttributeRow.isGoingToChange .cm-operator {
   color: #c00;

@@ -17,6 +17,7 @@ R.create "AttributeRow",
 
     R.div {className: R.cx {
       AttributeRow: true
+      isInherited: !attribute.isNovel()
       isWrapped: @_isWrapped()
       isGoingToChange: @_isGoingToChange()
     }},
