@@ -188,8 +188,13 @@ R.create "ExpressionCode",
           if corresponds
             # Update the existing mark.
             @_renderMark(mark, existingMark.el)
-            # Let CodeMirror know that the mark might have changed size.
-            existingMark.changed()
+
+            # Let CodeMirror know that the mark might have changed size. Note:
+            # I commented this out since it doesn't seem to be necessary and
+            # it also seems to slow things down considerably.
+
+            # existingMark.changed()
+
             updatedMarks.push(mark)
             keepExistingMark = true
 
