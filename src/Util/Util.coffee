@@ -3,8 +3,6 @@ numeric = require "numeric"
 
 
 module.exports = Util = {}
-
-Util.jsEvaluate = require "./jsEvaluate"
 Util.Matrix = require "./Matrix"
 
 

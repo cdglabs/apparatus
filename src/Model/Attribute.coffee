@@ -1,6 +1,7 @@
 _ = require "underscore"
 Util = require "../Util/Util"
 Dataflow = require "../Dataflow/Dataflow"
+Evaluator = require "../Evaluator/Evaluator"
 Node = require "./Node"
 Link = require "./Link"
 Model = require "./Model"
@@ -90,7 +91,7 @@ module.exports = Attribute = Node.createVariant
 
     wrapped = @_wrapped()
     try
-      compiled = Util.jsEvaluate(wrapped)
+      compiled = Evaluator.evaluate(wrapped)
     catch error
       @_setError()
       return

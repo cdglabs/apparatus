@@ -1,7 +1,4 @@
-spread = require "./spread"
-
-
-module.exports = jsEvaluate = (jsString) ->
+module.exports = evaluate = (jsString) ->
   return eval(jsString)
 
 
@@ -43,3 +40,6 @@ rgba = (r, g, b, a) ->
   g = Math.round(g * 255)
   b = Math.round(b * 255)
   return "rgba(#{r}, #{g}, #{b}, #{a})"
+
+spread = require "./spread"
+
