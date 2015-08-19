@@ -1,6 +1,5 @@
 Today
   Load file
-  Try relevant -> novel in Outline
   Menubar
   Try dataflow optimization
 
@@ -71,5 +70,4 @@ Cleanup
   Clean up Model
   Get rid of get in get* methods
   ControlPoints needs cleanup. Smells: returning {} object, mutating it at Element and Canvas.
-  Clean up relevantAttributes stuff
 

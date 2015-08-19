@@ -22,7 +22,6 @@ module.exports = class Project
     ]
 
     propsToMemoize = [
-      "allRelevantAttributes"
       "controlledAttributes"
       "implicitlyControlledAttributes"
       "controllableAttributes"
@@ -72,25 +71,6 @@ module.exports = class Project
   # ===========================================================================
   # Memoized attribute sets
   # ===========================================================================
-
-  # An attribute is relevant (should be shown in the outline) if it has a
-  # dependency, is depended on, is controlled, or is a variable.
-  allRelevantAttributes: ->
-    relevantAttributes = []
-    for attribute in @editingElement.descendantAttributes()
-      # Attributes are relevant if they have a dependency or are depended on.
-      referenceAttributes = _.values(attribute.references())
-      relevantAttributes.push(attribute) if referenceAttributes.length > 0
-      for referenceAttribute in referenceAttributes
-        relevantAttributes.push(referenceAttribute)
-      # Variables are relevant.
-      if attribute.isVariantOf(Model.Variable)
-        relevantAttributes.push attribute
-    for element in @editingElement.descendantElements()
-      # Controlled attributes are relevant.
-      relevantAttributes.push(element.controlledAttributes()...)
-
-    return _.unique(relevantAttributes)
 
   controlledAttributes: ->
     return @selectedParticularElement?.element.controlledAttributes() ? []

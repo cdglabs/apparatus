@@ -52,20 +52,6 @@ module.exports = Element = Node.createVariant
         result.push(attribute)
     return result
 
-  # descendantElements are all the childElements in my descendant tree,
-  # including myself.
-  descendantElements: ->
-    result = [this]
-    for childElement in @childElements()
-      result.push(childElement.descendantElements()...)
-    return result
-
-  descendantAttributes: ->
-    result = []
-    for element in @descendantElements()
-      result.push(element.attributes()...)
-    return result
-
 
   # ===========================================================================
   # Actions

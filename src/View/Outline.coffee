@@ -238,36 +238,6 @@ R.create "OutlineChildren",
         R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
 
-
-R.create "RelevantAttributesList",
-  propTypes:
-    element: Model.Element
-
-  contextTypes:
-    project: Model.Project
-
-  render: ->
-    {element} = @props
-    {project} = @context
-
-    relevantAttributes = []
-    allRelevantAttributes = project.allRelevantAttributes()
-    for attribute in element.attributes()
-      if _.contains(allRelevantAttributes, attribute)
-        relevantAttributes.push(attribute)
-
-    R.div {className: "AttributesList"},
-      for attribute in relevantAttributes
-        R.AttributeRow {attribute}
-      if element == project.editingElement
-        R.div {className: "AddVariableRow"},
-          R.button {className: "AddButton Interactive", onClick: @_addVariable}
-
-  _addVariable: ->
-    {element} = @props
-    element.addVariable()
-
-
 R.create "NovelAttributesList",
   propTypes:
     element: Model.Element
