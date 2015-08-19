@@ -90,26 +90,36 @@ canvas {
   box-sizing: border-box;
   position: absolute;
   left: 120px;
-  top: 32px;
+  top: 24px;
   right: 400px;
   bottom: 0;
 }
-.Toolbar {
+.Menubar {
   box-sizing: border-box;
   position: absolute;
-  height: 32px;
+  height: 24px;
   left: 120px;
   right: 400px;
   background-color: #eee;
   top: 0;
   border-bottom: 1px #ccc solid;
-  padding: 6px;
+  padding: 4px;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
 }
-.Toolbar .ToolbarRight {
+.Menubar .MenubarItem {
+  padding: 0 8px;
+  cursor: pointer;
+}
+.Menubar .MenubarItem:hover {
+  color: #09c;
+}
+.Menubar .MenubarSeparator {
+  width: 24px;
+}
+.Menubar .ToolbarRight {
   -webkit-box-flex: 1;
   -webkit-flex-grow: 1;
       -ms-flex-positive: 1;

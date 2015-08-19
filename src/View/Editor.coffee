@@ -40,9 +40,8 @@ R.create "Editor",
       R.CreatePanel {}
       R.Outline {}
       R.Inspector {}
-      # R.ToolbarView {}
+      R.Menubar {}
       R.Canvas {}
-      # R.EditorCanvasView {shape: State.Editor.topSelected()}
 
   componentDidMount: ->
     @_setupKeyboardListeners()

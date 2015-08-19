@@ -71,6 +71,16 @@ module.exports = class Editor
 
 
   # ===========================================================================
+  # File System
+  # ===========================================================================
+
+  saveToFile: ->
+    jsonString = @save()
+    fileName = @project.editingElement.label + ".json"
+    Storage.saveFile(jsonString, fileName, "application/json;charset=utf-8")
+
+
+  # ===========================================================================
   # Revision History
   # ===========================================================================
 

@@ -1,4 +1,9 @@
 Today
+  Load file
+  Try relevant -> novel in Outline
+  Menubar
+  Try dataflow optimization
+
   Remove
     variable
 
@@ -59,7 +64,6 @@ Rename
   Node.childrenOfType -> childNodesVarying
 
 Cleanup
-  jsEvaluate, spread - move them into their own folder?
   Attribute - error handling throw catches everywhere.
   Build process needs cleanup since React is off on its own, vendor is hard-coded, font css is separate, etc.
   Can AttributeLabel and AttributeToken be merged?

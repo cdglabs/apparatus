@@ -97,7 +97,7 @@ canvas
 CreatePanelWidth = 120px
 OutlineWidth = 400px
 InspectorHeight = 50%
-ToolbarHeight = 32px
+MenubarHeight = 24px
 
 .CreatePanel
   box-sizing border-box
@@ -134,21 +134,28 @@ ToolbarHeight = 32px
   box-sizing border-box
   position absolute
   left CreatePanelWidth
-  top ToolbarHeight
+  top MenubarHeight
   right OutlineWidth
   bottom 0
 
-.Toolbar
+.Menubar
   box-sizing border-box
   position absolute
-  height ToolbarHeight
+  height MenubarHeight
   left CreatePanelWidth
   right OutlineWidth
   background-color #eee
   top 0
   border-bottom 1px #ccc solid
-  padding 6px
+  padding 4px
   display flex
+  .MenubarItem
+    padding 0 8px
+    cursor pointer
+    &:hover
+      color #09c
+  .MenubarSeparator
+    width 24px
   .ToolbarRight
     flex-grow 1
     text-align right
