@@ -7,10 +7,6 @@ module.exports = class Project
   constructor: ->
     initialElement = @createNewElement()
 
-    # Testing
-    initialElement.addChild(Model.Rectangle.createVariant())
-    initialElement.addChild(Model.Circle.createVariant())
-
     @editingElement = initialElement
     @selectedParticularElement = null
 
