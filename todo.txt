@@ -1,6 +1,5 @@
 Today
   Load file
-  Menubar
   Try dataflow optimization
 
   Remove
@@ -24,8 +23,6 @@ Model
   Integrate control points into e.g. Model.Shape
 
 View
-  Menubar
-
   Keyboard events
     cmd+z to undo
     other shortcuts based on menubar

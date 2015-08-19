@@ -147,18 +147,7 @@ MenubarHeight = 24px
   background-color #eee
   top 0
   border-bottom 1px #ccc solid
-  padding 4px
-  display flex
-  .MenubarItem
-    padding 0 8px
-    cursor pointer
-    &:hover
-      color #09c
-  .MenubarSeparator
-    width 24px
-  .ToolbarRight
-    flex-grow 1
-    text-align right
+
 
 // ============================================================================
 // Layout "Chrome"
@@ -188,6 +177,30 @@ HeaderSize = 18px
   bottom 0px
   overflow-y auto
   overflow-x hidden
+
+
+// ============================================================================
+// Menubar
+// ============================================================================
+
+.Menubar
+  padding 4px
+  display flex
+  .MenubarItem
+    padding 0 8px
+    cursor pointer
+    &:hover
+      color #09c
+    &.isDisabled
+      cursor default
+      color #aaa
+      &:hover
+        color #aaa
+  .MenubarSeparator
+    width 24px
+  .ToolbarRight
+    flex-grow 1
+    text-align right
 
 
 // ============================================================================

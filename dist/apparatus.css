@@ -103,28 +103,6 @@ canvas {
   background-color: #eee;
   top: 0;
   border-bottom: 1px #ccc solid;
-  padding: 4px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-}
-.Menubar .MenubarItem {
-  padding: 0 8px;
-  cursor: pointer;
-}
-.Menubar .MenubarItem:hover {
-  color: #09c;
-}
-.Menubar .MenubarSeparator {
-  width: 24px;
-}
-.Menubar .ToolbarRight {
-  -webkit-box-flex: 1;
-  -webkit-flex-grow: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
-  text-align: right;
 }
 .Header {
   position: absolute;
@@ -149,6 +127,37 @@ canvas {
   bottom: 0px;
   overflow-y: auto;
   overflow-x: hidden;
+}
+.Menubar {
+  padding: 4px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.Menubar .MenubarItem {
+  padding: 0 8px;
+  cursor: pointer;
+}
+.Menubar .MenubarItem:hover {
+  color: #09c;
+}
+.Menubar .MenubarItem.isDisabled {
+  cursor: default;
+  color: #aaa;
+}
+.Menubar .MenubarItem.isDisabled:hover {
+  color: #aaa;
+}
+.Menubar .MenubarSeparator {
+  width: 24px;
+}
+.Menubar .ToolbarRight {
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  text-align: right;
 }
 .Thumbnail {
   width: 100%;
