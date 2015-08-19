@@ -43,6 +43,15 @@ Util.mouseDownPreventDefault = (e) ->
   for el in document.querySelectorAll(".CodeMirror-focused")
     el.CodeMirror.getInputField().blur()
 
+# textFocus returns a CodeMirror instance or a contenteditable DOM element
+# that is focused or null if nothing is focused.
+Util.textFocus = ->
+  if el = document.querySelector(".CodeMirror-focused")
+    return el.CodeMirror
+  if document.activeElement?.isContentEditable
+    return document.activeElement
+  return null
+
 Util.clearTextFocus = ->
   document.activeElement.blur()
   window.getSelection().removeAllRanges()

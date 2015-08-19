@@ -1,4 +1,3 @@
-key = require "keymaster"
 R = require "./R"
 Model = require "../Model/Model"
 
@@ -42,19 +41,6 @@ R.create "Editor",
       R.Inspector {}
       R.Menubar {}
       R.Canvas {}
-
-  componentDidMount: ->
-    @_setupKeyboardListeners()
-
-  _setupKeyboardListeners: ->
-    key "backspace", (e) =>
-      e.preventDefault()
-      @_removeSelectedElement()
-
-  _removeSelectedElement: ->
-    {editor} = @props
-    project = editor.project
-    project.removeSelectedElement()
 
 
 

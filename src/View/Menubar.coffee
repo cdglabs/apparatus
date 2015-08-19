@@ -1,5 +1,7 @@
+key = require "keymaster"
 R = require "./R"
 Model = require "../Model/Model"
+Util = require "../Util/Util"
 
 
 R.create "Menubar",
@@ -23,10 +25,16 @@ R.create "Menubar",
 
       R.div {className: "MenubarSeparator"}
 
-      R.MenubarItem {title: "Delete", isDisabled: !isSelection, fn: @_todo}
+      R.MenubarItem {title: "Delete", isDisabled: !isSelection, fn: @_removeSelectedElement}
       R.MenubarItem {title: "Group", isDisabled: !isSelection, fn: @_todo}
       R.MenubarItem {title: "Duplicate", isDisabled: !isSelection, fn: @_todo}
       R.MenubarItem {title: "Create Symbol", isDisabled: !isSelection, fn: @_todo}
+
+  componentDidMount: ->
+    key "backspace", (e) =>
+      return if Util.textFocus()
+      e.preventDefault()
+      @_removeSelectedElement()
 
   _new: ->
     {editor} = @context
@@ -39,6 +47,10 @@ R.create "Menubar",
     editor.saveToFile()
 
   _todo: ->
+
+  _removeSelectedElement: ->
+    {project} = @context
+    project.removeSelectedElement()
 
 
 R.create "MenubarItem",
