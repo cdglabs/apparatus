@@ -63,6 +63,9 @@ module.exports = Attribute = Node.createVariant
     # TODO
     return @isNumber()
 
+  isNovel: ->
+    @hasOwnProperty("exprString")
+
   # Returns all referenced attributes recursively. In other words every
   # attribute which, if it changed, would affect me.
   dependencies: ->

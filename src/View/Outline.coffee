@@ -90,7 +90,7 @@ R.create "OutlineItem",
             value: element.label
             setValue: @_setLabelValue
           }
-      R.RelevantAttributesList {element}
+      R.NovelAttributesList {element}
 
   _setLabelValue: (newValue) ->
     @props.element.label = newValue
@@ -267,6 +267,29 @@ R.create "RelevantAttributesList",
     {element} = @props
     element.addVariable()
 
+
+R.create "NovelAttributesList",
+  propTypes:
+    element: Model.Element
+
+  contextTypes:
+    project: Model.Project
+
+  render: ->
+    {element} = @props
+    {project} = @context
+
+    R.div {className: "AttributesList"},
+      for attribute in element.attributes()
+        if attribute.isNovel()
+          R.AttributeRow {attribute}
+      if element == project.editingElement
+        R.div {className: "AddVariableRow"},
+          R.button {className: "AddButton Interactive", onClick: @_addVariable}
+
+  _addVariable: ->
+    {element} = @props
+    element.addVariable()
 
 
 

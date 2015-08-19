@@ -13,7 +13,7 @@ module.exports = class Editor
   _setupProject: ->
     @loadFromLocalStorage()
     if !@project
-      @project = new Model.Project()
+      @createNewProject()
 
   _setupSerializer: ->
     builtInObjects = []
@@ -49,6 +49,9 @@ module.exports = class Editor
     json.version = @version
     jsonString = JSON.stringify(json)
     return jsonString
+
+  createNewProject: ->
+    @project = new Model.Project()
 
 
   # ===========================================================================

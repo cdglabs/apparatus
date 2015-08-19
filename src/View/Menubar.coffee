@@ -8,7 +8,9 @@ R.create "Menubar",
 
   render: ->
     R.div {className: "Menubar"},
-      R.div {className: "MenubarItem", onClick: @_saveFile}, "Save File"
+      R.div {className: "MenubarItem", onClick: @_new}, "New"
+      R.div {className: "MenubarItem", onClick: @_load}, "Load"
+      R.div {className: "MenubarItem", onClick: @_save}, "Save"
 
       R.div {className: "MenubarSeparator"}
 
@@ -22,6 +24,12 @@ R.create "Menubar",
       R.div {className: "MenubarItem"}, "Duplicate"
       R.div {className: "MenubarItem"}, "Create Symbol"
 
-  _saveFile: ->
+  _new: ->
+    {editor} = @context
+    editor.createNewProject()
+
+  _load: ->
+
+  _save: ->
     {editor} = @context
     editor.saveToFile()
