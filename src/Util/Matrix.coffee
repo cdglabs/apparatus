@@ -10,7 +10,7 @@ module.exports = class Matrix
   rotate: (angle) ->
     c = Math.cos(angle)
     s = Math.sin(angle)
-    @transform(c, -s, s, c, 0, 0)
+    @transform(c, s, -s, c, 0, 0)
 
   transform: (a, b, c, d, e, f) ->
     new Matrix(
@@ -66,8 +66,8 @@ Matrix.naturalConstruct = (x, y, sx, sy, rotate) ->
   s = Math.sin(rotate)
   return new Matrix(
     c * sx
-    -s * sx
-    s * sy
+    s * sx
+    -s * sy
     c * sy
     x
     y
