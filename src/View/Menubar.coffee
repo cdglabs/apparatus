@@ -26,7 +26,7 @@ R.create "Menubar",
       R.div {className: "MenubarSeparator"}
 
       R.MenubarItem {title: "Delete", isDisabled: !isSelection, fn: @_removeSelectedElement}
-      R.MenubarItem {title: "Group", isDisabled: !isSelection, fn: @_todo}
+      R.MenubarItem {title: "Group", isDisabled: !isSelection, fn: @_groupSelectedElement}
       R.MenubarItem {title: "Duplicate", isDisabled: !isSelection, fn: @_todo}
       R.MenubarItem {title: "Create Symbol", isDisabled: !isSelection, fn: @_todo}
 
@@ -51,6 +51,10 @@ R.create "Menubar",
   _removeSelectedElement: ->
     {project} = @context
     project.removeSelectedElement()
+
+  _groupSelectedElement: ->
+    {project} = @context
+    project.groupSelectedElement()
 
 
 R.create "MenubarItem",
