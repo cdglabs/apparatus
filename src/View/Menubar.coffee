@@ -41,6 +41,8 @@ R.create "Menubar",
     editor.createNewProject()
 
   _load: ->
+    {editor} = @context
+    editor.loadFromFile()
 
   _save: ->
     {editor} = @context

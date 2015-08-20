@@ -82,6 +82,10 @@ module.exports = class Editor
     fileName = @project.editingElement.label + ".json"
     Storage.saveFile(jsonString, fileName, "application/json;charset=utf-8")
 
+  loadFromFile: ->
+    Storage.loadFile (jsonString) =>
+      @load(jsonString)
+
 
   # ===========================================================================
   # Revision History

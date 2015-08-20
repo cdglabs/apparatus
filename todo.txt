@@ -1,5 +1,4 @@
 Today
-  Load file
   Try dataflow optimization
 
   Remove
@@ -39,6 +38,7 @@ View
     Reorder with drag
 
   Expression
+    a way to "reset", maybe by empty string in expression
     color picker
     autocomplete
     arrow keys between them and EditableText
