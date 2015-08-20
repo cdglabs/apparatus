@@ -1,7 +1,6 @@
 Today
   Useability must-haves
     Undo/redo
-    Outline reorder
     Arrow keys
     Autocomplete
 
@@ -44,9 +43,6 @@ View
     Remove a variable
     Reorder/reparent variables
     Constrain a variable within a range
-
-  Outline
-    Reorder with drag
 
   Expression
     a way to "reset", maybe by empty string in expression

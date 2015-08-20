@@ -51,6 +51,12 @@ R.create "OutlineTree",
     else
       outlineTree
 
+  componentDidMount: ->
+    {element} = @props
+    el = @getDOMNode()
+    # Annotate element for drag reordering.
+    el.element = element
+
 
 R.create "OutlineItem",
   propTypes:
@@ -161,88 +167,74 @@ R.create "OutlineItem",
       onMove: (mouseMoveEvent) =>
         dragManager.drag.x = mouseMoveEvent.clientX - offsetX
         dragManager.drag.y = mouseMoveEvent.clientY - offsetY
-        # TODO
+        dropSpot = @_findDropSpot(dragManager.drag)
+        if dropSpot
+          @_reorderItem(dropSpot)
 
-    # payload = {
-    #   type: "outlineReorder"
-    #   element: @element
-    #   offsetX, offsetY, width, height
-    #   outlineEl
-    # }
+  # _findDropSpot returns a dropSpot object consisting of outlineChildrenEl
+  # (where to insert), beforeOutlineTreeEl (where to insert after, if null
+  # then insert at the end), and quadrance. If nothing is close enough, it
+  # will return null.
+  _findDropSpot: (drag) ->
+    {x, y, outlineEl} = drag
+    dragPosition = [x, y]
 
-    # State.UI.startDrag mouseDownEvent,
-    #   # TODO: Figure out how sticky drags want to work, e.g. have a handle
-    #   # that does the drag, or sticky drag if the item is selected.
-    #   sticky: false
-    #   payload: payload
-    #   onMove: =>
-    #     dropSpot = @_findDropSpot()
-    #     if dropSpot?
-    #       @_reorderItem(dropSpot)
+    # Hide OutlinePlaceholder for the purpose of this calculation.
+    outlinePlaceholderEl = outlineEl.querySelector(".OutlinePlaceholder")
+    outlinePlaceholderEl?.style.display = "none"
 
-  _findDropSpot: ->
-    # dragPayload = State.UI.dragPayload
-    # {outlineEl} = dragPayload
+    # Keep track of the best drop spot.
+    bestDropSpot = {
+      quadrance: 40 * 40 # Threshold to be considered.
+    }
+    checkFit = (droppedPosition, outlineChildrenEl, beforeOutlineTreeEl) =>
+      quadrance = Util.quadrance(dragPosition, droppedPosition)
+      if quadrance < bestDropSpot.quadrance
+        bestDropSpot = {quadrance, outlineChildrenEl, beforeOutlineTreeEl}
 
-    # dragPosition = [
-    #   mouse.x - dragPayload.offsetX
-    #   mouse.y - dragPayload.offsetY
-    # ]
+    # All the places within which we could drop.
+    outlineChildrenEls = outlineEl.querySelectorAll(".OutlineChildren")
 
-    # # Hide OutlinePlaceholder for the purpose of this calculation.
-    # outlinePlaceholderEl = outlineEl.querySelector(".OutlinePlaceholder")
-    # outlinePlaceholderEl?.style.display = "none"
+    for outlineChildrenEl in outlineChildrenEls
+      # Don't try to insert it into itself!
+      continue if Util.closest(outlineChildrenEl, ".OutlineDragging")
 
-    # # Keep track of the best drop spot.
-    # bestDropSpot = {
-    #   quadrance: 40 * 40 # Threshold to be considered.
-    # }
-    # checkFit = (droppedPosition, outlineChildrenEl, beforeOutlineTreeEl) =>
-    #   quadrance = util.quadrance(dragPosition, droppedPosition)
-    #   if quadrance < bestDropSpot.quadrance
-    #     bestDropSpot = {quadrance, outlineChildrenEl, beforeOutlineTreeEl}
+      # Check fit before each existing child.
+      childEls = _.filter(outlineChildrenEl.childNodes, (el) -> Util.matches(el, ".OutlineTree"))
+      for childEl in childEls
+        rect = childEl.getBoundingClientRect()
+        droppedPosition = [rect.left, rect.top]
+        checkFit(droppedPosition, outlineChildrenEl, childEl)
 
-    # # All the places within which we could drop.
-    # outlineChildrenEls = outlineEl.querySelectorAll(".OutlineChildren")
+      # Check fit after the last child.
+      rect = outlineChildrenEl.getBoundingClientRect()
+      droppedPosition = [rect.left, rect.bottom]
+      checkFit(droppedPosition, outlineChildrenEl, null)
 
-    # for outlineChildrenEl in outlineChildrenEls
-    #   # Don't try to insert it into itself!
-    #   continue if util.dom.closest(outlineChildrenEl, ".OutlineDragging")
+    # Clean up by unhiding OutlinePlaceholder
+    outlinePlaceholderEl?.style.display = ""
 
-    #   # Check fit before each existing child.
-    #   childEls = _.filter(outlineChildrenEl.childNodes, (el) -> util.dom.matches(el, ".OutlineTree"))
-    #   for childEl in childEls
-    #     rect = childEl.getBoundingClientRect()
-    #     droppedPosition = [rect.left, rect.top]
-    #     checkFit(droppedPosition, outlineChildrenEl, childEl)
+    if bestDropSpot.outlineChildrenEl
+      return bestDropSpot
+    else
+      return null
 
-    #   # Check fit after the last child.
-    #   rect = outlineChildrenEl.getBoundingClientRect()
-    #   droppedPosition = [rect.left, rect.bottom]
-    #   checkFit(droppedPosition, outlineChildrenEl, null)
-
-    # # Clean up by unhiding OutlinePlaceholder
-    # outlinePlaceholderEl?.style.display = ""
-
-    # if bestDropSpot.outlineChildrenEl
-    #   return bestDropSpot
-    # else
-    #   return null
-
+  # _reorderItem will move my element to a dropSpot. dropSpot should be an
+  # object with outlineChildrenEl (where to insert) and beforeOutlineTreeEl
+  # (where to insert after, if null then insert at the end).
   _reorderItem: (dropSpot) ->
-    # dragPayload = State.UI.dragPayload
-    # {outlineChildrenEl, beforeOutlineTreeEl} = dropSpot
-    # {element} = dragPayload
+    {element} = @props
+    {outlineChildrenEl, beforeOutlineTreeEl} = dropSpot
 
-    # parentElement = outlineChildrenEl.dataFor.element
-
-    # if beforeOutlineTreeEl
-    #   beforeElement = beforeOutlineTreeEl.dataFor.element
-    #   parentElement.removeChild(element)
-    #   index = parentElement.children().indexOf(beforeElement)
-    #   parentElement.addChild(element, index)
-    # else
-    #   parentElement.addChild(element)
+    parentElement = outlineChildrenEl.element
+    if beforeOutlineTreeEl
+      beforeElement = beforeOutlineTreeEl.element
+      if parentElement.children().indexOf(element) != -1
+        parentElement.removeChild(element)
+      index = parentElement.children().indexOf(beforeElement)
+      parentElement.addChild(element, index)
+    else
+      parentElement.addChild(element)
 
 
 R.create "OutlineChildren",
@@ -255,6 +247,12 @@ R.create "OutlineChildren",
     R.div {className: "OutlineChildren"},
       for childElement in element.childElements()
         R.OutlineTree {element: childElement, key: Util.getId(childElement)}
+
+  componentDidMount: ->
+    {element} = @props
+    el = @getDOMNode()
+    # Annotate element for drag reordering.
+    el.element = element
 
 
 
