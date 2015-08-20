@@ -2,6 +2,8 @@ _ = require "underscore"
 
 ###
 
+These are the options you can pass in to DragManager.start:
+
     cursor: (String) Sets the global cursor for the duration of the drag
     gesture.
 

@@ -45,8 +45,6 @@ R.create "FullAttributesList",
     element.addVariable()
 
 
-
-
 R.create "ComponentSection",
   propTypes:
     component: Model.Component
@@ -61,3 +59,28 @@ R.create "ComponentSection",
       R.div {className: "ComponentSectionContent"},
         for attribute in component.attributes()
           R.AttributeRow {attribute, key: Util.getId(attribute)}
+
+
+# NovelAttributesList is used to show attributes in the Outline.
+R.create "NovelAttributesList",
+  propTypes:
+    element: Model.Element
+
+  contextTypes:
+    project: Model.Project
+
+  render: ->
+    {element} = @props
+    {project} = @context
+
+    R.div {className: "AttributesList"},
+      for attribute in element.attributes()
+        if attribute.isNovel()
+          R.AttributeRow {attribute}
+      if element == project.editingElement
+        R.div {className: "AddVariableRow"},
+          R.button {className: "AddButton Interactive", onClick: @_addVariable}
+
+  _addVariable: ->
+    {element} = @props
+    element.addVariable()

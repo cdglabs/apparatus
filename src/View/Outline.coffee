@@ -200,20 +200,19 @@ R.create "OutlineItem",
           @_reorderItem(dropSpot)
 
   # _findDropSpot returns a dropSpot object consisting of outlineChildrenEl
-  # (where to insert), beforeOutlineTreeEl (where to insert after, if null
-  # then insert at the end), and quadrance. If nothing is close enough, it
-  # will return null.
+  # (where to insert) and beforeOutlineTreeEl (where to insert after, if null
+  # then insert at the end). If nothing is close enough, it will return null.
   _findDropSpot: (drag) ->
     {x, y, outlineEl} = drag
     dragPosition = [x, y]
 
-    # Hide OutlinePlaceholder for the purpose of this calculation.
+    # Temporarily hide OutlinePlaceholder for the purpose of this calculation.
     outlinePlaceholderEl = outlineEl.querySelector(".OutlinePlaceholder")
     outlinePlaceholderEl?.style.display = "none"
 
     # Keep track of the best drop spot.
     bestDropSpot = {
-      quadrance: 40 * 40 # Threshold to be considered.
+      quadrance: 40 * 40 # Threshold to be considered close enough to drop.
     }
     checkFit = (droppedPosition, outlineChildrenEl, beforeOutlineTreeEl) =>
       quadrance = Util.quadrance(dragPosition, droppedPosition)
@@ -263,40 +262,3 @@ R.create "OutlineItem",
       parentElement.addChild(element, index)
     else
       parentElement.addChild(element)
-
-
-
-
-
-
-
-
-
-# TODO: Move to another file.
-
-R.create "NovelAttributesList",
-  propTypes:
-    element: Model.Element
-
-  contextTypes:
-    project: Model.Project
-
-  render: ->
-    {element} = @props
-    {project} = @context
-
-    R.div {className: "AttributesList"},
-      for attribute in element.attributes()
-        if attribute.isNovel()
-          R.AttributeRow {attribute}
-      if element == project.editingElement
-        R.div {className: "AddVariableRow"},
-          R.button {className: "AddButton Interactive", onClick: @_addVariable}
-
-  _addVariable: ->
-    {element} = @props
-    element.addVariable()
-
-
-
-
