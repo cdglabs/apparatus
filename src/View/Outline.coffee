@@ -9,7 +9,7 @@ R.create "Outline",
     project: Model.Project
 
   render: ->
-    project = @context.project
+    {project} = @context
     element = project.editingElement
     R.div {className: "Outline"},
       R.div {className: "Header"}, "Outline"
@@ -50,6 +50,23 @@ R.create "OutlineTree",
         R.div {className: "OutlinePlaceholder", style: {height: drag.height}}
     else
       outlineTree
+
+  componentDidMount: ->
+    {element} = @props
+    el = @getDOMNode()
+    # Annotate element for drag reordering.
+    el.element = element
+
+
+R.create "OutlineChildren",
+  propTypes:
+    element: Model.Element
+
+  render: ->
+    {element} = @props
+    R.div {className: "OutlineChildren"},
+      for childElement in element.childElements()
+        R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
   componentDidMount: ->
     {element} = @props
@@ -105,8 +122,10 @@ R.create "OutlineItem",
           }
       R.NovelAttributesList {element}
 
-  _setLabelValue: (newValue) ->
-    @props.element.label = newValue
+
+  # ===========================================================================
+  # Event Logic
+  # ===========================================================================
 
   _onMouseDown: (mouseDownEvent) ->
     target = mouseDownEvent.target
@@ -117,23 +136,27 @@ R.create "OutlineItem",
     @_startDragToReorder(mouseDownEvent)
 
   _onMouseEnter: ->
-    dragManager = @context.dragManager
-    hoverManager = @context.hoverManager
-    element = @props.element
-
+    {element} = @props
+    {dragManager, hoverManager} = @context
     return if dragManager.drag?
     particularElement = new Model.ParticularElement(element)
     hoverManager.hoveredParticularElement = particularElement
 
   _onMouseLeave: ->
-    dragManager = @context.dragManager
-    hoverManager = @context.hoverManager
-
+    {dragManager, hoverManager} = @context
     return if dragManager.drag?
     hoverManager.hoveredParticularElement = null
 
+
+  # ===========================================================================
+  # Actions
+  # ===========================================================================
+
+  _setLabelValue: (newValue) ->
+    @props.element.label = newValue
+
   _onClickTriangle: ->
-    element = @props.element
+    {element} = @props
     element.expanded = !element.expanded
     return
 
@@ -142,6 +165,11 @@ R.create "OutlineItem",
     {project} = @context
     particularElement = new Model.ParticularElement(element)
     project.select(particularElement)
+
+
+  # ===========================================================================
+  # Drag Reorder
+  # ===========================================================================
 
   _startDragToReorder: (mouseDownEvent) ->
     {element} = @props
@@ -237,22 +265,6 @@ R.create "OutlineItem",
       parentElement.addChild(element)
 
 
-R.create "OutlineChildren",
-  propTypes:
-    element: Model.Element
-
-  render: ->
-    element = @props.element
-
-    R.div {className: "OutlineChildren"},
-      for childElement in element.childElements()
-        R.OutlineTree {element: childElement, key: Util.getId(childElement)}
-
-  componentDidMount: ->
-    {element} = @props
-    el = @getDOMNode()
-    # Annotate element for drag reordering.
-    el.element = element
 
 
 
