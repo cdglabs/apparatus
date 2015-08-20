@@ -37,6 +37,8 @@ R.create "Picture",
 
     highlight = (graphic) ->
       particularElement = graphic.particularElement
+      if hoverManager.controllerParticularElement?.isAncestorOf(particularElement)
+        return {color: "#c00", lineWidth: 2.5}
       if project.selectedParticularElement?.isAncestorOf(particularElement)
         return {color: "#09c", lineWidth: 2.5}
       if hoverManager.hoveredParticularElement?.isAncestorOf(particularElement)
