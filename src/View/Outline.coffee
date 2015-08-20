@@ -16,17 +16,23 @@ R.create "Outline",
       R.div {className: "Scroller"},
         R.OutlineTree {element}
 
+
 R.create "OutlineTree",
   propTypes:
     element: Model.Element
 
-  render: ->
-    element = @props.element
-    isExpanded = element.expanded
-    isBeingDragged = false
+  contextTypes:
+    dragManager: R.DragManager
 
-    # dragPayload = State.UI.dragPayload
-    # isBeingDragged = dragPayload?.type == "outlineReorder" and dragPayload.consummated and dragPayload.element == @element
+  render: ->
+    {element} = @props
+    {dragManager} = @context
+
+    isExpanded = element.expanded
+    drag = dragManager.drag
+    isBeingDragged = drag?.type == "outlineReorder" and
+      drag.consummated and
+      drag.element == element
 
     outlineTree = R.div {className: "OutlineTree"},
       R.OutlineItem {element}
@@ -35,15 +41,16 @@ R.create "OutlineTree",
 
     if isBeingDragged
       R.div {},
-        # R.div {className: "OutlineDragging", style: {
-        #   left: mouse.x - dragPayload.offsetX
-        #   top: mouse.y - dragPayload.offsetY
-        #   width: dragPayload.width
-        # }},
-        #   outlineTree
-        # R.div {className: "OutlinePlaceholder", style: {height: dragPayload.height}}
+        R.div {className: "OutlineDragging", style: {
+          left: drag.x
+          top: drag.y
+          width: drag.width
+        }},
+          outlineTree
+        R.div {className: "OutlinePlaceholder", style: {height: drag.height}}
     else
       outlineTree
+
 
 R.create "OutlineItem",
   propTypes:
@@ -70,7 +77,7 @@ R.create "OutlineItem",
         OutlineItem: true
         isSelected, isHovered, isActiveController, isController
       }
-      onMouseDown: @_select
+      onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
     },
@@ -95,6 +102,14 @@ R.create "OutlineItem",
   _setLabelValue: (newValue) ->
     @props.element.label = newValue
 
+  _onMouseDown: (mouseDownEvent) ->
+    target = mouseDownEvent.target
+    return if Util.closest(target, ".Interactive")
+    mouseDownEvent.preventDefault()
+    Util.clearTextFocus()
+    @_select()
+    @_startDragToReorder(mouseDownEvent)
+
   _onMouseEnter: ->
     dragManager = @context.dragManager
     hoverManager = @context.hoverManager
@@ -116,28 +131,37 @@ R.create "OutlineItem",
     element.expanded = !element.expanded
     return
 
-  _select: (mouseDownEvent) ->
-    target = mouseDownEvent.target
-    return if Util.closest(target, ".Interactive")
-
-    element = @props.element
+  _select: ->
+    {element} = @props
+    {project} = @context
     particularElement = new Model.ParticularElement(element)
-    @context.project.select(particularElement)
-
-    Util.mouseDownPreventDefault(mouseDownEvent)
-    # @_startDragToReorder(mouseDownEvent)
+    project.select(particularElement)
 
   _startDragToReorder: (mouseDownEvent) ->
-    # el = @getDOMNode()
-    # outlineTreeEl = util.dom.closest(el, ".OutlineTree")
-    # outlineEl = util.dom.closest(el, ".Outline")
-    # rect = outlineTreeEl.getBoundingClientRect()
+    {element} = @props
+    {dragManager} = @context
 
-    # offsetX = mouseDownEvent.clientX - rect.left
-    # offsetY = mouseDownEvent.clientY - rect.top
+    el = @getDOMNode()
+    outlineTreeEl = Util.closest(el, ".OutlineTree")
+    outlineEl = Util.closest(el, ".Outline")
+    rect = outlineTreeEl.getBoundingClientRect()
 
-    # width = rect.width
-    # height = rect.height
+    offsetX = mouseDownEvent.clientX - rect.left
+    offsetY = mouseDownEvent.clientY - rect.top
+
+    width = rect.width
+    height = rect.height
+
+    dragManager.start mouseDownEvent,
+      type: "outlineReorder"
+      element: element
+      outlineEl: outlineEl
+      width: width
+      height: height
+      onMove: (mouseMoveEvent) =>
+        dragManager.drag.x = mouseMoveEvent.clientX - offsetX
+        dragManager.drag.y = mouseMoveEvent.clientY - offsetY
+        # TODO
 
     # payload = {
     #   type: "outlineReorder"
@@ -221,11 +245,6 @@ R.create "OutlineItem",
     #   parentElement.addChild(element)
 
 
-
-
-
-
-
 R.create "OutlineChildren",
   propTypes:
     element: Model.Element
@@ -237,6 +256,13 @@ R.create "OutlineChildren",
       for childElement in element.childElements()
         R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
+
+
+
+
+
+
+# TODO: Move to another file.
 
 R.create "NovelAttributesList",
   propTypes:

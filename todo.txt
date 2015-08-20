@@ -1,8 +1,19 @@
 Today
+  Useability must-haves
+    Undo/redo
+    Outline reorder
+    Arrow keys
+    Autocomplete
+
+
   Try dataflow optimization
 
-  Remove
-    variable
+
+
+
+Other
+  Prototype mirror box in cardboard
+
 
 
 Dataflow
@@ -67,4 +78,6 @@ Cleanup
   Clean up Model
   Get rid of get in get* methods
   ControlPoints needs cleanup. Smells: returning {} object, mutating it at Element and Canvas.
+  Get rid of Util.mouseDownPreventDefault
+  DragManager should have isConsummated, not consummated
 
