@@ -100,6 +100,13 @@ R.create "AttributeLabel",
           attribute.label = newValue
       }
 
+  componentDidMount: ->
+    # We annotate the DOM element with the attribute in order for autocomplete
+    # to work.
+    {attribute} = @props
+    el = @getDOMNode()
+    el.attributeData = attribute
+
   _onMouseDown: (mouseDownEvent) ->
     return if Util.closest(mouseDownEvent.target, ".EditableTextInline")
 

@@ -229,76 +229,84 @@ R.create "ExpressionCode",
   # ===========================================================================
 
   _showAutocomplete: ->
-    # TODO
+    @mirror.showHint
+      hint: @_hint
+      completeSingle: false
+      # Uncomment below to play with styling in browser inspector.
+      # closeOnUnfocus: false
 
-    # @mirror.showHint
-    #   hint: @_hint
-    #   completeSingle: false
-    #   # Uncomment below to play with styling in browser inspector.
-    #   # closeOnUnfocus: false
+  _shouldShowHint: (token) ->
+    {attribute} = @props
+    return false unless token.type == "variable"
+    letters = token.string
+    references = attribute.references()
+    for own referenceKey, referenceAttribute of references
+      if letters.indexOf(referenceKey) != -1
+        return false
+    return true
 
   _hint: (mirror) ->
     cursor = mirror.getCursor()
     token = mirror.getTokenAt(cursor)
+    return unless @_shouldShowHint(token)
 
-    if token.type == "variable" and token.string.indexOf("$$$") == -1
-      from = CodeMirror.Pos(cursor.line, token.start)
-      to = CodeMirror.Pos(cursor.line, cursor.ch)
-      letters = token.string.toLowerCase()
+    from = CodeMirror.Pos(cursor.line, token.start)
+    to = CodeMirror.Pos(cursor.line, cursor.ch)
+    letters = token.string.toLowerCase()
 
-      # Find possible completions
-      completions = []
+    completions = @_completions(letters, from, to)
 
-      attributeLabelEls = document.querySelectorAll(".AttributeLabel")
-      attributes = _.map attributeLabelEls, (attributeLabelEl) ->
-        attributeLabelEl.dataFor.node
+    return {
+      list: completions
+      from, to
+    }
 
-      attributes = _.unique(attributes)
+  # Given what you have typed so far (`letters`) and a from and to
+  # CodeMirror.Pos, returns a list of completions. Each completion is an
+  # object with a `render(el)` function and a `hint()` function. `render(el)`
+  # should append some DOM to `el`. `hint()` should replace the selection with
+  # the appropriate autocompleted value.
+  #
+  # See: http://codemirror.net/doc/manual.html#addon_show-hint
+  _completions: (letters, from, to) ->
+    {project} = @context
 
-      for attribute in attributes
-        # Need closure on attribute.
-        do (attribute) =>
-          label = attribute.label
-          completionLetters = label.toLowerCase()
-          isMatch = _.every letters, (letter) ->
-            completionLetters.indexOf(letter) != -1
+    attributeLabelEls = document.querySelectorAll(".AttributeLabel")
+    attributes = _.map attributeLabelEls, (attributeLabelEl) =>
+      attributeLabelEl.attributeData
 
-          if isMatch
-            completions.push
-              text: label
-              displayText: label
-              hint: =>
-                mirror.setSelection(from, to)
-                @_replaceSelectionWithAttributeToken(attribute)
+    attributes = _.filter attributes, (attribute) =>
+      label = attribute.label
+      completionLetters = label.toLowerCase()
+      isMatch = _.every letters, (letter) ->
+        completionLetters.indexOf(letter) != -1
+      return isMatch
 
-      # Create new Attribute completion.
-      completions.push
-        text: token.string
-        displayText: "Create Variable: "+token.string
-        hint: =>
-          # Create a new Variable
-          attribute = Model.Attribute.createVariant()
-          attribute.label = token.string
-          attribute.setExpression("0.00")
-          State.Editor.topSelected().addChild(attribute)
+    attributes = _.unique(attributes)
 
-          mirror.setSelection(from, to)
-          @_replaceSelectionWithAttributeToken(attribute)
-
+    completions = _.map attributes, (attribute) =>
       return {
-        list: completions
-        from, to
+        render: (el) =>
+          wrappedReactElement = R.ContextWrapper {
+            context: @context
+            childRender: => R.AttributeToken {attribute}
+          }
+          React.render(wrappedReactElement, el)
+        hint: =>
+          @mirror.setSelection(from, to)
+          @_replaceSelectionWithReference(attribute)
       }
-    else
-      return null
 
-  # Given what you have typed so far (letters), returns a list of completions.
-  # Each completion is an object with...
-  _completions: (letters) ->
-    # return [
-    #   {text: "asdf", displayText: "asdf"}
-    #   {text: "wer"}
-    # ]
+    completions.push {
+      displayText: "Create Variable: #{letters}"
+      hint: =>
+        variable = project.editingElement.addVariable()
+        variable.label = letters
+        @mirror.setSelection(from, to)
+        @_replaceSelectionWithReference(variable)
+    }
+
+    return completions
 
 
   # ===========================================================================

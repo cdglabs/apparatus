@@ -360,6 +360,7 @@ canvas {
 .AttributeLabel,
 .ReferenceToken {
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+  color: #333;
   background-color: #ddd;
   background-image: -webkit-linear-gradient(top, #eee, #ccc);
   background-image: linear-gradient(to bottom, #eee, #ccc);
