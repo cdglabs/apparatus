@@ -292,6 +292,14 @@ R.create "ExpressionCode",
     else
       return null
 
+  # Given what you have typed so far (letters), returns a list of completions.
+  # Each completion is an object with...
+  _completions: (letters) ->
+    # return [
+    #   {text: "asdf", displayText: "asdf"}
+    #   {text: "wer"}
+    # ]
+
 
   # ===========================================================================
   # Number Scrubbing

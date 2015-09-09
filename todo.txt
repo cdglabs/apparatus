@@ -4,15 +4,7 @@ Today
     Arrow keys
     Autocomplete
 
-
   Try dataflow optimization
-
-
-
-
-Other
-  Prototype mirror box in cardboard
-
 
 
 Dataflow
@@ -77,3 +69,4 @@ Cleanup
   Get rid of Util.mouseDownPreventDefault
   DragManager should have isConsummated, not consummated
 
+make stylus include the relevant css so we don't have references into node_modules
