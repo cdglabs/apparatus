@@ -207,8 +207,13 @@ module.exports = Element = Node.createVariant
     return graphic
 
   allGraphics: ->
+    return [] if @_isBeyondMaxDepth()
     result = @graphic.asSpread()
     if result instanceof Dataflow.Spread
       return result.flattenToArray()
     else
       return [result]
+
+  _isBeyondMaxDepth: ->
+    # This might want to be adjustable somewhere rather than hard coded here.
+    return @depth() > 20

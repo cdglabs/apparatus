@@ -252,6 +252,9 @@ module.exports = Node = {
   childOfType: (type) ->
     _.find @children(), (child) -> child.isVariantOf(type)
 
+  depth: ->
+    return 0 if !@parent()
+    return 1 + @parent().depth()
 
 }
 

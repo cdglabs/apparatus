@@ -148,3 +148,6 @@ Util.charToLineCh = (string, char) ->
   stringUpToChar = string.substr(0, char)
   lines = stringUpToChar.split("\n")
   return {line: lines.length-1, ch: _.last(lines).length}
+
+Util.isNumberString = (string) ->
+  return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(string)

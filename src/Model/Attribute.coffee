@@ -9,26 +9,40 @@ Model = require "./Model"
 
 module.exports = Attribute = Node.createVariant
   constructor: ->
-    # Call "super"
+    # Call "super" constructor
     Node.constructor.apply(this, arguments)
 
-    @__isDirty = true
+    @value = Dataflow.cell(@_value.bind(this))
 
-  value: ->
-    if @__isDirty
-      @_compile()
+  _value: ->
+    # Optimization
+    if @isNumber()
+      return parseFloat(@exprString)
+
+    if @_isDirty()
+      @_updateCompiledExpression()
+
+    referenceValues = _.mapObject @references(), (referenceAttribute) ->
+      referenceAttribute.value()
+
     try
-      return @_fn()
+      return @__compiledExpression.evaluate(referenceValues)
     catch error
       if error instanceof Dataflow.UnresolvedSpreadError
         throw error
       else
         return error
 
-  _setDirty: ->
-    @__isDirty = true
-    for variant in @variants()
-      variant._setDirty()
+  _isDirty: ->
+    return true if !@hasOwnProperty("__compiledExpression")
+    return true if @__compiledExpression.exprString != @exprString
+    return false
+
+  _updateCompiledExpression: ->
+    compiledExpression = new CompiledExpression(this)
+    if compiledExpression.isSyntaxError
+      compiledExpression.fn = @__compiledExpression?.fn ? -> new Error("Syntax error")
+    @__compiledExpression = compiledExpression
 
   setExpression: (exprString, references={}) ->
     @exprString = String(exprString)
@@ -44,8 +58,6 @@ module.exports = Attribute = Node.createVariant
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
 
-    @_setDirty()
-
   references: ->
     references = {}
     for referenceLink in @childrenOfType(Model.ReferenceLink)
@@ -57,7 +69,7 @@ module.exports = Attribute = Node.createVariant
   hasReferences: -> _.any(@references(), -> true)
 
   isNumber: ->
-    return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(@exprString)
+    return Util.isNumberString(@exprString)
 
   isTrivial: ->
     # TODO
@@ -78,64 +90,62 @@ module.exports = Attribute = Node.createVariant
     dependencies = _.unique(dependencies)
     return dependencies
 
-  # ===========================================================================
-  # Compiling
-  # ===========================================================================
 
-  _compile: ->
+
+
+
+class CompiledExpression
+  constructor: (@attribute) ->
+    @exprString = @attribute.exprString
+    @referenceKeys = _.keys(@attribute.references())
+
     if @exprString == ""
-      @_setError()
+      @_setSyntaxError()
       return
 
-    if @isNumber()
+    if Util.isNumberString(@exprString)
       value = parseFloat(@exprString)
-      @_setFnConstant(value)
+      @_setConstant(value)
       return
 
     wrapped = @_wrapped()
     try
       compiled = Evaluator.evaluate(wrapped)
     catch error
-      @_setError()
+      @_setSyntaxError()
       return
 
     compiled = @_wrapFunctionInSpreadCheck(compiled)
 
-    if !@hasReferences()
+    if @referenceKeys.length == 0
       try
         value = compiled()
-      catch
-        @_setError()
+      catch error
+        @_setConstant(error)
         return
-      @_setFnConstant(value)
+      @_setConstant(value)
       return
 
-    @_setFn =>
-      referenceValues = _.mapObject @references(), (attribute) ->
-        attribute.value()
-      return compiled(referenceValues)
+    @_setFn(compiled)
+
+  _setSyntaxError: ->
+    @isSyntaxError = true
+
+  _setConstant: (value) ->
+    @isConstant = true
+    @fn = -> value
 
   _setFn: (fn) ->
-    @_isSyntaxError = false
-    @_fn = Dataflow.cell(fn)
-    @__isDirty = false
+    @fn = fn
 
-  _setFnConstant: (value) ->
-    if value instanceof Dataflow.Spread
-      @_setFn -> value
-    else
-      @_fn = -> value
-      @__isDirty = false
-
-  _setError: ->
-    @_isSyntaxError = true
-    @__isDirty = false
+  evaluate: (referenceValues) ->
+    return @fn(referenceValues)
 
   _wrapped: ->
     result    = "'use strict';\n"
     result   += "(function ($$$referenceValues) {\n"
 
-    for referenceKey, referenceAttribute of @references()
+    for referenceKey in @referenceKeys
       result += "  var #{referenceKey} = $$$referenceValues.#{referenceKey};\n"
 
     if @exprString.indexOf("return") == -1
@@ -150,5 +160,7 @@ module.exports = Attribute = Node.createVariant
     return =>
       result = fn(arguments...)
       if result instanceof Dataflow.Spread
-        result.origin = this
+        result.origin = @attribute
       return result
+
+
