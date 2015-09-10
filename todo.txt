@@ -17,10 +17,13 @@ Storage
 
 Misc
   Import JSON
+  Import file (like load but add it to current toolbox)
+  Create Path, Add Anchor menu items (in lieu of pen tool)
 
 Model
   Image Element
   Better naming/labeling system (Figure A, Rectangle 3, etc.)
+    Count all the Elements with the same label that are previous (in "document" order) and then number the element accordingly.
   Integrate control points into e.g. Model.Shape
 
 View
@@ -40,6 +43,10 @@ View
     a way to "reset", maybe by empty string in expression
     color picker
     autocomplete
+      highlight (as in hover) attribute when its selected in autocomplete menu
+      better styling for "create variable"
+      autocomplete built-in functions (sin, etc)
+      click an option to autocomplete
     arrow keys between them and EditableText
     disable CodeMirror undo (once Apparatus undo works)
     displaying expression values
@@ -52,6 +59,7 @@ View
 
   Canvas
     Control text on the canvas (scrubbable numbers text on canvas)
+    Edit text directly on canvas (need to emulate text cursor)
     (Multi-)Touch support
 
 Rename
