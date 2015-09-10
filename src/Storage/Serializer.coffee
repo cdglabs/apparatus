@@ -24,19 +24,16 @@ module.exports = class Serializer
   jsonify: (rootValue) ->
     objects = {} # id : json
 
-    jsonifyValue = (value, force=false) =>
+    jsonifyValue = (value) =>
       if _.isArray(value)
         return jsonifyArray(value)
       else if _.isObject(value)
-        if force
-          return jsonifyObject(value)
-        else
-          return referenceTo(value)
+        return referenceTo(value)
       else
         return value
 
     jsonifyArray = (array) =>
-      return _.map array, (childValue) => jsonifyValue(childValue)
+      return jsonifyValue(childValue) for childValue in array
 
     referenceTo = (object) =>
       id = Util.getId(object)
@@ -44,7 +41,7 @@ module.exports = class Serializer
         # We'll need to jsonify the object and add it to objects. First, set a
         # placeholder value so recursive references work.
         objects[id] = "PROCESSING"
-        objects[id] = jsonifyValue(object, true)
+        objects[id] = jsonifyObject(object)
       return {__ref: id}
 
     jsonifyObject = (object) =>
