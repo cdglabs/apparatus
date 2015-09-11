@@ -22,6 +22,8 @@ R.create "ExpressionCode",
     # won't need ContextWrapper so we can get rid of the ones marked
     # extraneous.
 
+  mixins: [R.AnnotateMixin]
+
   render: ->
     attribute = @props.attribute
 
@@ -30,12 +32,13 @@ R.create "ExpressionCode",
       onMouseUp: @_onMouseUp
     }
 
+  annotation: ->
+    # We annotate with a reference to this to support AttributeLabel's "click
+    # an attribute to transclude it" feature.
+    {component: this}
+
   componentDidMount: ->
     el = @getDOMNode()
-
-    # We annotate the dom node to support the "click an attribute to
-    # transclude it" feature.
-    el.component = this
 
     @mirror = CodeMirror(el, {
       mode: "javascript"
@@ -273,7 +276,7 @@ R.create "ExpressionCode",
 
     attributeLabelEls = document.querySelectorAll(".AttributeLabel")
     attributes = _.map attributeLabelEls, (attributeLabelEl) =>
-      attributeLabelEl.attributeData
+      attributeLabelEl.annotation.attribute
 
     attributes = _.filter attributes, (attribute) =>
       label = attribute.label

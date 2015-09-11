@@ -15,6 +15,22 @@ for own key, value of React.DOM
 R.cx = (classNames) ->
   Object.keys(classNames).filter((className) -> classNames[className]).join(" ")
 
+# AnnotateMixin is used to annotate the created DOM Node with some extra
+# information in an "expando" property called annotation. This is often useful
+# when coordinating interactions with other Components. When using this Mixin,
+# leave a note saying why the annotation is needed.
+R.AnnotateMixin = {
+  componentDidMount: -> @_annotateDOMNode()
+  componentDidUpdate: -> @_annotateDOMNode()
+  componentWillUnmount: -> @_clearAnnotation()
+  _annotateDOMNode: ->
+    el = @getDOMNode()
+    el.annotation = @annotation()
+  _clearAnnotation: ->
+    el = @getDOMNode()
+    delete el.annotation
+}
+
 
 R.create = (name, spec) ->
   # Component.displayName is used by React in its debugging messages.

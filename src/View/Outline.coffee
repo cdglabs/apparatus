@@ -24,6 +24,8 @@ R.create "OutlineTree",
   contextTypes:
     dragManager: R.DragManager
 
+  mixins: [R.AnnotateMixin]
+
   render: ->
     {element} = @props
     {dragManager} = @context
@@ -51,16 +53,16 @@ R.create "OutlineTree",
     else
       outlineTree
 
-  componentDidMount: ->
-    {element} = @props
-    el = @getDOMNode()
-    # Annotate element for drag reordering.
-    el.element = element
+  annotation: ->
+    # Used for drag reording.
+    {element: @props.element}
 
 
 R.create "OutlineChildren",
   propTypes:
     element: Model.Element
+
+  mixins: [R.AnnotateMixin]
 
   render: ->
     {element} = @props
@@ -68,11 +70,9 @@ R.create "OutlineChildren",
       for childElement in element.childElements()
         R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
-  componentDidMount: ->
-    {element} = @props
-    el = @getDOMNode()
-    # Annotate element for drag reordering.
-    el.element = element
+  annotation: ->
+    # Used for drag reording.
+    {element: @props.element}
 
 
 R.create "OutlineItem",
@@ -253,9 +253,9 @@ R.create "OutlineItem",
     {element} = @props
     {outlineChildrenEl, beforeOutlineTreeEl} = dropSpot
 
-    parentElement = outlineChildrenEl.element
+    parentElement = outlineChildrenEl.annotation.element
     if beforeOutlineTreeEl
-      beforeElement = beforeOutlineTreeEl.element
+      beforeElement = beforeOutlineTreeEl.annotation.element
       if parentElement.children().indexOf(element) != -1
         parentElement.removeChild(element)
       index = parentElement.children().indexOf(beforeElement)

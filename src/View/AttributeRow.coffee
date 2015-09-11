@@ -78,6 +78,8 @@ R.create "AttributeLabel",
     dragManager: R.DragManager
     hoverManager: R.HoverManager
 
+  mixins: [R.AnnotateMixin]
+
   render: ->
     {attribute} = @props
     {hoverManager} = @context
@@ -100,12 +102,9 @@ R.create "AttributeLabel",
           attribute.label = newValue
       }
 
-  componentDidMount: ->
-    # We annotate the DOM element with the attribute in order for autocomplete
-    # to work.
-    {attribute} = @props
-    el = @getDOMNode()
-    el.attributeData = attribute
+  annotation: ->
+    # For autocomplete to find all the attributes on the screen.
+    {attribute: @props.attribute}
 
   _onMouseDown: (mouseDownEvent) ->
     return if Util.closest(mouseDownEvent.target, ".EditableTextInline")
@@ -132,7 +131,7 @@ R.create "AttributeLabel",
     focusedCodeMirrorEl = document.querySelector(".CodeMirror-focused")
     return unless focusedCodeMirrorEl
     expressionCodeEl = Util.closest(focusedCodeMirrorEl, ".ExpressionCode")
-    expressionCode = expressionCodeEl.component
+    expressionCode = expressionCodeEl.annotation.component
     expressionCode.transcludeAttribute(attribute)
 
   _onMouseEnter: (e) ->
