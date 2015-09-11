@@ -10,7 +10,7 @@ R.create "Menubar",
     project: Model.Project
 
   render: ->
-    {project} = @context
+    {editor, project} = @context
     isSelection = project.selectedParticularElement?
 
     R.div {className: "Menubar"},
@@ -20,8 +20,8 @@ R.create "Menubar",
 
       R.div {className: "MenubarSeparator"}
 
-      R.MenubarItem {title: "Undo", isDisabled: true, fn: @_todo}
-      R.MenubarItem {title: "Redo", isDisabled: true, fn: @_todo}
+      R.MenubarItem {title: "Undo", isDisabled: !editor.isUndoable(), fn: @_undo}
+      R.MenubarItem {title: "Redo", isDisabled: !editor.isRedoable(), fn: @_redo}
 
       R.div {className: "MenubarSeparator"}
 
@@ -47,6 +47,14 @@ R.create "Menubar",
   _save: ->
     {editor} = @context
     editor.saveToFile()
+
+  _undo: ->
+    {editor} = @context
+    editor.undo()
+
+  _redo: ->
+    {editor} = @context
+    editor.redo()
 
   _todo: ->
 
