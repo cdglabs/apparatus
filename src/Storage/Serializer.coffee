@@ -33,7 +33,7 @@ module.exports = class Serializer
         return value
 
     jsonifyArray = (array) =>
-      return jsonifyValue(childValue) for childValue in array
+      return (jsonifyValue(childValue) for childValue in array)
 
     referenceTo = (object) =>
       id = Util.getId(object)

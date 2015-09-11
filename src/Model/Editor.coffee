@@ -9,6 +9,7 @@ module.exports = class Editor
   constructor: ->
     @_setupSerializer()
     @_setupProject()
+    @_setupRevision()
 
   _setupProject: ->
     @loadFromLocalStorage()
@@ -63,6 +64,7 @@ module.exports = class Editor
   saveToLocalStorage: ->
     jsonString = @save()
     window.localStorage[@localStorageName] = jsonString
+    return jsonString
 
   loadFromLocalStorage: ->
     jsonString = window.localStorage[@localStorageName]
@@ -91,8 +93,46 @@ module.exports = class Editor
   # Revision History
   # ===========================================================================
 
+  _setupRevision: ->
+    # @current is a JSON string representing the current state. @undoStack and
+    # @redoStack are arrays of such JSON strings.
+    @current = @save()
+    @undoStack = []
+    @redoStack = []
+    @maxUndoStackSize = 100
+
   checkpoint: ->
+    jsonString = @saveToLocalStorage()
+    return if @current == jsonString
+    @undoStack.push(@current)
+    if @undoStack.length > @maxUndoStackSize
+      @undoStack.shift()
+    @redoStack = []
+    @current = jsonString
+
+  undo: ->
+    return unless @isUndoable()
+    @redoStack.push(@current)
+    @current = @undoStack.pop()
+    @load(@current)
     @saveToLocalStorage()
 
-  # TODO: undo, redo
+  redo: ->
+    return unless @isRedoable()
+    @undoStack.push(@current)
+    @current = @redoStack.pop()
+    @load(@current)
+    @saveToLocalStorage()
+
+  isUndoable: ->
+    return @undoStack.length > 0
+
+  isRedoable: ->
+    return @redoStack.length > 0
+
+
+
+
+
+
 
