@@ -1,80 +1,72 @@
-Today
-  Useability must-haves
-    Undo/redo
-    Arrow keys
-    Autocomplete
+Priority Features:
 
-  Try dataflow optimization
+Arrow keys between code fields
+Import file (like load file but add it to the current toolbox)
+Create Path, Add Anchor menu items (in lieu of pen tool)
+Better naming/labeling system (Figure A, Rectangle 3, etc.)
+  Count all the Elements with the same label that are previous (in "document" order) and then number the element accordingly.
 
 
-Dataflow
-  Test if we even need Dataflow memoization anymore...
-  Thoughts on optimization
-    Nested spreads seem to slow things down considerably. I'm not sure if it's all the nested try-catch statements or what. One way to avoid having try-catch to determine spread dependencies would be if cells manually declared their cell dependencies. That is, each cell would have a function for running it and a function that would return a list of cells it depends on. Then when you evaluate, you'd first evaluate the dependencies and if any of those were spreads you would spread the function in question.
 
-Storage
-  undo/redo
 
-Misc
-  Import JSON
-  Import file (like load but add it to current toolbox)
-  Create Path, Add Anchor menu items (in lieu of pen tool)
 
-Model
-  Image Element
-  Better naming/labeling system (Figure A, Rectangle 3, etc.)
-    Count all the Elements with the same label that are previous (in "document" order) and then number the element accordingly.
-  Integrate control points into e.g. Model.Shape
+Features:
 
-View
-  Keyboard events
-    cmd+z to undo
-    other shortcuts based on menubar
+Autocomplete
+  highlight (as in hover) attribute when its selected in autocomplete menu
+  better styling for "create variable"
+  autocomplete built-in functions (sin, etc)
+  click an option to autocomplete
+Import JSON
+Pen tool
+Image Element
+Keyboard events
+  Cmd+z to undo
+  Other shortcuts based on menubar
+Create panel thumbnails should have auto view matrix
+Variable manipulation
+  Remove a variable
+  Reorder/reparent variable
+  Constrain a variable within a range
+  Reset a variable/attribute (e.g. by empty string in expression)
+Color picker in code view
+Disable CodeMirror undo
+Better display of expression values
+  highlight the appropriate spread selection (and hover)
+  click to select that particular element
+Add thumbnails to Outline
+Scrubbably numbers in canvas
+Edit text directly on canvas (need to emulate text cursor)
+Multitouch support on canvas
 
-  Create Panel
-    Thumbnail with auto view matrix
 
-  AttributeRow
-    Remove a variable
-    Reorder/reparent variables
-    Constrain a variable within a range
 
-  Expression
-    a way to "reset", maybe by empty string in expression
-    color picker
-    autocomplete
-      highlight (as in hover) attribute when its selected in autocomplete menu
-      better styling for "create variable"
-      autocomplete built-in functions (sin, etc)
-      click an option to autocomplete
-    arrow keys between them and EditableText
-    disable CodeMirror undo (once Apparatus undo works)
-    displaying expression values
-      highlight the appropriate spread selection (and hover)
-      click to select that particularElement
+Cleanup:
 
-  Picture
-    Need to figure out all the different thumbnail needs, then refactor
-    Add thumbnails everywhere
-
-  Canvas
-    Control text on the canvas (scrubbable numbers text on canvas)
-    Edit text directly on canvas (need to emulate text cursor)
-    (Multi-)Touch support
-
+Integrate control points into e.g. Model.Shape
+  Smells: returning {} object, mutating it at Element and Canvas.
+Picture view
+  Need to figure out all the different thumbnail needs, then refactor
 Rename
   Node.children -> childNodes
   Node.childrenOfType -> childNodesVarying
+Attribute/CompiledExpression
+Build process
+  React is off on its own
+  vendor is hard-coded
+  font css is separate
+  built css has references into node_modules (for code mirror)
+Can AttributeLabel and AttributeToken be merged?
+Make consistent: first get @props, then @context in views
+Clean up Model.coffee
+Get rid of all get* methods (eliminate the get prefix)
+Get rid of Util.mouseDownPreventDefault
+DragManager.isConsummated, not consummated
 
-Cleanup
-  Attribute - error handling throw catches everywhere.
-  Build process needs cleanup since React is off on its own, vendor is hard-coded, font css is separate, etc.
-  Can AttributeLabel and AttributeToken be merged?
-  Make consistent: first get @props, then @context in views
-  Clean up Model
-  Get rid of get in get* methods
-  ControlPoints needs cleanup. Smells: returning {} object, mutating it at Element and Canvas.
-  Get rid of Util.mouseDownPreventDefault
-  DragManager should have isConsummated, not consummated
 
-make stylus include the relevant css so we don't have references into node_modules
+
+
+Optimizations:
+
+Get rid of try-catch for dependency management
+  Nested spreads seem to slow things down considerably. I'm not sure if it's all the nested try-catch statements or what. One way to avoid having try-catch to determine spread dependencies would be if cells manually declared their cell dependencies. That is, each cell would have a function for running it and a function that would return a list of cells it depends on. Then when you evaluate, you'd first evaluate the dependencies and if any of those were spreads you would spread the function in question.
