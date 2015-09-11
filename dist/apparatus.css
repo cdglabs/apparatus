@@ -129,6 +129,10 @@ canvas {
   overflow-x: hidden;
 }
 .Menubar {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   padding: 4px;
   display: -webkit-box;
   display: -webkit-flex;
