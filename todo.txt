@@ -5,7 +5,8 @@ Import file (like load file but add it to the current toolbox)
 Create Path, Add Anchor menu items (in lieu of pen tool)
 Better naming/labeling system (Figure A, Rectangle 3, etc.)
   Count all the Elements with the same label that are previous (in "document" order) and then number the element accordingly.
-
+Show "context" in attribute (element where a token came from)
+  Need to disambiguate with name clashes
 
 
 

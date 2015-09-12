@@ -90,6 +90,11 @@ module.exports = Attribute = Node.createVariant
     dependencies = _.unique(dependencies)
     return dependencies
 
+  parentElement: ->
+    result = @parent()
+    until result.isVariantOf(Model.Element)
+      result = result.parent()
+    return result
 
 
 

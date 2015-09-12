@@ -89,6 +89,6 @@ R.create "DragHint",
             left: drag.x + 5
             top:  drag.y + 5
         },
-          R.AttributeToken {attribute: drag.attribute}
+          R.AttributeToken {attribute: drag.attribute, contextElement: null}
 
 

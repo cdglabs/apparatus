@@ -56,6 +56,9 @@ R.create "ExpressionCode",
       lineWrapping: true
       scrollbarStyle: "null"
 
+      # Disable undo
+      undoDepth: 0
+
       # # Extra key handlers
       # extraKeys: @extraKeys
     })
@@ -166,7 +169,7 @@ R.create "ExpressionCode",
         render = ->
           R.AttributeToken {
             attribute: referenceAttribute
-            # contextAttribute: attribute
+            contextElement: attribute.parentElement()
           }
         marks.push {from, to, render}
     return marks
@@ -272,32 +275,25 @@ R.create "ExpressionCode",
   #
   # See: http://codemirror.net/doc/manual.html#addon_show-hint
   _completions: (letters, from, to) ->
+    {attribute} = @props
     {project} = @context
 
-    attributeLabelEls = document.querySelectorAll(".AttributeLabel")
-    attributes = _.map attributeLabelEls, (attributeLabelEl) =>
-      attributeLabelEl.annotation.attribute
+    matchingAttributes = @_matchingAttributes(letters)
 
-    attributes = _.filter attributes, (attribute) =>
-      label = attribute.label
-      completionLetters = label.toLowerCase()
-      isMatch = _.every letters, (letter) ->
-        completionLetters.indexOf(letter) != -1
-      return isMatch
-
-    attributes = _.unique(attributes)
-
-    completions = _.map attributes, (attribute) =>
+    completions = _.map matchingAttributes, (matchingAttribute) =>
       return {
         render: (el) =>
           wrappedReactElement = R.ContextWrapper {
             context: @context
-            childRender: => R.AttributeToken {attribute}
+            childRender: => R.AttributeToken {
+              attribute: matchingAttribute
+              contextElement: attribute.parentElement()
+            }
           }
           React.render(wrappedReactElement, el)
         hint: =>
           @mirror.setSelection(from, to)
-          @_replaceSelectionWithReference(attribute)
+          @_replaceSelectionWithReference(matchingAttribute)
       }
 
     completions.push {
@@ -310,6 +306,22 @@ R.create "ExpressionCode",
     }
 
     return completions
+
+  _matchingAttributes: (letters) ->
+    attributeLabelEls = document.querySelectorAll(".AttributeLabel")
+    matchingAttributes = _.map attributeLabelEls, (attributeLabelEl) =>
+      attributeLabelEl.annotation.attribute
+
+    matchingAttributes = _.filter matchingAttributes, (attribute) =>
+      label = attribute.label
+      completionLetters = label.toLowerCase()
+      isMatch = _.every letters, (letter) ->
+        completionLetters.indexOf(letter) != -1
+      return isMatch
+
+    matchingAttributes = _.unique(matchingAttributes)
+
+    return matchingAttributes
 
 
   # ===========================================================================

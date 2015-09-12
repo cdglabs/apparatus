@@ -8,6 +8,8 @@ module.exports = spread = (start, end, increment=1) ->
 
   if increment == 0
     throw "Spread increment cannot be 0"
+  if !_.isFinite(increment)
+    throw "Spread increment must be finite"
 
   n = (end - start) / increment
   array = (start + increment * i for i in [0 ... n])

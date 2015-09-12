@@ -149,7 +149,7 @@ R.create "AttributeLabel",
 R.create "AttributeToken",
   propTypes:
     attribute: Model.Attribute
-    # contextAttribute: {optional: Model.Attribute}
+    contextElement: "any" # TODO: should be Model.Element or null
 
   contextTypes:
     dragManager: R.DragManager
@@ -167,22 +167,19 @@ R.create "AttributeToken",
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
     },
-      attribute.label
+      @_label()
 
-  # # TODO: This helper should be moved somewhere else (Node?)
-  # _parentElement: (node) ->
-  #   return null if !node?
-  #   return node if node.isVariantOf(Model.Element)
-  #   return @_parentElement(node.parent())
-
-  # _label: ->
-  #   if @contextAttribute
-  #     contextElement = @_parentElement(@contextAttribute)
-  #     element = @_parentElement(@attribute)
-  #     isSameContext = element.isAncestorOf(contextElement)
-  #     if !isSameContext
-  #       return @attribute.parent().label + "’s " + @attribute.label
-  #   return @attribute.label
+  _label: ->
+    {attribute, contextElement} = @props
+    parentElement = attribute.parentElement()
+    if contextElement
+      isSameContext = parentElement.isAncestorOf(contextElement)
+    else
+      isSameContext = false
+    if isSameContext
+      return attribute.label
+    else
+      return "#{parentElement.label}’s #{attribute.label}"
 
   _onMouseEnter: (e) ->
     {attribute} = @props
