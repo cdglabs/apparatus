@@ -27,8 +27,8 @@ R.create "Menubar",
 
       R.MenubarItem {title: "Delete", isDisabled: !isSelection, fn: @_removeSelectedElement}
       R.MenubarItem {title: "Group", isDisabled: !isSelection, fn: @_groupSelectedElement}
-      R.MenubarItem {title: "Duplicate", isDisabled: true, fn: @_todo}
-      R.MenubarItem {title: "Create Symbol", isDisabled: true, fn: @_todo}
+      # R.MenubarItem {title: "Duplicate", isDisabled: !isSelection, fn: @_duplicateSelectedElement}
+      R.MenubarItem {title: "Create Symbol", isDisabled: !isSelection, fn: @_createSymbolFromSelectedElement}
 
   componentDidMount: ->
     key "backspace", (e) =>
@@ -65,6 +65,14 @@ R.create "Menubar",
   _groupSelectedElement: ->
     {project} = @context
     project.groupSelectedElement()
+
+  _duplicateSelectedElement: ->
+    {project} = @context
+    project.duplicateSelectedElement()
+
+  _createSymbolFromSelectedElement: ->
+    {project} = @context
+    project.createSymbolFromSelectedElement()
 
 
 R.create "MenubarItem",

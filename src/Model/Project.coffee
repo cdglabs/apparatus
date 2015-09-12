@@ -74,6 +74,34 @@ module.exports = class Project
     group.addChild(selectedElement)
     @select(new Model.ParticularElement(group))
 
+  duplicateSelectedElement: ->
+    # This implementation is a little kooky in that it creates a master that
+    # is not in createPanelElements. This leads to weirdness with showing
+    # novel attributes in the right sidebar.
+    return unless @selectedParticularElement
+    selectedElement = @selectedParticularElement.element
+    parent = selectedElement.parent()
+    return unless parent
+    firstClone = selectedElement.createVariant()
+    secondClone = selectedElement.createVariant()
+    parent.replaceChildWith(selectedElement, firstClone)
+    index = parent.children().indexOf(firstClone)
+    parent.addChild(secondClone, index+1)
+    @select(new Model.ParticularElement(secondClone))
+
+  createSymbolFromSelectedElement: ->
+    return unless @selectedParticularElement
+    selectedElement = @selectedParticularElement.element
+    parent = selectedElement.parent()
+    return unless parent
+    master = selectedElement
+    variant = selectedElement.createVariant()
+    parent.replaceChildWith(selectedElement, variant)
+    @select(new Model.ParticularElement(variant))
+    # Insert master into createPanelElements.
+    index = @createPanelElements.indexOf(@editingElement)
+    @createPanelElements.splice(index, 0, master)
+
 
   # ===========================================================================
   # Memoized attribute sets
