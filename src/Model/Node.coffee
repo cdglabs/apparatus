@@ -256,6 +256,11 @@ module.exports = Node = {
     return 0 if !@parent()
     return 1 + @parent().depth()
 
+  replaceChildWith: (childToReplace, replacementNode) ->
+    index = @children().indexOf(childToReplace)
+    @removeChild(childToReplace)
+    @addChild(replacementNode, index)
+
 }
 
 Node.constructor()

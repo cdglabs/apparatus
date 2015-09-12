@@ -68,12 +68,10 @@ module.exports = class Project
     selectedElement = @selectedParticularElement.element
     parent = selectedElement.parent()
     return unless parent
-    index = parent.children().indexOf(selectedElement)
     group = Model.Group.createVariant()
     group.expanded = true
-    parent.removeChild(selectedElement)
+    parent.replaceChildWith(selectedElement, group)
     group.addChild(selectedElement)
-    parent.addChild(group, index)
     @select(new Model.ParticularElement(group))
 
 
