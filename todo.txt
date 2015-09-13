@@ -13,14 +13,30 @@ Show "context" in attribute (element where a token came from)
 
 Features:
 
+Export for embedding on the web
+Pen tool
+Bezier curves
+Shadows
+Gradients
+Multiple fills and strokes
+Images
+Videos
+Constrain attributes/variables within a range
+Import JSON data
+Multitouch support
+Color picker
+Richer text support
+  Scrubbable numbers on canvas if text string is a number
+  Edit text directly on canvas (need to emulate text cursor)
+
+
+Useability:
+
 Autocomplete
   highlight (as in hover) attribute when its selected in autocomplete menu
   better styling for "create variable"
   autocomplete built-in functions (sin, etc)
   click an option to autocomplete
-Import JSON
-Pen tool
-Image Element
 Keyboard events
   Cmd+z to undo
   Other shortcuts based on menubar
@@ -28,17 +44,11 @@ Create panel thumbnails should have auto view matrix
 Variable manipulation
   Remove a variable
   Reorder/reparent variable
-  Constrain a variable within a range
   Reset a variable/attribute (e.g. by empty string in expression)
-Color picker in code view
-Disable CodeMirror undo
 Better display of expression values
   highlight the appropriate spread selection (and hover)
   click to select that particular element
 Add thumbnails to Outline
-Scrubbably numbers in canvas
-Edit text directly on canvas (need to emulate text cursor)
-Multitouch support on canvas
 
 
 
