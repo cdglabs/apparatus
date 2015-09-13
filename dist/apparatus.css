@@ -219,13 +219,13 @@ canvas {
   margin-left: 1.5em;
 }
 .OutlineItem.isHovered {
-  background-color: rgba(0,204,153,0.1);
+  background-color: #e5f9f4;
 }
 .OutlineItem.isActiveController {
-  background-color: rgba(204,0,0,0.1);
+  background-color: #f9e5e5;
 }
 .OutlineItem.isSelected {
-  background-color: rgba(0,153,204,0.1);
+  background-color: #e5f4f9;
 }
 .OutlineItem.isController .ElementRow {
   color: #c66;
@@ -299,6 +299,9 @@ canvas {
 }
 .AttributeRow.isInherited {
   opacity: 0.5;
+}
+.AttributeRow.isGoingToChange {
+  background-color: #f4cccc;
 }
 .AttributeRow.isGoingToChange .cm-number,
 .AttributeRow.isGoingToChange .cm-operator {

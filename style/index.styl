@@ -24,6 +24,11 @@ defaultFont()
 codeFont()
   font-family menlo, monospace
 
+selectedColor = #09c
+hoveredColor = #0c9
+controlledColor = #c00
+
+
 // ============================================================================
 // Generic
 // ============================================================================
@@ -271,11 +276,11 @@ HeaderSize = 18px
 
 .OutlineItem
   &.isHovered
-    background-color rgba(0, 204, 153, 0.10)
+    background-color tint(hoveredColor, 90%)
   &.isActiveController
-    background-color rgba(204, 0, 0, 0.10)
+    background-color tint(controlledColor, 90%)
   &.isSelected
-    background-color rgba(0, 153, 204, 0.10)
+    background-color tint(selectedColor, 90%)
   &.isController
     .ElementRow
       color #c66
@@ -364,6 +369,7 @@ HeaderSize = 18px
     opacity 0.5
 
   &.isGoingToChange
+    background-color tint(controlledColor, 80%)
     .cm-number, .cm-operator
       color: #c00
 
