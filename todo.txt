@@ -1,3 +1,23 @@
+Notes from microjam:
+  spread() crashes
+  click thumbnail to edit it
+  copy paste expressions
+  double click to edit attribute label
+  drop attribute feedback
+  new lines in text
+  path with line
+  any shape should be an implicit group
+
+  tutorial
+    clock
+    plot sine wave
+    polygon
+    mention precision
+
+
+
+
+
 Priority Features:
 
 Arrow keys between code fields
