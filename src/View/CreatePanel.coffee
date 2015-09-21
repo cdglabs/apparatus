@@ -51,13 +51,13 @@ R.create "CreatePanelItem",
       },
         R.Thumbnail {element}
 
-      unless @_isBuiltIn()
+      if @_isEditable()
         R.span {},
           R.div {
             className: "CreatePanelItemEditButton icon-pencil"
             onClick: @_editElement
           }
-      unless @_isBuiltIn() or @_isEditing()
+      if @_isEditable() and !@_isEditing()
           R.div {
             className: "CreatePanelItemRemoveButton icon-x"
             onClick: @_remove
@@ -76,10 +76,10 @@ R.create "CreatePanelItem",
     {project} = @context
     return element == project.editingElement
 
-  _isBuiltIn: ->
+  _isEditable: ->
     {element} = @props
     builtIn = _.values(Model)
-    return _.contains(builtIn, element)
+    return !_.contains(builtIn, element)
 
   _setLabelValue: (newValue) ->
     @props.element.label = newValue
@@ -104,4 +104,7 @@ R.create "CreatePanelItem",
     dragManager.start mouseDownEvent,
       type: "createElement"
       element: element
+      onCancel: =>
+        if @_isEditable()
+          @_editElement()
       # cursor
