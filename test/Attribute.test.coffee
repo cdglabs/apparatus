@@ -1,5 +1,6 @@
 test = require "tape"
-Attribute = require "../src/Model/Attribute"
+Model = require "../src/Model/Model"
+Attribute = Model.Attribute
 
 test "Numbers work", (t) ->
   a = Attribute.createVariant()
