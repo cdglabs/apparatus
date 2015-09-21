@@ -5,6 +5,7 @@
     "codemirror": "^5.4.0",
     "keymaster": "^1.6.2",
     "numeric": "^1.2.6",
+    "query-string": "^2.4.1",
     "react": "^0.13.3",
     "underscore": "^1.8.3"
   },

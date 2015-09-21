@@ -51,7 +51,7 @@ document.addEventListener "keydown", ->
 
 
 willRefreshNextFrame = false
-refresh = ->
+refresh = Apparatus.refresh = ->
   return if willRefreshNextFrame
   willRefreshNextFrame = true
   requestAnimationFrame ->

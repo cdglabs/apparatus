@@ -1,4 +1,5 @@
 _ = require "underscore"
+queryString = require "query-string"
 Dataflow = require "../Dataflow/Dataflow"
 Model = require "./Model"
 Util = require "../Util/Util"
@@ -10,6 +11,7 @@ module.exports = class Editor
     @_setupSerializer()
     @_setupProject()
     @_setupRevision()
+    @_parseQueryString()
 
   _setupProject: ->
     @loadFromLocalStorage()
@@ -24,6 +26,13 @@ module.exports = class Editor
       Util.assignId(object, name)
       builtInObjects.push(object)
     @serializer = new Storage.Serializer(builtInObjects)
+
+  # Checks if we should load an external JSON file based on the query string
+  # (the ?stuff at the end of the URL).
+  _parseQueryString: ->
+    parsed = queryString.parse(location.search)
+    if parsed.load
+      @loadFromURL(parsed.load)
 
   # builtIn returns all of the built in classes and objects that are used as
   # the "anchors" for serialization and deserialization. That is, all of the
@@ -87,6 +96,26 @@ module.exports = class Editor
   loadFromFile: ->
     Storage.loadFile (jsonString) =>
       @load(jsonString)
+
+
+  # ===========================================================================
+  # External URL
+  # ===========================================================================
+
+  # TODO: Deal with error conditions, timeout, etc.
+  # TODO: Maybe move xhr stuff to Util.
+  # TODO: Show some sort of loading indicator.
+  loadFromURL: (url) ->
+    xhr = new XMLHttpRequest()
+    xhr.onreadystatechange = =>
+      return unless xhr.readyState == 4
+      return unless xhr.status == 200
+      jsonString = xhr.responseText
+      @load(jsonString)
+      @checkpoint()
+      Apparatus.refresh() # HACK: calling Apparatus seems funky here.
+    xhr.open("GET", url, true)
+    xhr.send()
 
 
   # ===========================================================================
