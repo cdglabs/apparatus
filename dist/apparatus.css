@@ -29,23 +29,6 @@ canvas {
 .CursorOverride * {
   cursor: inherit !important;
 }
-#LoadingNotice {
-  display: none;
-  background-color: rgba(0,0,0,0.5);
-  color: #fff;
-  text-align: center;
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  width: 200px;
-  margin-left: -100px;
-  padding: 10px;
-  border-radius: 100px;
-  z-index: 10;
-}
-#LoadingNotice:before {
-  content: "Loading Snapshot...";
-}
 .DragHintContainer {
   position: fixed;
   top: 0;
@@ -211,9 +194,6 @@ canvas {
 .CreatePanelAddItem {
   font-size: 18px;
   text-align: center;
-}
-.Toolbar button {
-  margin-right: 0.5em;
 }
 .OutlineChildren {
   margin-left: 1.5em;
@@ -459,7 +439,4 @@ canvas {
   background-image: -webkit-linear-gradient(top, #cacaca, #d5d5d5);
   background-image: linear-gradient(to bottom, #cacaca, #d5d5d5);
   box-shadow: 0 1px 1px rgba(255,255,255,0.35), inset 0 0 1px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4);
-}
-.TempContainer {
-  overflow: hidden;
 }

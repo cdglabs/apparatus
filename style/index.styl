@@ -60,28 +60,6 @@ canvas
 
 
 // ============================================================================
-// LoadingNotice
-// ============================================================================
-
-#LoadingNotice
-  display none
-  background-color rgba(0, 0, 0, 0.5)
-  color white
-  text-align center
-  position fixed
-  top 20px
-  left 50%
-  width 200px
-  margin-left -100px
-  padding 10px
-  border-radius 100px
-  z-index 10
-
-  &:before
-    content "Loading Snapshot..."
-
-
-// ============================================================================
 // DragHintContainer
 // ============================================================================
 
@@ -260,14 +238,6 @@ HeaderSize = 18px
 
 
 // ============================================================================
-// Toolbar
-// ============================================================================
-
-.Toolbar button
-  margin-right 0.5em
-
-
-// ============================================================================
 // Outline
 // ============================================================================
 
@@ -424,12 +394,6 @@ HeaderSize = 18px
   &.Variable
     color #c30 // TODO: Change this color
 
-// TODO: Should come up with better visual indicator to mark that a thing is
-// novel.
-// .Novel .AttributeLabel
-//   font-weight bold
-//   color #000
-
 .AttributeLabel, .ReferenceToken
   defaultFont()
   color #333
@@ -470,7 +434,7 @@ HeaderSize = 18px
     opacity 0.5
 
 // ============================================================================
-// CodeMirror
+// Editable Text
 // ============================================================================
 
 .EditableTextInline
@@ -550,9 +514,3 @@ AddButtonSize = 1em
   &:active
     background-image linear-gradient(to bottom, #cacaca, #d5d5d5)
     box-shadow 0 1px 1px rgba(255,255,255,0.35), inset 0 0 1px rgba(0,0,0,0.5), inset 0 1px 4px rgba(0,0,0,0.4)
-
-
-
-
-.TempContainer
-  overflow hidden
