@@ -246,11 +246,11 @@ HeaderSize = 18px
 
 .OutlineItem
   &.isHovered
-    background-color tint(hoveredColor, 90%)
+    background-color tint(hoveredColor, 88%)
   &.isActiveController
-    background-color tint(controlledColor, 90%)
+    background-color tint(controlledColor, 88%)
   &.isSelected
-    background-color tint(selectedColor, 90%)
+    background-color tint(selectedColor, 88%)
   &.isController
     .ElementRow
       color #c66
@@ -339,7 +339,6 @@ HeaderSize = 18px
     opacity 0.5
 
   &.isGoingToChange
-    background-color tint(controlledColor, 80%)
     .cm-number, .cm-operator
       color: #c00
 
@@ -382,27 +381,21 @@ HeaderSize = 18px
 // ============================================================================
 
 .AttributeLabel
-  // inline(bottom)
   margin-right 0.5em
   border-radius 20px
   padding 0 0.75em
-  // color #aaa
   cursor grab
   &.Editing
     cursor text
-    // background-color transparent
-  &.Variable
-    color #c30 // TODO: Change this color
 
 .AttributeLabel, .ReferenceToken
   defaultFont()
   color #333
-  background-color #ddd
-  background-image linear-gradient(to bottom, #eee, #ccc)
+  background-image linear-gradient(to bottom, #f4f4f4, #e4e4e4)
   &.isHovered
-    background-color #def
-    // background-image linear-gradient(to bottom, #def, #bcd)
-    background-image linear-gradient(to bottom, #f99, #d77)
+    background-image linear-gradient(to bottom, tint(hoveredColor, 75%), tint(hoveredColor, 40%))
+  &.isGoingToChange
+    background-image linear-gradient(to bottom, tint(controlledColor, 75%), tint(controlledColor, 40%))
 
 
 // ============================================================================

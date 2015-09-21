@@ -89,7 +89,7 @@ R.create "AttributeLabel",
         AttributeLabel: true
         Interactive: true
         isHovered: hoverManager.hoveredAttribute == attribute
-        # Variable: @node.parent().isVariantOf(Element)
+        isGoingToChange: _.contains(hoverManager.attributesToChange, attribute)
       }
       onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
@@ -163,6 +163,7 @@ R.create "AttributeToken",
       className: R.cx {
         ReferenceToken: true
         isHovered: hoverManager.hoveredAttribute == attribute
+        isGoingToChange: _.contains(hoverManager.attributesToChange, attribute)
       }
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave

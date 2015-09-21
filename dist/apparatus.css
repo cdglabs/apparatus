@@ -199,13 +199,13 @@ canvas {
   margin-left: 1.5em;
 }
 .OutlineItem.isHovered {
-  background-color: #e5f9f4;
+  background-color: #e0f8f2;
 }
 .OutlineItem.isActiveController {
-  background-color: #f9e5e5;
+  background-color: #f8e0e0;
 }
 .OutlineItem.isSelected {
-  background-color: #e5f4f9;
+  background-color: #e0f2f8;
 }
 .OutlineItem.isController .ElementRow {
   color: #c66;
@@ -280,9 +280,6 @@ canvas {
 .AttributeRow.isInherited {
   opacity: 0.5;
 }
-.AttributeRow.isGoingToChange {
-  background-color: #f4cccc;
-}
 .AttributeRow.isGoingToChange .cm-number,
 .AttributeRow.isGoingToChange .cm-operator {
   color: #c00;
@@ -341,22 +338,22 @@ canvas {
 .AttributeLabel.Editing {
   cursor: text;
 }
-.AttributeLabel.Variable {
-  color: #c30;
-}
 .AttributeLabel,
 .ReferenceToken {
   font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
   color: #333;
-  background-color: #ddd;
-  background-image: -webkit-linear-gradient(top, #eee, #ccc);
-  background-image: linear-gradient(to bottom, #eee, #ccc);
+  background-image: -webkit-linear-gradient(top, #f4f4f4, #e4e4e4);
+  background-image: linear-gradient(to bottom, #f4f4f4, #e4e4e4);
 }
 .AttributeLabel.isHovered,
 .ReferenceToken.isHovered {
-  background-color: #def;
-  background-image: -webkit-linear-gradient(top, #f99, #d77);
-  background-image: linear-gradient(to bottom, #f99, #d77);
+  background-image: -webkit-linear-gradient(top, #bff2e5, #66e0c1);
+  background-image: linear-gradient(to bottom, #bff2e5, #66e0c1);
+}
+.AttributeLabel.isGoingToChange,
+.ReferenceToken.isGoingToChange {
+  background-image: -webkit-linear-gradient(top, #f2bfbf, #e06666);
+  background-image: linear-gradient(to bottom, #f2bfbf, #e06666);
 }
 .Expression {
   font-family: menlo, monospace;
