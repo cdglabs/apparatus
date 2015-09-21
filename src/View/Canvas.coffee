@@ -1,5 +1,6 @@
 _ = require "underscore"
 numeric = require "numeric"
+key = require "keymaster"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -326,6 +327,10 @@ R.create "Canvas",
         for attribute, index in attributesToChange
           solvedValue = solvedValues[index]
           precision = precisions[index]
+          # Hold the command key to "snap-drag" to one level coarser
+          # precision.
+          if key.command
+            solvedValue = Util.roundToPrecision(solvedValue, precision - 1)
           solvedValue = Util.toPrecision(solvedValue, precision)
           attribute.setExpression(solvedValue)
 
