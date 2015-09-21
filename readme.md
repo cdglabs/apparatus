@@ -25,7 +25,13 @@ You can run `npm run test` to run all the tests in `test/`.
 
 See all of the commands you can run in the `scripts` section of `package.json`.
 
+## Compiling the icon font
 
+If you add an icon to the icon font (by putting an svg into the `icons` folder), you'll need to rebuild the icon font (the stuff in `dist/font` including `dist/font/icons.css`).
+
+To do this you'll need to install [fontcustom](http://fontcustom.com/). Then in the terminal run:
+
+    fontcustom compile
 
 
 
