@@ -1,12 +1,50 @@
+Website
+  Layout
+    Apparatus
+    Try Apparatus
+    Source Code
+  Outline
+    Apparatus
+      Motivation
+      Examples
+      Video Introduction (from FPW videos)
+    Try Apparatus
+      Tested in Chrome.
+      Buggy, will autosave, refresh.
+      Usage image
+      Javascript in expressions
+    Source Code
+
+
+  Collect examples
+  Thumbnail/GIF examples
+  Make example loader
+
+Github
+
+
+
+Presentation
+  Make slides
+  Make video of interactive diagrams motivation
+
+
+
+
+
+
+
 Notes from microjam:
   spread() crashes
   click thumbnail to edit it
-  copy paste expressions
+  copy paste expressions (references break)
   double click to edit attribute label
   drop attribute feedback
   new lines in text
   path with line
   any shape should be an implicit group
+  duplicate feature
+
 
   tutorial
     clock
@@ -69,6 +107,7 @@ Better display of expression values
   highlight the appropriate spread selection (and hover)
   click to select that particular element
 Add thumbnails to Outline
+Resize right panel
 
 
 
