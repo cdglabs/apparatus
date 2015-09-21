@@ -49,7 +49,10 @@ R.create "Canvas",
 
     renderOpts = {ctx, viewMatrix, highlight}
 
-    @_drawBackgroundGrid(ctx)
+    # HACK: This feature should exist but there is currently no way to set
+    # isGridHidden in the UI (you can only set it in the console...)
+    unless @_editingElement().isGridHidden
+      @_drawBackgroundGrid(ctx)
 
     for graphic in @_graphics()
       graphic.render(renderOpts)
