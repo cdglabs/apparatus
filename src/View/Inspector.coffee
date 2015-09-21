@@ -61,7 +61,12 @@ R.create "ComponentSection",
           R.AttributeRow {attribute, key: Util.getId(attribute)}
 
 
-# NovelAttributesList is used to show attributes in the Outline.
+# NovelAttributesList is used to show attributes in the Outline. A design
+# question is what attributes should be shown? We want to show anything that
+# you might want to reference in another expression, and anything that might
+# be useful in understanding a diagram (so that the outline is like the source
+# code of the diagram). Currently we show any attribute from a component that
+# is novel and all variables.
 R.create "NovelAttributesList",
   propTypes:
     element: Model.Element
@@ -75,7 +80,8 @@ R.create "NovelAttributesList",
 
     R.div {className: "AttributesList"},
       for attribute in element.attributes()
-        if attribute.isNovel()
+        shouldShow = attribute.isNovel() or attribute.isVariantOf(Model.Variable)
+        if shouldShow
           R.AttributeRow {attribute}
       if element == project.editingElement
         R.div {className: "AddVariableRow"},
