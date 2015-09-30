@@ -108,7 +108,11 @@ class Graphic.Path extends Graphic.Element
     opts.ctx = getDummyCanvasCtx()
     {ctx, x, y} = opts
     @buildPath(opts)
-    if ctx.isPointInPath(x, y)
+    ctx.save()
+    ctx.lineWidth = 5;
+    hit = ctx.isPointInPath(x, y) or ctx.isPointInStroke(x, y)
+    ctx.restore()
+    if hit
       return [@particularElement]
     else
       return null
