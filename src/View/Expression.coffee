@@ -39,22 +39,25 @@ R.create "Value",
       else if _.isFunction(value)
         "(Function)"
       else if value instanceof Dataflow.Spread
-        # TODO: Make this better
-        "(Spread) " + JSON.stringify(value.items)
+        R.SpreadValue {spread: value}
       else if _.isNumber(value)
         Util.toMaxPrecision(value, 3)
       else
         JSON.stringify(value)
 
+# TODO: The styling/formatting for this could be better. Also it should
+# highlight the particular selected item when appropriate.
 R.create "SpreadValue",
   propTypes:
     spread: "any"
-  maxSpreadItems: 5
   render: ->
+    {spread} = @props
+    maxSpreadItems = 5
+
     R.span {className: "SpreadValue"},
-      for index in [0...Math.min(@spread.length, @maxSpreadItems)]
-        value = @spread.take(index)
+      for index in [0...Math.min(spread.items.length, maxSpreadItems)]
+        value = spread.items[index]
         R.span {className: "SpreadValueItem"},
           R.Value {value: value}
-      if @spread.length > @maxSpreadItems
+      if spread.items.length > maxSpreadItems
         "..."
