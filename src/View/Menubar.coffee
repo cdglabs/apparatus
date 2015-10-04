@@ -31,10 +31,15 @@ R.create "Menubar",
       R.MenubarItem {title: "Create Symbol", isDisabled: !isSelection, fn: @_createSymbolFromSelectedElement}
 
   componentDidMount: ->
-    key "backspace", (e) =>
+    key "command+o, ctrl+o", (e) =>
       return if Util.textFocus()
       e.preventDefault()
-      @_removeSelectedElement()
+      @_load()
+
+    key "command+s, ctrl+s", (e) =>
+      return if Util.textFocus()
+      e.preventDefault()
+      @_save()
 
     key "command+z, ctrl+z", (e) =>
       return if Util.textFocus()
@@ -45,6 +50,16 @@ R.create "Menubar",
       return if Util.textFocus()
       e.preventDefault()
       @_redo()
+
+    key "backspace", (e) =>
+      return if Util.textFocus()
+      e.preventDefault()
+      @_removeSelectedElement()
+
+    key "command+g, ctrl+g", (e) =>
+      return if Util.textFocus()
+      e.preventDefault()
+      @_groupSelectedElement()
 
   _new: ->
     {editor} = @context
