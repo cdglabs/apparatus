@@ -36,6 +36,16 @@ R.create "Menubar",
       e.preventDefault()
       @_removeSelectedElement()
 
+    key "command+z, ctrl+z", (e) =>
+      return if Util.textFocus()
+      e.preventDefault()
+      @_undo()
+
+    key "command+shift+z, ctrl+y", (e) =>
+      return if Util.textFocus()
+      e.preventDefault()
+      @_redo()
+
   _new: ->
     {editor} = @context
     editor.createNewProject()
