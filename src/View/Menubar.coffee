@@ -32,32 +32,29 @@ R.create "Menubar",
 
   componentDidMount: ->
     key "command+o, ctrl+o", (e) =>
-      return if Util.textFocus()
       e.preventDefault()
       @_load()
 
     key "command+s, ctrl+s", (e) =>
-      return if Util.textFocus()
       e.preventDefault()
       @_save()
 
     key "command+z, ctrl+z", (e) =>
-      return if Util.textFocus()
       e.preventDefault()
       @_undo()
 
     key "command+shift+z, ctrl+y", (e) =>
-      return if Util.textFocus()
       e.preventDefault()
       @_redo()
 
     key "backspace", (e) =>
+      # We need to check that we're not editing text, since in this case
+      # pressing the backspace key should backspace a letter.
       return if Util.textFocus()
       e.preventDefault()
       @_removeSelectedElement()
 
     key "command+g, ctrl+g", (e) =>
-      return if Util.textFocus()
       e.preventDefault()
       @_groupSelectedElement()
 
