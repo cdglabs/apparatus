@@ -2,6 +2,7 @@ require "codemirror/addon/hint/show-hint"
 require "codemirror/mode/javascript/javascript"
 CodeMirror = require "codemirror"
 _ = require "underscore"
+key = require "keymaster"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
@@ -369,8 +370,8 @@ R.create "ExpressionCode",
         dx = dx / 3
         delta = dx * Math.pow(10, -precision)
         newValue = originalValue + delta
-        # if key.command
-        #   newValue = Util.roundToPrecision(newValue, precision - 1)
+        if key.command
+          newValue = Util.roundToPrecision(newValue, precision - 1)
         newValue = Util.toPrecision(newValue, precision)
         @mirror.replaceSelection(""+newValue, "around")
 
