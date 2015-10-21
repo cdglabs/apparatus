@@ -37,16 +37,9 @@ R.create "Editor",
       R.DragHint {}
 
       R.CreatePanel {}
-      R.Outline {}
-      R.Inspector {}
+      R.RightPanel {}
       R.Menubar {}
       R.Canvas {}
-
-
-
-
-
-
 
 
 

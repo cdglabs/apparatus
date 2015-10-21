@@ -8,6 +8,7 @@ Util = require "../Util/Util"
 
 R.create "Canvas",
   contextTypes:
+    editor: Model.Editor
     project: Model.Project
     hoverManager: R.HoverManager
     dragManager: R.DragManager
@@ -15,8 +16,11 @@ R.create "Canvas",
   render: ->
     R.div {
       className: "Canvas"
-      # style:
-      #   cursor: @_cursor()
+      style: {
+        # cursor: @_cursor()
+        right: @context.editor.layout.rightPanelWidth
+      }
+
       onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave

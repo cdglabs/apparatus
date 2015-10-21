@@ -78,7 +78,6 @@ canvas
 // ============================================================================
 
 CreatePanelWidth = 120px
-OutlineWidth = 400px
 InspectorHeight = 50%
 MenubarHeight = 24px
 
@@ -93,13 +92,20 @@ MenubarHeight = 24px
   background-color #eee
   border-right 1px solid #ccc
 
+.RightPanel
+  box-sizing border-box
+  position absolute
+  right 0
+  top 0
+  bottom 0
+
 .Outline
   box-sizing border-box
   position absolute
   top 0
   right 0
   bottom InspectorHeight
-  width OutlineWidth
+  width 100%
   background-color #fff
   border-left 1px solid #ccc
 
@@ -107,7 +113,7 @@ MenubarHeight = 24px
   box-sizing border-box
   position absolute
   right 0
-  width OutlineWidth
+  width 100%
   bottom 0
   height InspectorHeight
   background-color #fff
@@ -118,7 +124,6 @@ MenubarHeight = 24px
   position absolute
   left CreatePanelWidth
   top MenubarHeight
-  right OutlineWidth
   bottom 0
 
 .Menubar
@@ -126,7 +131,6 @@ MenubarHeight = 24px
   position absolute
   height MenubarHeight
   left CreatePanelWidth
-  right OutlineWidth
   background-color #eee
   top 0
   border-bottom 1px #ccc solid
