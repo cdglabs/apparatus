@@ -80,6 +80,7 @@ canvas
 CreatePanelWidth = 120px
 InspectorHeight = 50%
 MenubarHeight = 24px
+RightResizeWidth = 10px
 
 .CreatePanel
   box-sizing border-box
@@ -99,13 +100,21 @@ MenubarHeight = 24px
   top 0
   bottom 0
 
+.RightResize
+  position absolute
+  width RightResizeWidth
+  background #eee
+  left 0
+  height 100%
+  border-left 1px solid #ccc
+
 .Outline
   box-sizing border-box
   position absolute
   top 0
   right 0
   bottom InspectorHeight
-  width 100%
+  width "calc(100% - %s)" % RightResizeWidth
   background-color #fff
   border-left 1px solid #ccc
 
@@ -113,7 +122,7 @@ MenubarHeight = 24px
   box-sizing border-box
   position absolute
   right 0
-  width 100%
+  width "calc(100% - %s)" % RightResizeWidth
   bottom 0
   height InspectorHeight
   background-color #fff

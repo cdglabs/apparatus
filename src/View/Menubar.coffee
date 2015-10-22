@@ -16,7 +16,7 @@ R.create "Menubar",
     R.div {
         className: "Menubar"
         style: {
-          right: @context.editor.layout.rightPanelWidth
+          right: editor.layout.rightPanelWidth
         }
       },
       R.MenubarItem {title: "New", isDisabled: false, fn: @_new}
