@@ -15,7 +15,7 @@ module.exports = class Editor
     @_parseQueryString()
 
   _setupLayout: ->
-    @layout = { rightPanelWidth: 400 }
+    @layout = new Model.Layout()
 
   _setupProject: ->
     @loadFromLocalStorage()

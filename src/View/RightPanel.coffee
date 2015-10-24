@@ -6,25 +6,35 @@ Util = require "../Util/Util"
 R.create "RightPanel",
   contextTypes:
     editor: Model.Editor
+    dragManager: R.DragManager
 
-  toggleRightPanel: ->
-    # TODO find a cleaner mechanism to store the toggled state
-    @context.editor.layout.rightPanelWidth = if @context.editor.layout.rightPanelWidth == 10 then 400 else 10
+  _onResizeMouseDown: (mouseDownEvent) ->
+    startX = mouseDownEvent.clientX
+    layout = @context.editor.layout
 
-    # TODO I don't know a clean way to communicate the resizeEvent so for now I'm triggering a "resize" event to do the trick...
-    resize = new Event "resize"
-    window.dispatchEvent resize
+    @context.dragManager.start mouseDownEvent,
+      cursor: "ew-resize"
+      onMove: (moveEvent) =>
+        dx = moveEvent.clientX - startX
+        startX = moveEvent.clientX
+        layout.resizeRightPanel(dx)
+
+  componentDidMount: ->
+    @refs.resize.getDOMNode().addEventListener("mousedown", @_onResizeMouseDown)
 
   render: ->
+    layout = @context.editor.layout
+
     R.div { 
         className: "RightPanel"
         style: {
-          width: @context.editor.layout.rightPanelWidth
+          width: layout.rightPanelWidth
         }
       },
       R.div { 
         className: "RightResize"
-        onClick: @toggleRightPanel
+        ref: "resize"
+        #onClick: layout.dragRightPanel.bind(layout, 10)
       }
       R.Outline {}
       R.Inspector {}
