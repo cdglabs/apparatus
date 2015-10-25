@@ -4,10 +4,15 @@ module.exports = class Layout
     @rightPanelWidth = 400
     @_rightPanelMin = 100
     @_rightPanelMax = 600
+    @fullScreen = false
 
   resizeRightPanel: (xDelta) ->
     @rightPanelWidth -= xDelta
     @rightPanelWidth = Math.min(@_rightPanelMax, Math.max(@_rightPanelMin, @rightPanelWidth))
+    @_refreshLayout()
+
+  toggleFullScreen: ->
+    @fullScreen = !@fullScreen
     @_refreshLayout()
 
   _refreshLayout: ->

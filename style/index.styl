@@ -24,6 +24,14 @@ defaultFont()
 codeFont()
   font-family menlo, monospace
 
+noSelect()
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
 selectedColor = #09c
 hoveredColor = #0c9
 controlledColor = #c00
@@ -93,12 +101,18 @@ RightResizeWidth = 10px
   background-color #eee
   border-right 1px solid #ccc
 
+  &.FullScreen
+    display none
+
 .RightPanel
   box-sizing border-box
   position absolute
   right 0
   top 0
   bottom 0
+
+  &.FullScreen
+    display none
 
 .RightResize
   position absolute
@@ -109,6 +123,7 @@ RightResizeWidth = 10px
   border-left 1px solid #ccc
 
 .Outline
+  noSelect()
   box-sizing border-box
   position absolute
   top 0
@@ -119,6 +134,7 @@ RightResizeWidth = 10px
   border-left 1px solid #ccc
 
 .Inspector
+  noSelect()
   box-sizing border-box
   position absolute
   right 0
@@ -135,6 +151,27 @@ RightResizeWidth = 10px
   top MenubarHeight
   bottom 0
 
+  &.FullScreen
+    position fixed
+    left 0 
+    top 0
+    bottom 0
+    right 0 !important
+
+.LayoutMode
+  noSelect()
+  position absolute
+  border 1px solid #ccc
+  width 20px
+  height 20px
+  right 3px
+  top -22px
+  box-sizing border-box
+  background-color #eee
+
+  &.FullScreen
+    top 2px
+
 .Menubar
   box-sizing border-box
   position absolute
@@ -144,6 +181,8 @@ RightResizeWidth = 10px
   top 0
   border-bottom 1px #ccc solid
 
+  &.FullScreen
+    display none
 
 // ============================================================================
 // Layout "Chrome"

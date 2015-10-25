@@ -14,8 +14,13 @@ R.create "Canvas",
     dragManager: R.DragManager
 
   render: ->
+    layout = @context.editor.layout
+
     R.div {
-      className: "Canvas"
+      className: R.cx {
+         Canvas: true
+         FullScreen: layout.fullScreen
+      }
       style: {
         # cursor: @_cursor()
         right: @context.editor.layout.rightPanelWidth
@@ -30,6 +35,14 @@ R.create "Canvas",
       R.HTMLCanvas {
         ref: "HTMLCanvas"
         draw: @_draw
+      }
+      R.div {
+        className: R.cx {
+           LayoutMode: true
+           FullScreen: layout.fullScreen
+        }
+        ref: "LayoutMode"
+        onClick: @_toggleLayout
       }
 
   componentDidMount: ->
@@ -357,7 +370,7 @@ R.create "Canvas",
 
 
   # ===========================================================================
-  # Pan and Zoom
+  # Pan, Zoom and Layout
   # ===========================================================================
 
   _startPan: (mouseDownEvent) ->
@@ -385,6 +398,10 @@ R.create "Canvas",
     matrix = matrix.translate(-x, -y)
     element.viewMatrix = matrix
 
+  _toggleLayout: ->
+    { layout } = @context.editor
+    console.log(layout)
+    layout.toggleFullScreen()
 
   # ===========================================================================
   # Hit Detection

@@ -14,7 +14,10 @@ R.create "Menubar",
     isSelection = project.selectedParticularElement?
 
     R.div {
-        className: "Menubar"
+        className: R.cx {
+          Menubar: true
+          FullScreen: editor.layout.fullScreen
+        }
         style: {
           right: editor.layout.rightPanelWidth
         }

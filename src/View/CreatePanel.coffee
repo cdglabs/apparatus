@@ -7,10 +7,18 @@ Util = require "../Util/Util"
 R.create "CreatePanel",
   contextTypes:
     project: Model.Project
+    editor: Model.Editor
 
   render: ->
     project = @context.project
-    R.div {className: "CreatePanel"},
+    layout = @context.editor.layout
+
+    R.div {
+      className: R.cx {
+         CreatePanel: true
+         FullScreen: layout.fullScreen
+      }
+    },
       R.div {className: "Header"}, "Symbols"
       R.div {className: "Scroller"},
         for element in project.createPanelElements
