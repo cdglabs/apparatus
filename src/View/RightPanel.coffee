@@ -19,9 +19,6 @@ R.create "RightPanel",
         startX = moveEvent.clientX
         layout.resizeRightPanel(dx)
 
-  componentDidMount: ->
-    @refs.resize.getDOMNode().addEventListener("mousedown", @_onResizeMouseDown)
-
   render: ->
     layout = @context.editor.layout
 
@@ -36,8 +33,7 @@ R.create "RightPanel",
       },
       R.div { 
         className: "RightResize"
-        ref: "resize"
-        #onClick: layout.dragRightPanel.bind(layout, 10)
+        onMouseDown: @_onResizeMouseDown
       }
       R.Outline {}
       R.Inspector {}
