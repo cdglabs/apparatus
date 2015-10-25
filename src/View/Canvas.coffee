@@ -400,7 +400,6 @@ R.create "Canvas",
 
   _toggleLayout: ->
     { layout } = @context.editor
-    console.log(layout)
     layout.toggleFullScreen()
 
   # ===========================================================================
