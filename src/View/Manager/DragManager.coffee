@@ -17,8 +17,7 @@ These are the options you can pass in to DragManager.start:
     dragged.
 
     onCancel(mouseUpEvent): Will be called if the user releases the object
-    without ever consummating the drag. When sticky is false, this is equivalent
-    to a click. When sticky is true, this is equivalent to a double click.
+    without ever consummating the drag.
 
 ###
 
