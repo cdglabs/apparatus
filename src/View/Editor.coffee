@@ -30,6 +30,7 @@ R.create "Editor",
 
     R.div {
       className: R.cx {
+        Editor: true
         CursorOverride: cursor?
       }
       style: {cursor: cursor ? ""}
@@ -37,11 +38,10 @@ R.create "Editor",
       R.DragHint {}
 
       R.CreatePanel {}
+      R.div { className: "Center" },
+        R.Menubar {}
+        R.Canvas {}
       R.RightPanel {}
-      R.Menubar {}
-      R.Canvas {}
-
-
 
 # This wrapper is used in Expression where we need to be able to render
 # ReactElements within a CodeMirror mark. It may not be needed in the future

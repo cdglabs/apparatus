@@ -57,9 +57,6 @@ body
   color #333
 
 canvas
-  position absolute
-  top 0px
-  left 0px
   width 100%
   height 100%
 
@@ -90,73 +87,74 @@ InspectorHeight = 50%
 MenubarHeight = 24px
 RightResizeWidth = 10px
 
-.CreatePanel
-  box-sizing border-box
+.Editor
   position absolute
+  display flex
+  width 100%
+  height 100%
+
+.Center
+  display flex
+  flex-direction column
+  height 100%
+
+.CreatePanel
+  position relative
+  flex-shrink 0
+  box-sizing border-box
   top 0
   left 0
   bottom 0
   width CreatePanelWidth
-
   background-color #eee
   border-right 1px solid #ccc
 
-  &.FullScreen
-    display none
-
 .RightPanel
+  // this panel should not shrink
+  flex-shrink 0
   box-sizing border-box
-  position absolute
-  right 0
-  top 0
-  bottom 0
 
-  &.FullScreen
-    display none
+.CreatePanelContainer, .RightPanelContainer
+  position absolute
+  width 100%
+  height 100%
 
 .RightResize
+  z-index 2
   position absolute
   width RightResizeWidth
-  background #eee
-  left 0
+  margin-left "-%s" % (RightResizeWidth / 2)
   height 100%
-  border-left 1px solid #ccc
+  cursor ew-resize
 
 .Outline
   noSelect()
-  box-sizing border-box
+
   position absolute
   top 0
-  right 0
   bottom InspectorHeight
-  width "calc(100% - %s)" % RightResizeWidth
+  left 0
+  right 0
+  box-sizing border-box
   background-color #fff
   border-left 1px solid #ccc
 
 .Inspector
   noSelect()
-  box-sizing border-box
+
   position absolute
-  right 0
-  width "calc(100% - %s)" % RightResizeWidth
+  top InspectorHeight
   bottom 0
-  height InspectorHeight
+  left 0
+  right 0
+  box-sizing border-box
   background-color #fff
   border-left 1px solid #ccc
 
 .Canvas
   box-sizing border-box
-  position absolute
-  left CreatePanelWidth
-  top MenubarHeight
-  bottom 0
-
-  &.FullScreen
-    position fixed
-    left 0 
-    top 0
-    bottom 0
-    right 0 !important
+  flex-grow 2
+  position relative
 
 .LayoutMode
   noSelect()
@@ -179,15 +177,9 @@ RightResizeWidth = 10px
 
 .Menubar
   box-sizing border-box
-  position absolute
   height MenubarHeight
-  left CreatePanelWidth
   background-color #eee
-  top 0
   border-bottom 1px #ccc solid
-
-  &.FullScreen
-    display none
 
 // ============================================================================
 // Layout "Chrome"
@@ -196,9 +188,7 @@ RightResizeWidth = 10px
 HeaderSize = 18px
 
 .Header
-  position absolute
   width 100%
-  top 0px
   height HeaderSize
   box-sizing border-box
   line-height HeaderSize - 2
@@ -211,13 +201,10 @@ HeaderSize = 18px
   border-bottom 1px solid #d3d3d3
 
 .Scroller
-  position absolute
   width 100%
-  top HeaderSize
-  bottom 0px
+  height "calc(100% - %s)" % HeaderSize
   overflow-y auto
   overflow-x hidden
-
 
 // ============================================================================
 // Menubar
@@ -254,11 +241,9 @@ HeaderSize = 18px
 
 .CreatePanelItem
   padding 6px 6px 18px 6px
-  position relative
 
   .CreatePanelThumbnail
     cursor grab
-    position relative
     width CreatePanelWidth - 12px
     height CreatePanelWidth - 12px
     background-color white

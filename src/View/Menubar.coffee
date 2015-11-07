@@ -13,15 +13,7 @@ R.create "Menubar",
     {editor, project} = @context
     isSelection = project.selectedParticularElement?
 
-    R.div {
-        className: R.cx {
-          Menubar: true
-          FullScreen: editor.layout.fullScreen
-        }
-        style: {
-          right: editor.layout.rightPanelWidth
-        }
-      },
+    R.div { className: "Menubar" },
       R.MenubarItem {title: "New", isDisabled: false, fn: @_new}
       R.MenubarItem {title: "Load", isDisabled: false, fn: @_load}
       R.MenubarItem {title: "Save", isDisabled: false, fn: @_save}

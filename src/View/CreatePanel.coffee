@@ -13,22 +13,18 @@ R.create "CreatePanel",
     project = @context.project
     layout = @context.editor.layout
 
-    R.div {
-      className: R.cx {
-         CreatePanel: true
-         FullScreen: layout.fullScreen
-      }
-    },
-      R.div {className: "Header"}, "Symbols"
-      R.div {className: "Scroller"},
-        for element in project.createPanelElements
-          R.CreatePanelItem {element, key: Util.getId(element)}
-
-        R.div {className: "CreatePanelAddItem"},
-          R.button {
-            className: "AddButton",
-            onClick: @_createNewElement
-          }
+    R.div { className: "CreatePanel" },
+      R.div { className: "CreatePanelContainer" },
+        R.div {className: "Header"}, "Symbols"
+        R.div {className: "Scroller"},
+          for element in project.createPanelElements
+            R.CreatePanelItem {element, key: Util.getId(element)}
+  
+          R.div {className: "CreatePanelAddItem"},
+            R.button {
+              className: "AddButton",
+              onClick: @_createNewElement
+            }
 
   _createNewElement: ->
     project = @context.project

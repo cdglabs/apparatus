@@ -17,15 +17,7 @@ R.create "Canvas",
     layout = @context.editor.layout
 
     R.div {
-      className: R.cx {
-         Canvas: true
-         FullScreen: layout.fullScreen
-      }
-      style: {
-        # cursor: @_cursor()
-        right: @context.editor.layout.rightPanelWidth
-      }
-
+      className: "Canvas"
       onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
@@ -37,10 +29,7 @@ R.create "Canvas",
         draw: @_draw
       }
       R.div {
-        className: R.cx {
-           LayoutMode: true
-           FullScreen: layout.fullScreen
-        }
+        className: "LayoutMode"
         ref: "LayoutMode"
         onClick: @_toggleLayout
       }

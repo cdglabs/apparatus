@@ -35,6 +35,7 @@ R.create "RightPanel",
         className: "RightResize"
         onMouseDown: @_onResizeMouseDown
       }
-      R.Outline {}
-      R.Inspector {}
+      R.div { className: "RightPanelContainer" }, 
+        R.Outline {}
+        R.Inspector {}
 
