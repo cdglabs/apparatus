@@ -13,6 +13,9 @@ R.create "CreatePanel",
     project = @context.project
     layout = @context.editor.layout
 
+    if layout.fullScreen
+      return null
+
     R.div { className: "CreatePanel" },
       R.div { className: "CreatePanelContainer" },
         R.div {className: "Header"}, "Symbols"

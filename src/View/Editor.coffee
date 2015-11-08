@@ -26,17 +26,16 @@ R.create "Editor",
     }
 
   render: ->
+    layout = @props.editor.layout
     cursor = @_dragManager.drag?.cursor
-
     R.div {
-      className: R.cx {
-        Editor: true
-        CursorOverride: cursor?
-      }
-      style: {cursor: cursor ? ""}
+       className: R.cx {
+         Editor: true
+         CursorOverride: cursor?
+       }
+       style: {cursor: cursor ? ""}
     },
       R.DragHint {}
-
       R.CreatePanel {}
       R.div { className: "Center" },
         R.Menubar {}

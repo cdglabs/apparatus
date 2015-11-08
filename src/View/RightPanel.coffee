@@ -22,6 +22,9 @@ R.create "RightPanel",
   render: ->
     layout = @context.editor.layout
 
+    if layout.fullScreen
+      return null
+
     R.div { 
         className: R.cx {
            RightPanel: true

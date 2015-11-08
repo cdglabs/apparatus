@@ -29,7 +29,10 @@ R.create "Canvas",
         draw: @_draw
       }
       R.div {
-        className: "LayoutMode"
+        className: R.cx {
+          "LayoutMode": true
+          "FullScreen": layout.fullScreen
+        }
         ref: "LayoutMode"
         onClick: @_toggleLayout
       }
@@ -207,7 +210,6 @@ R.create "Canvas",
   _onResize: ->
     @refs.HTMLCanvas.resize()
     @_rectCached = null
-
 
   # ===========================================================================
   # Hover and Selection
