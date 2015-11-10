@@ -23,6 +23,8 @@
 [data-icon]:before { content: attr(data-icon); }
 
 [data-icon]:before,
+.icon-edit:before,
+.icon-fullscreen:before,
 .icon-pencil:before,
 .icon-x:before {
   display: inline-block;
@@ -39,5 +41,7 @@
   font-smoothing: antialiased;
 }
 
-.icon-pencil:before { content: "\f100"; }
-.icon-x:before { content: "\f101"; }
+.icon-edit:before { content: "\f100"; }
+.icon-fullscreen:before { content: "\f101"; }
+.icon-pencil:before { content: "\f102"; }
+.icon-x:before { content: "\f103"; }
