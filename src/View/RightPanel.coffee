@@ -9,15 +9,15 @@ R.create "RightPanel",
     dragManager: R.DragManager
 
   _onResizeMouseDown: (mouseDownEvent) ->
-    startX = mouseDownEvent.clientX
     layout = @context.editor.layout
+    startX = mouseDownEvent.clientX
+    startWidth = layout.rightPanelWidth
 
     @context.dragManager.start mouseDownEvent,
       cursor: "ew-resize"
       onMove: (moveEvent) =>
         dx = moveEvent.clientX - startX
-        startX = moveEvent.clientX
-        layout.resizeRightPanel(dx)
+        layout.constraintRightPanelWidth(startWidth - dx)
 
   render: ->
     layout = @context.editor.layout

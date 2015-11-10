@@ -2,13 +2,14 @@
 module.exports = class Layout
   constructor: ->  
     @rightPanelWidth = 400
-    @_rightPanelMin = 100
-    @_rightPanelMax = 600
     @fullScreen = false
 
-  resizeRightPanel: (xDelta) ->
-    @rightPanelWidth -= xDelta
-    @rightPanelWidth = Math.min(@_rightPanelMax, Math.max(@_rightPanelMin, @rightPanelWidth))
+    @_rightPanelMin = 100
+    @_rightPanelMax = 600
+
+  # applies the constraints to the new right panel width
+  constraintRightPanelWidth: (newWidth) ->
+    @rightPanelWidth = Math.min(@_rightPanelMax, Math.max(@_rightPanelMin, newWidth))
     @_refreshLayout()
 
   toggleFullScreen: ->
@@ -20,4 +21,3 @@ module.exports = class Layout
     # This is a workaround by triggering "resize" event so that the Canvas will update itself
     resize = new Event "resize"
     window.dispatchEvent resize
-

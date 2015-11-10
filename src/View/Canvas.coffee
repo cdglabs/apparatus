@@ -33,7 +33,6 @@ R.create "Canvas",
           "LayoutMode": true
           "FullScreen": layout.fullScreen
         }
-        ref: "LayoutMode"
         onClick: @_toggleLayout
       }
 
