@@ -24,6 +24,14 @@ defaultFont()
 codeFont()
   font-family menlo, monospace
 
+noSelect()
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
 selectedColor = #09c
 hoveredColor = #0c9
 controlledColor = #c00
@@ -49,9 +57,6 @@ body
   color #333
 
 canvas
-  position absolute
-  top 0px
-  left 0px
   width 100%
   height 100%
 
@@ -78,59 +83,108 @@ canvas
 // ============================================================================
 
 CreatePanelWidth = 120px
-OutlineWidth = 400px
 InspectorHeight = 50%
 MenubarHeight = 24px
+RightResizeWidth = 10px
+
+.Editor
+  position absolute
+  display flex
+  width 100%
+  height 100%
+
+.Center
+  flex-grow 2
+  display flex
+  flex-direction column
+  height 100%
 
 .CreatePanel
+  position relative
+  flex-shrink 0
   box-sizing border-box
-  position absolute
   top 0
   left 0
   bottom 0
   width CreatePanelWidth
-
   background-color #eee
   border-right 1px solid #ccc
 
-.Outline
+.RightPanel
+  // this panel should not shrink
+  flex-shrink 0
   box-sizing border-box
+
+.CreatePanelContainer, .RightPanelContainer
+  position absolute
+  width 100%
+  height 100%
+
+.RightResize
+  z-index 2
+  position absolute
+  width RightResizeWidth
+  margin-left "-%s" % (RightResizeWidth / 2)
+  height 100%
+  cursor ew-resize
+
+.Outline
+  noSelect()
+
   position absolute
   top 0
-  right 0
   bottom InspectorHeight
-  width OutlineWidth
+  left 0
+  right 0
+  box-sizing border-box
   background-color #fff
   border-left 1px solid #ccc
 
 .Inspector
-  box-sizing border-box
+  noSelect()
+
   position absolute
-  right 0
-  width OutlineWidth
+  top InspectorHeight
   bottom 0
-  height InspectorHeight
+  left 0
+  right 0
+  box-sizing border-box
   background-color #fff
   border-left 1px solid #ccc
 
 .Canvas
   box-sizing border-box
+  flex-grow 2
+  position relative
+
+  canvas
+    position absolute
+
+.LayoutMode
+  noSelect()
+
   position absolute
-  left CreatePanelWidth
-  top MenubarHeight
-  right OutlineWidth
-  bottom 0
+  border 1px solid #ccc
+  width 20px
+  height 20px
+  right 3px
+  top -22px
+  box-sizing border-box
+  background-color #eee
+  background-size 16px 16px
+  background-position 1px 1px
+  background-repeat no-repeat
+  text-align center
+  font-size 16px
+
+  &.FullScreen
+    top 2px
 
 .Menubar
   box-sizing border-box
-  position absolute
   height MenubarHeight
-  left CreatePanelWidth
-  right OutlineWidth
   background-color #eee
-  top 0
   border-bottom 1px #ccc solid
-
 
 // ============================================================================
 // Layout "Chrome"
@@ -139,9 +193,7 @@ MenubarHeight = 24px
 HeaderSize = 18px
 
 .Header
-  position absolute
   width 100%
-  top 0px
   height HeaderSize
   box-sizing border-box
   line-height HeaderSize - 2
@@ -154,13 +206,10 @@ HeaderSize = 18px
   border-bottom 1px solid #d3d3d3
 
 .Scroller
-  position absolute
   width 100%
-  top HeaderSize
-  bottom 0px
+  height "calc(100% - %s)" % HeaderSize
   overflow-y auto
   overflow-x hidden
-
 
 // ============================================================================
 // Menubar
@@ -196,12 +245,11 @@ HeaderSize = 18px
   height 100%
 
 .CreatePanelItem
-  padding 6px 6px 18px 6px
   position relative
+  padding 6px 6px 18px 6px
 
   .CreatePanelThumbnail
     cursor grab
-    position relative
     width CreatePanelWidth - 12px
     height CreatePanelWidth - 12px
     background-color white

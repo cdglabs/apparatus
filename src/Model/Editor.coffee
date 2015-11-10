@@ -8,10 +8,14 @@ Storage = require "../Storage/Storage"
 
 module.exports = class Editor
   constructor: ->
+    @_setupLayout()
     @_setupSerializer()
     @_setupProject()
     @_setupRevision()
     @_parseQueryString()
+
+  _setupLayout: ->
+    @layout = new Model.Layout()
 
   _setupProject: ->
     @loadFromLocalStorage()
@@ -158,10 +162,3 @@ module.exports = class Editor
 
   isRedoable: ->
     return @redoStack.length > 0
-
-
-
-
-
-
-

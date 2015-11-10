@@ -8,15 +8,16 @@ Util = require "../Util/Util"
 
 R.create "Canvas",
   contextTypes:
+    editor: Model.Editor
     project: Model.Project
     hoverManager: R.HoverManager
     dragManager: R.DragManager
 
   render: ->
+    layout = @context.editor.layout
+
     R.div {
       className: "Canvas"
-      # style:
-      #   cursor: @_cursor()
       onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
@@ -26,6 +27,15 @@ R.create "Canvas",
       R.HTMLCanvas {
         ref: "HTMLCanvas"
         draw: @_draw
+      }
+      R.div {
+        className: R.cx {
+          LayoutMode: true
+          FullScreen: layout.fullScreen
+          "icon-fullscreen": !layout.fullScreen 
+          "icon-edit": layout.fullScreen 
+        }
+        onClick: @_toggleLayout
       }
 
   componentDidMount: ->
@@ -202,7 +212,6 @@ R.create "Canvas",
     @refs.HTMLCanvas.resize()
     @_rectCached = null
 
-
   # ===========================================================================
   # Hover and Selection
   # ===========================================================================
@@ -353,7 +362,7 @@ R.create "Canvas",
 
 
   # ===========================================================================
-  # Pan and Zoom
+  # Pan, Zoom and Layout
   # ===========================================================================
 
   _startPan: (mouseDownEvent) ->
@@ -381,6 +390,9 @@ R.create "Canvas",
     matrix = matrix.translate(-x, -y)
     element.viewMatrix = matrix
 
+  _toggleLayout: ->
+    { layout } = @context.editor
+    layout.toggleFullScreen()
 
   # ===========================================================================
   # Hit Detection

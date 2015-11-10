@@ -26,29 +26,21 @@ R.create "Editor",
     }
 
   render: ->
+    layout = @props.editor.layout
     cursor = @_dragManager.drag?.cursor
-
     R.div {
-      className: R.cx {
-        CursorOverride: cursor?
-      }
-      style: {cursor: cursor ? ""}
+       className: R.cx {
+         Editor: true
+         CursorOverride: cursor?
+       }
+       style: {cursor: cursor ? ""}
     },
       R.DragHint {}
-
       R.CreatePanel {}
-      R.Outline {}
-      R.Inspector {}
-      R.Menubar {}
-      R.Canvas {}
-
-
-
-
-
-
-
-
+      R.div { className: "Center" },
+        R.Menubar {}
+        R.Canvas {}
+      R.RightPanel {}
 
 # This wrapper is used in Expression where we need to be able to render
 # ReactElements within a CodeMirror mark. It may not be needed in the future
