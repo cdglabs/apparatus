@@ -43,3 +43,4 @@ rgba = (r, g, b, a) ->
 
 spread = require "./spread"
 
+_ = require "underscore"
