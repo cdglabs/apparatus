@@ -7,6 +7,11 @@ Link = require "./Link"
 Model = require "./Model"
 
 
+class CircularReferenceError extends Error
+  constructor: (@attributePath) ->
+    labels = _.pluck(@attributePath, 'label')
+    @message = "Circular reference: #{labels.join(' -> ')}"
+
 module.exports = Attribute = Node.createVariant
   constructor: ->
     # Call "super" constructor
@@ -15,6 +20,9 @@ module.exports = Attribute = Node.createVariant
     @value = Dataflow.cell(@_value.bind(this))
 
   _value: ->
+    if @circularReferenceError
+      return @circularReferenceError
+
     # Optimization
     if @isNumber()
       return parseFloat(@exprString)
@@ -82,11 +90,27 @@ module.exports = Attribute = Node.createVariant
   # attribute which, if it changed, would affect me.
   dependencies: ->
     dependencies = []
+    attributePath = []
     recurse = (attribute) ->
+      # Make sure there aren't any circular references
+      if attributePath.indexOf(attribute) != -1
+        attributePath.push(attribute)  # for error debugging
+        throw new CircularReferenceError(attributePath)
+      attributePath.push(attribute)
       for referenceAttribute in _.values(attribute.references())
         dependencies.push(referenceAttribute)
         recurse(referenceAttribute)
-    recurse(this)
+      attributePath.pop()
+
+    try
+      recurse(this)
+    catch error
+      if error instanceof CircularReferenceError
+        @circularReferenceError = error
+        return []
+      else
+        throw error
+    @circularReferenceError = null
     dependencies = _.unique(dependencies)
     return dependencies
 
@@ -167,5 +191,3 @@ class CompiledExpression
       if result instanceof Dataflow.Spread
         result.origin = @attribute
       return result
-
-
