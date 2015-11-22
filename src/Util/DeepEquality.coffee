@@ -13,6 +13,10 @@ module.exports = DeepEquality = {}
 # cyclicDeepEqual compares two Javascript values. It is comfortable with values
 # which have cyclic references between their parts. In this case, it will ensure
 # that the two values have isomorphic reference graphs.
+#   Opts:
+#     checkPrototypes (default: true) -- whether equality of prototypes should
+#       be included in the checking process
+#     log (default: false) -- whether to log debugging info
 DeepEquality.cyclicDeepEqual = (a, b, opts) ->
   # PLAN:
   # Recursively check that each piece of a matches a corresponding piece of b.
@@ -20,8 +24,9 @@ DeepEquality.cyclicDeepEqual = (a, b, opts) ->
   # is possible with the following strategy:
   #  * The first time checkPartsEqual is called on aPart, it checks that bPart
   #    is a valid, unclaimed part of b, and then records the association between
-  #    aPart and bPart in an array called aPartToBPart. (This all happens before
-  #    any recursive calls.)
+  #    aPart and bPart in an array called aPartToBPart. checkPartsEqual can then
+  #    go on to check that aPart and bPart are in fact equal, largely via
+  #    recursive calls.
   #  * If checkPartsEqual is called on aPart a second time, this is the result
   #    of either a cyclic reference during the checking of aPart, or the
   #    checking of some unrelated part of a. In either case, it suffices to
