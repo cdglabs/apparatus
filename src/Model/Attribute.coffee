@@ -20,8 +20,8 @@ module.exports = Attribute = Node.createVariant
     @value = Dataflow.cell(@_value.bind(this))
 
   _value: ->
-    if @circularReferenceError
-      return @circularReferenceError
+    if @__circularReferenceError
+      return @__circularReferenceError
 
     # Optimization
     if @isNumber()
@@ -106,11 +106,11 @@ module.exports = Attribute = Node.createVariant
       recurse(this)
     catch error
       if error instanceof CircularReferenceError
-        @circularReferenceError = error
+        @__circularReferenceError = error
         return []
       else
         throw error
-    @circularReferenceError = null
+    @__circularReferenceError = null
     dependencies = _.unique(dependencies)
     return dependencies
 
