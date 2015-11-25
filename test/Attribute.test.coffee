@@ -39,3 +39,33 @@ test "Changes recompile", (t) ->
   b.setExpression("$$$a$$$ * 3", {$$$a$$$: a})
   t.equal(b.value(), 30)
   t.end()
+
+test "Dependencies work", (t) ->
+  a = Attribute.createVariant({label: 'a'})
+  b = Attribute.createVariant({label: 'b'})
+  c = Attribute.createVariant({label: 'c'})
+
+  a.setExpression("$$$b$$$ * 2", {$$$b$$$: b})
+  b.setExpression("$$$c$$$ * 3", {$$$c$$$: c})
+  c.setExpression("20")
+
+  t.equal(a.value(), 120, 'value works')
+  t.deepEqual(a.dependencies(), [b, c], 'dependencies works')
+  t.equal(a.checkForCircularReferenceError(), null, 'checkForCircularReferenceError works')
+  t.end()
+
+test "Dependencies work with circular references", (t) ->
+  a = Attribute.createVariant({label: 'a'})
+  b = Attribute.createVariant({label: 'b'})
+  c = Attribute.createVariant({label: 'c'})
+
+  a.setExpression("$$$b$$$", {$$$b$$$: b})
+  b.setExpression("$$$c$$$", {$$$c$$$: c})
+  c.setExpression("$$$b$$$", {$$$b$$$: b})
+
+  expectedError = new Attribute.CircularReferenceError([a, b, c, b])
+
+  t.deepEqual(a.value(), expectedError, 'value works')
+  t.deepEqual(a.dependencies(), [b, c], 'dependencies works')
+  t.deepEqual(a.checkForCircularReferenceError(), expectedError, 'checkForCircularReferenceError works')
+  t.end()

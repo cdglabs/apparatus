@@ -7,11 +7,6 @@ Link = require "./Link"
 Model = require "./Model"
 
 
-class CircularReferenceError extends Error
-  constructor: (@attributePath) ->
-    labels = _.pluck(@attributePath, 'label')
-    @message = "Circular reference: #{labels.join(' -> ')}"
-
 module.exports = Attribute = Node.createVariant
   constructor: ->
     # Call "super" constructor
@@ -20,8 +15,8 @@ module.exports = Attribute = Node.createVariant
     @value = Dataflow.cell(@_value.bind(this))
 
   _value: ->
-    if @__circularReferenceError
-      return @__circularReferenceError
+    if (circularReferenceError = @checkForCircularReferenceError())?
+      return circularReferenceError
 
     # Optimization
     if @isNumber()
@@ -87,32 +82,38 @@ module.exports = Attribute = Node.createVariant
     @hasOwnProperty("exprString")
 
   # Returns all referenced attributes recursively. In other words every
-  # attribute which, if it changed, would affect me.
+  # attribute which, if it changed, would affect me. (Also sets
+  # @__circularReferenceError to either null or an error regarding a circular
+  # reference in the attribute's dependency graph. Will still return a
+  # reasonable set of dependencies even in the presence of a circular
+  # reference.)
   dependencies: ->
     dependencies = []
+
     attributePath = []
-    recurse = (attribute) ->
-      # Make sure there aren't any circular references
-      if attributePath.indexOf(attribute) != -1
-        attributePath.push(attribute)  # for error debugging
-        throw new CircularReferenceError(attributePath)
+    @__circularReferenceError = null
+
+    recurse = (attribute) =>
       attributePath.push(attribute)
-      for referenceAttribute in _.values(attribute.references())
-        dependencies.push(referenceAttribute)
-        recurse(referenceAttribute)
+      # Make sure not to get trapped in a circular reference
+      if attributePath.indexOf(attribute) != attributePath.length - 1
+        @__circularReferenceError ?= new CircularReferenceError(attributePath.slice())
+      else
+        for referenceAttribute in _.values(attribute.references())
+          dependencies.push(referenceAttribute)
+          recurse(referenceAttribute)
       attributePath.pop()
 
-    try
-      recurse(this)
-    catch error
-      if error instanceof CircularReferenceError
-        @__circularReferenceError = error
-        return []
-      else
-        throw error
-    @__circularReferenceError = null
+    recurse(this)
+
     dependencies = _.unique(dependencies)
     return dependencies
+
+  # If there is a circular reference in the attribute's dependency graph,
+  # returns a CircularReferenceError. Otherwise returns null.
+  checkForCircularReferenceError: ->
+    @dependencies()
+    return @__circularReferenceError
 
   parentElement: ->
     result = @parent()
@@ -191,3 +192,8 @@ class CompiledExpression
       if result instanceof Dataflow.Spread
         result.origin = @attribute
       return result
+
+Attribute.CircularReferenceError = class CircularReferenceError extends Error
+  constructor: (@attributePath) ->
+    labels = _.pluck(@attributePath, 'label')
+    @message = "Circular reference: #{labels.join(' -> ')}"
