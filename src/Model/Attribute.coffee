@@ -15,15 +15,15 @@ module.exports = Attribute = Node.createVariant
     @value = Dataflow.cell(@_value.bind(this))
 
   _value: ->
-    if (circularReferenceError = @checkForCircularReferenceError())?
-      return circularReferenceError
-
     # Optimization
     if @isNumber()
       return parseFloat(@exprString)
 
     if @_isDirty()
       @_updateCompiledExpression()
+
+    if (circularReferencePath = @circularReferencePath())?
+      return new CircularReferenceError(circularReferencePath)
 
     referenceValues = _.mapObject @references(), (referenceAttribute) ->
       referenceAttribute.value()
@@ -81,23 +81,23 @@ module.exports = Attribute = Node.createVariant
   isNovel: ->
     @hasOwnProperty("exprString")
 
-  # Returns all referenced attributes recursively. In other words every
-  # attribute which, if it changed, would affect me. (Also sets
-  # @__circularReferenceError to either null or an error regarding a circular
-  # reference in the attribute's dependency graph. Will still return a
-  # reasonable set of dependencies even in the presence of a circular
-  # reference.)
-  dependencies: ->
+  # Descends through all recursively referenced attributes. An object is
+  # returned with two properties:
+  #   dependencies: array consisting of the set of all recursive dependencies
+  #     (will be reasonable even if a circular reference exists)
+  #   circularReferencePath: a chain of dependencies resulting in a circular
+  #     reference, if one exists, or null
+  _analyzeDependencies: ->
     dependencies = []
 
     attributePath = []
-    @__circularReferenceError = null
+    circularReferencePath = null
 
-    recurse = (attribute) =>
+    recurse = (attribute) ->
       attributePath.push(attribute)
-      # Make sure not to get trapped in a circular reference
+      # Detect circular references, and don't get trapped
       if attributePath.indexOf(attribute) != attributePath.length - 1
-        @__circularReferenceError ?= new CircularReferenceError(attributePath.slice())
+        circularReferencePath ?= attributePath.slice()
       else
         for referenceAttribute in _.values(attribute.references())
           dependencies.push(referenceAttribute)
@@ -107,13 +107,21 @@ module.exports = Attribute = Node.createVariant
     recurse(this)
 
     dependencies = _.unique(dependencies)
-    return dependencies
+
+    return {
+      dependencies
+      circularReferencePath
+    }
+
+  # Returns all referenced attributes recursively. In other words every
+  # attribute which, if it changed, would affect me.
+  dependencies: ->
+    return @_analyzeDependencies().dependencies
 
   # If there is a circular reference in the attribute's dependency graph,
-  # returns a CircularReferenceError. Otherwise returns null.
-  checkForCircularReferenceError: ->
-    @dependencies()
-    return @__circularReferenceError
+  # returns a chain of dependencies representing it. Otherwise returns null.
+  circularReferencePath: ->
+    return @_analyzeDependencies().circularReferencePath
 
   parentElement: ->
     result = @parent()

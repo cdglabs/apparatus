@@ -51,7 +51,7 @@ test "Dependencies work", (t) ->
 
   t.equal(a.value(), 120, 'value works')
   t.deepEqual(a.dependencies(), [b, c], 'dependencies works')
-  t.equal(a.checkForCircularReferenceError(), null, 'checkForCircularReferenceError works')
+  t.equal(a.circularReferencePath(), null, 'circularReferencePath works')
   t.end()
 
 test "Dependencies work with circular references", (t) ->
@@ -63,9 +63,11 @@ test "Dependencies work with circular references", (t) ->
   b.setExpression("$$$c$$$", {$$$c$$$: c})
   c.setExpression("$$$b$$$", {$$$b$$$: b})
 
-  expectedError = new Attribute.CircularReferenceError([a, b, c, b])
+  expectedCircularReferencePath = [a, b, c, b]
+  expectedError = new Attribute.CircularReferenceError(
+    expectedCircularReferencePath)
 
   t.deepEqual(a.value(), expectedError, 'value works')
   t.deepEqual(a.dependencies(), [b, c], 'dependencies works')
-  t.deepEqual(a.checkForCircularReferenceError(), expectedError, 'checkForCircularReferenceError works')
+  t.deepEqual(a.circularReferencePath(), expectedCircularReferencePath, 'circularReferencePath works')
   t.end()
