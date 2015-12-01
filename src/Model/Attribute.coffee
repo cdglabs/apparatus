@@ -92,6 +92,7 @@ module.exports = Attribute = Node.createVariant
 
   parentElement: ->
     result = @parent()
+    return null if !result
     until result.isVariantOf(Model.Element)
       result = result.parent()
     return result

@@ -12,9 +12,20 @@ R.create "Expression",
   render: ->
     attribute = @props.attribute
 
-    R.div {className: "Expression"},
-      R.ExpressionCode {attribute}
-      R.ExpressionValue {attribute}
+    R.span {},
+      R.div {className: "Expression"},
+        R.ExpressionCode {attribute}
+        R.ExpressionValue {attribute}
+      if attribute.evolve
+        R.span {},
+          R.div {style: {fontStyle: "italic"}},
+            R.input {type: "checkbox", className: "Interactive", checked: attribute.evolveOn, onChange: @_setEvolveOn}
+            "Followed By:"
+          R.Expression {attribute: attribute.evolve}
+
+  _setEvolveOn: (e) ->
+    {attribute} = @props
+    attribute.evolveOn = e.target.checked
 
 R.create "ExpressionValue",
   propTypes:

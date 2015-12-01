@@ -39,7 +39,7 @@ R.create "AttributeRow",
 
   _isWrapped: ->
     {attribute} = @props
-    return attribute.exprString.indexOf("\n") != -1
+    return attribute.exprString.indexOf("\n") != -1 or attribute.evolve?
 
   _isGoingToChange: ->
     {attribute} = @props

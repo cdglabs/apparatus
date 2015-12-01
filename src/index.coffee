@@ -50,29 +50,46 @@ document.addEventListener "keydown", ->
 
 
 
-willRefreshNextFrame = false
-refresh = Apparatus.refresh = ->
-  return if willRefreshNextFrame
-  willRefreshNextFrame = true
-  requestAnimationFrame ->
+# willRefreshNextFrame = false
+# refresh = Apparatus.refresh = ->
+#   return if willRefreshNextFrame
+#   willRefreshNextFrame = true
+#   requestAnimationFrame ->
+#     render()
+#     if shouldCheckpoint
+#       editor.checkpoint()
+#       shouldCheckpoint = false
+#     willRefreshNextFrame = false
+
+# refreshEventNames = [
+#   "mousedown"
+#   "mousemove"
+#   "mouseup"
+#   "keydown"
+#   "keyup"
+#   "scroll"
+#   "change"
+#   "wheel"
+#   "mousewheel"
+# ]
+
+# for eventName in refreshEventNames
+#   window.addEventListener(eventName, refresh)
+
+
+
+# HACK: We replace the above with a refresh cycle that re-renders every
+# animation frame. This will make fans spin.
+
+Apparatus.refresh = -> return
+
+everyTick = ->
+  unless document.hidden
+    editor.project.runEvolveSteps()
     render()
     if shouldCheckpoint
       editor.checkpoint()
       shouldCheckpoint = false
-    willRefreshNextFrame = false
+  requestAnimationFrame(everyTick)
 
-refreshEventNames = [
-  "mousedown"
-  "mousemove"
-  "mouseup"
-  "keydown"
-  "keyup"
-  "scroll"
-  "change"
-  "wheel"
-  "mousewheel"
-]
-
-for eventName in refreshEventNames
-  window.addEventListener(eventName, refresh)
-
+everyTick()

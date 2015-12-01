@@ -60,6 +60,14 @@ module.exports = Element = Node.createVariant
   addVariable: ->
     variable = Model.Variable.createVariant()
     variable.setExpression("0.00")
+
+    # HACK: this shouldn't be a property (should be a link), and should be
+    # able to put it optionally on any attribute, shouldn't come by default on
+    # variables.
+    variable.evolve = Model.Attribute.createVariant()
+    variable.evolve.setExpression("")
+    variable.evolveOn = false
+
     @addChild(variable)
     return variable
 

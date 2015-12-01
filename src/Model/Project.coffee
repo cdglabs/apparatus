@@ -115,3 +115,24 @@ module.exports = class Project
 
   controllableAttributes: ->
     return @selectedParticularElement?.element.controllableAttributes() ? []
+
+
+  # ===========================================================================
+  # Evolve
+  # ===========================================================================
+
+  runEvolveSteps: ->
+    # Collect all attribute descendants of @editingElement. Note this will
+    # break recursion.
+    attributes = []
+    collect = (node) ->
+      if node.isVariantOf(Model.Attribute)
+        attributes.push(node)
+      for childNode in node.children()
+        collect(childNode)
+    collect(@editingElement)
+
+    for attribute in attributes
+      if attribute.evolveOn
+        newValue = attribute.evolve.value()
+        attribute.setExpression(newValue)
