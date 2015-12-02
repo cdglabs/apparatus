@@ -135,4 +135,6 @@ module.exports = class Project
     for attribute in attributes
       if attribute.evolveOn
         newValue = attribute.evolve.value()
+        unless _.isNumber(newValue)
+          newValue = JSON.stringify(newValue)
         attribute.setExpression(newValue)
