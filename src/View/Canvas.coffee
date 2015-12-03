@@ -32,8 +32,8 @@ R.create "Canvas",
         className: R.cx {
           LayoutMode: true
           FullScreen: layout.fullScreen
-          "icon-fullscreen": !layout.fullScreen 
-          "icon-edit": layout.fullScreen 
+          "icon-fullscreen": !layout.fullScreen
+          "icon-edit": layout.fullScreen
         }
         onClick: @_toggleLayout
       }
@@ -150,6 +150,7 @@ R.create "Canvas",
     return [] unless selectedParticularElement
 
     matrix = selectedParticularElement.accumulatedMatrix()
+    return [] unless matrix
     matrix = @_viewMatrix().compose(matrix)
 
     controlPoints = selectedParticularElement.element.controlPoints()
