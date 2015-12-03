@@ -42,10 +42,8 @@ cell = (fn) ->
     return new Spread(items, spread.origin)
 
 
-  evaluateFull = ->
+  evaluateFull = computationManager.memoize ->
     return dynamicScope.with {spreadEnv: SpreadEnv.empty}, runFn
-
-  evaluateFull = computationManager.memoize(evaluateFull)
 
 
   # resolve will recursively try to resolve value in the current spread
@@ -58,19 +56,17 @@ cell = (fn) ->
 
   # "Public" methods.
   asSpread = ->
-    if !computationManager.isRunning
-      return computationManager.run(asSpread)
-    value = evaluateFull()
-    value = resolve(value)
-    return value
+    computationManager.run ->
+      value = evaluateFull()
+      value = resolve(value)
+      return value
 
   cellFn = ->
-    if !computationManager.isRunning
-      return computationManager.run(cellFn)
-    value = asSpread()
-    if dynamicScope.context.shouldThrow and value instanceof Spread
-      throw new UnresolvedSpreadError(value)
-    return value
+    computationManager.run ->
+      value = asSpread()
+      if dynamicScope.context.shouldThrow and value instanceof Spread
+        throw new UnresolvedSpreadError(value)
+      return value
 
   # Package it up.
   cellFn.asSpread = asSpread

@@ -17,12 +17,15 @@ module.exports = class ComputationManager
   # never executed more than once. They will instead return their cached
   # value.
   run: (callback) ->
-    @isRunning = true
-    @counter++
-    try
-      return callback()
-    finally
-      @isRunning = false
+    if !@isRunning
+      @isRunning = true
+      @counter++
+      try
+        return callback()
+      finally
+        @isRunning = false
+    else
+      callback()
 
   # Takes a function and returns a memoized version.
   memoize: (fn) ->
