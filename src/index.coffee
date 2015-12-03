@@ -83,8 +83,16 @@ document.addEventListener "keydown", ->
 
 Apparatus.refresh = -> return
 
+lastTime = Date.now()
 everyTick = ->
   unless document.hidden
+    # HACK: We set window.dt to make it accessible in expressions. Really
+    # there should be a mechanism for putting variables into scope for
+    # expressions.
+    now = Date.now()
+    window.dt = (now - lastTime) / 1000
+    lastTime = now
+
     editor.project.runEvolveSteps()
     render()
     if shouldCheckpoint
