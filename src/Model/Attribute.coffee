@@ -22,6 +22,9 @@ module.exports = Attribute = Node.createVariant
     if @_isDirty()
       @_updateCompiledExpression()
 
+    if (circularReferencePath = @circularReferencePath())?
+      return new CircularReferenceError(circularReferencePath)
+
     referenceValues = _.mapObject @references(), (referenceAttribute) ->
       referenceAttribute.value()
 
@@ -78,17 +81,47 @@ module.exports = Attribute = Node.createVariant
   isNovel: ->
     @hasOwnProperty("exprString")
 
+  # Descends through all recursively referenced attributes. An object is
+  # returned with two properties:
+  #   dependencies: array consisting of the set of all recursive dependencies
+  #     (will be reasonable even if a circular reference exists)
+  #   circularReferencePath: a chain of dependencies resulting in a circular
+  #     reference, if one exists, or null
+  _analyzeDependencies: ->
+    dependencies = []
+
+    attributePath = []
+    circularReferencePath = null
+
+    recurse = (attribute) ->
+      attributePath.push(attribute)
+      # Detect circular references, and don't get trapped
+      if attributePath.indexOf(attribute) != attributePath.length - 1
+        circularReferencePath ?= attributePath.slice()
+      else
+        for referenceAttribute in _.values(attribute.references())
+          dependencies.push(referenceAttribute)
+          recurse(referenceAttribute)
+      attributePath.pop()
+
+    recurse(this)
+
+    dependencies = _.unique(dependencies)
+
+    return {
+      dependencies
+      circularReferencePath
+    }
+
   # Returns all referenced attributes recursively. In other words every
   # attribute which, if it changed, would affect me.
   dependencies: ->
-    dependencies = []
-    recurse = (attribute) ->
-      for referenceAttribute in _.values(attribute.references())
-        dependencies.push(referenceAttribute)
-        recurse(referenceAttribute)
-    recurse(this)
-    dependencies = _.unique(dependencies)
-    return dependencies
+    return @_analyzeDependencies().dependencies
+
+  # If there is a circular reference in the attribute's dependency graph,
+  # returns a chain of dependencies representing it. Otherwise returns null.
+  circularReferencePath: ->
+    return @_analyzeDependencies().circularReferencePath
 
   parentElement: ->
     result = @parent()
@@ -168,4 +201,7 @@ class CompiledExpression
         result.origin = @attribute
       return result
 
-
+Attribute.CircularReferenceError = class CircularReferenceError extends Error
+  constructor: (@attributePath) ->
+    labels = _.pluck(@attributePath, 'label')
+    @message = "Circular reference: #{labels.join(' -> ')}"
