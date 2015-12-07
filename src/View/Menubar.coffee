@@ -20,6 +20,8 @@ R.create "Menubar",
       R.MenubarItem {title: "New", isDisabled: false, fn: @_new}
       R.MenubarItem {title: "Load", isDisabled: false, fn: @_load}
       R.MenubarItem {title: "Save", isDisabled: false, fn: @_save}
+      if editor.experimental
+        R.MenubarItem {title: "Share", isDisabled: false, fn: @_share}
 
       R.div {className: "MenubarSeparator"}
 
@@ -80,6 +82,10 @@ R.create "Menubar",
   _save: ->
     {editor} = @context
     editor.saveToFile()
+
+  _share: ->
+    {editor} = @context
+    editor.saveToFirebase()
 
   _undo: ->
     {editor} = @context
