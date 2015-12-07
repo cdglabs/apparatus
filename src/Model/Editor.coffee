@@ -52,14 +52,19 @@ module.exports = class Editor
   # TODO: get version via build process / ENV variable?
   version: "0.4.1"
 
-  load: (jsonString) ->
+  loadJsonStringIntoProject: (jsonString) ->
     json = JSON.parse(jsonString)
     # TODO: If the file format changes, this will need to check the version
     # and convert or fail appropriately.
     if json.type == "Apparatus"
       @project = @serializer.dejsonify(json)
 
-  save: ->
+  loadJsonStringIntoProjectFromExternalSource: (jsonString) ->
+    @loadJsonStringIntoProject(jsonString)
+    @checkpoint()
+    Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
+
+  getJsonStringOfProject: ->
     json = @serializer.jsonify(@project)
     json.type = "Apparatus"
     json.version = @version
@@ -77,14 +82,14 @@ module.exports = class Editor
   localStorageName: "apparatus"
 
   saveToLocalStorage: ->
-    jsonString = @save()
+    jsonString = @getJsonStringOfProject()
     window.localStorage[@localStorageName] = jsonString
     return jsonString
 
   loadFromLocalStorage: ->
     jsonString = window.localStorage[@localStorageName]
     if jsonString
-      @load(jsonString)
+      @loadJsonStringIntoProject(jsonString)
 
   resetLocalStorage: ->
     delete window.localStorage[@localStorageName]
@@ -95,13 +100,13 @@ module.exports = class Editor
   # ===========================================================================
 
   saveToFile: ->
-    jsonString = @save()
+    jsonString = @getJsonStringOfProject()
     fileName = @project.editingElement.label + ".json"
     Storage.saveFile(jsonString, fileName, "application/json;charset=utf-8")
 
   loadFromFile: ->
     Storage.loadFile (jsonString) =>
-      @load(jsonString)
+      @loadJsonStringIntoProjectFromExternalSource(jsonString)
 
 
   # ===========================================================================
@@ -117,9 +122,7 @@ module.exports = class Editor
       return unless xhr.readyState == 4
       return unless xhr.status == 200
       jsonString = xhr.responseText
-      @load(jsonString)
-      @checkpoint()
-      Apparatus.refresh() # HACK: calling Apparatus seems funky here.
+      @loadJsonStringIntoProjectFromExternalSource(jsonString)
     xhr.open("GET", url, true)
     xhr.send()
 
@@ -131,7 +134,7 @@ module.exports = class Editor
   _setupRevision: ->
     # @current is a JSON string representing the current state. @undoStack and
     # @redoStack are arrays of such JSON strings.
-    @current = @save()
+    @current = @getJsonStringOfProject()
     @undoStack = []
     @redoStack = []
     @maxUndoStackSize = 100
@@ -149,14 +152,14 @@ module.exports = class Editor
     return unless @isUndoable()
     @redoStack.push(@current)
     @current = @undoStack.pop()
-    @load(@current)
+    @loadJsonStringIntoProject(@current)
     @saveToLocalStorage()
 
   redo: ->
     return unless @isRedoable()
     @undoStack.push(@current)
     @current = @redoStack.pop()
-    @load(@current)
+    @loadJsonStringIntoProject(@current)
     @saveToLocalStorage()
 
   isUndoable: ->
