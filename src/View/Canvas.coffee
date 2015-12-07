@@ -424,7 +424,7 @@ R.create "Canvas",
 
   _rect: ->
     return @_rectCached if @_rectCached?
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
     return @_rectCached = el.getBoundingClientRect()
 
   _editingElement: ->

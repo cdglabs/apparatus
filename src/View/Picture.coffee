@@ -58,7 +58,7 @@ R.create "Picture",
 
   _size: ->
     return @_cachedSize if @_cachedSize
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
     rect = el.getBoundingClientRect()
     {width, height} = rect
     return @_cachedSize = {width, height}

@@ -39,7 +39,7 @@ R.create "ExpressionCode",
     {component: this}
 
   componentDidMount: ->
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
 
     @mirror = CodeMirror(el, {
       mode: "javascript"

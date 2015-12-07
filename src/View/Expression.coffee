@@ -57,7 +57,7 @@ R.create "SpreadValue",
     R.span {className: "SpreadValue"},
       for index in [0...Math.min(spread.items.length, maxSpreadItems)]
         value = spread.items[index]
-        R.span {className: "SpreadValueItem"},
+        R.span {key: index, className: "SpreadValueItem"},
           R.Value {value: value}
       if spread.items.length > maxSpreadItems
         "..."

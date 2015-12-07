@@ -79,10 +79,10 @@ R.create "NovelAttributesList",
     {project} = @context
 
     R.div {className: "AttributesList"},
-      for attribute in element.allAttributes()
+      for attribute, i in element.allAttributes()
         shouldShow = attribute.isNovel() or attribute.isVariantOf(Model.Variable)
         if shouldShow
-          R.AttributeRow {attribute}
+          R.AttributeRow {key: i, attribute}
       if element == project.editingElement
         R.div {className: "AddVariableRow"},
           R.button {className: "AddButton Interactive", onClick: @_addVariable}
