@@ -170,6 +170,8 @@ module.exports = Element = Node.createVariant
 
   matrix: ->
     matrix = new Util.Matrix()
+    for position in @childrenOfType(Model.Position)
+      matrix = matrix.compose(position.matrix())
     for transform in @childrenOfType(Model.Transform)
       matrix = matrix.compose(transform.matrix())
     return matrix
