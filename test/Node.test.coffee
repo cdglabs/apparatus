@@ -83,3 +83,56 @@ test "adding a variant as a child (to create recursion) does not crash / overflo
     cursor = cursor.children()[0]
 
   t.end()
+
+test "lineages basically work", (t) ->
+  b = Node.createVariant()
+  c = Node.createVariant()
+  b.addChild(c)
+
+  a2 = Node.createVariant()
+  b2 = b.createVariant()
+  a2.addChild(b2)
+  c2 = c.findVariantWithHead(b2)
+
+  b3 = b2.createVariant()
+  c3 = c2.findVariantWithHead(b3)
+
+  t.deepEqual(b.masterLineage(), [b, Node])
+  t.deepEqual(c.masterLineage(), [c, Node])
+  t.deepEqual(a2.masterLineage(), [a2, Node])
+  t.deepEqual(b2.masterLineage(), [b2, b, Node])
+  t.deepEqual(c2.masterLineage(), [c2, c, Node])
+  t.deepEqual(b3.masterLineage(), [b3, b2, b, Node])
+  t.deepEqual(c3.masterLineage(), [c3, c2, c, Node])
+
+  t.deepEqual(b.parentThenMasterLineage(),
+    [[b, "master"], [Node, "end"]])
+  t.deepEqual(c.parentThenMasterLineage(),
+    [[c, "parent"], [b, "master"], [Node, "end"]])
+  t.deepEqual(a2.parentThenMasterLineage(),
+    [[a2, "master"], [Node, "end"]])
+  t.deepEqual(b2.parentThenMasterLineage(),
+    [[b2, "parent"], [a2, "master"], [Node, "end"]])
+  t.deepEqual(c2.parentThenMasterLineage(),
+    [[c2, "parent"], [b2, "parent"], [a2, "master"], [Node, "end"]])
+  t.deepEqual(b3.parentThenMasterLineage(),
+    [[b3, "master"], [b2, "parent"], [a2, "master"], [Node, "end"]])
+  t.deepEqual(c3.parentThenMasterLineage(),
+    [[c3, "parent"], [b3, "master"], [b2, "parent"], [a2, "master"], [Node, "end"]])
+
+  t.deepEqual(b.headThenMasterLineage(),
+    [[b, "master"], [Node, "end"]])
+  t.deepEqual(c.headThenMasterLineage(),
+    [[c, "master"], [Node, "end"]])
+  t.deepEqual(a2.headThenMasterLineage(),
+    [[a2, "master"], [Node, "end"]])
+  t.deepEqual(b2.headThenMasterLineage(),
+    [[b2, "master"], [b, "master"], [Node, "end"]])
+  t.deepEqual(c2.headThenMasterLineage(),
+    [[c2, "head"], [b2, "master"], [b, "master"], [Node, "end"]])
+  t.deepEqual(b3.headThenMasterLineage(),
+    [[b3, "master"], [b2, "master"], [b, "master"], [Node, "end"]])
+  t.deepEqual(c3.headThenMasterLineage(),
+    [[c3, "head"], [b3, "master"], [b2, "master"], [b, "master"], [Node, "end"]])
+
+  t.end()

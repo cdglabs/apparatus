@@ -1,6 +1,8 @@
 Node = require "./Node"
 
-module.exports = Link = Node.createVariant {
+module.exports = Link = Node.createVariant
+  label: "Link"
+
   setTarget: (@_target) ->
 
   target: ->
@@ -25,4 +27,3 @@ module.exports = Link = Node.createVariant {
       cursor = nextCursor
 
     return cursor
-}

@@ -21,13 +21,16 @@ Model.Element = require "./Element"
 Model.Editor = require "./Editor"
 
 
-Model.Variable = Model.Attribute.createVariant()
+Model.Variable = Model.Attribute.createVariant
+  label: "Variable"
 
 # Links an Element to the Attributes it controls.
-Model.ControlledAttributeLink = Model.Link.createVariant()
+Model.ControlledAttributeLink = Model.Link.createVariant
+  label: "ControlledAttributeLink"
 
 # Links an Attribute to the Attributes it references in its expression.
-Model.ReferenceLink = Model.Link.createVariant()
+Model.ReferenceLink = Model.Link.createVariant
+  label: "ReferenceLink"
 
 createAttribute = (label, name, exprString) ->
   attribute = Model.Attribute.createVariant
@@ -41,6 +44,8 @@ createAttribute = (label, name, exprString) ->
 # =============================================================================
 
 Model.Component = Model.Node.createVariant
+  label: "Component"
+
   attributes: ->
     @childrenOfType(Model.Attribute)
 
@@ -66,6 +71,7 @@ Model.Component = Model.Node.createVariant
 
 Model.Transform = Model.Component.createVariant
   label: "Transform"
+
   matrix: ->
     {x, y, sx, sy, rotate} = @getAttributesValuesByName()
     return Util.Matrix.naturalConstruct(x, y, sx, sy, rotate)
@@ -116,7 +122,9 @@ Model.Stroke.addChildren [
 # Elements
 # =============================================================================
 
-Model.Shape = Model.Element.createVariant()
+Model.Shape = Model.Element.createVariant
+  label: "Shape"
+
 Model.Shape.addChildren [
   Model.Transform.createVariant()
 ]
@@ -141,6 +149,7 @@ createAnchor = (x, y) ->
 
 
 Model.PathComponent = Model.Component.createVariant
+  devLabel: "PathComponent"
   label: "Path"
   graphicClass: Graphic.PathComponent
 
@@ -176,6 +185,7 @@ Model.Rectangle.addChildren [
 
 
 Model.TextComponent = Model.Component.createVariant
+  devLabel: "TextComponent"
   label: "Text"
   graphicClass: Graphic.TextComponent
 
