@@ -100,6 +100,19 @@ test "Self- and mutually-referential objects work", (t) ->
 
   t.end()
 
+test "Situation which tricks deep-equal-ident works", (t) ->
+  # See https://github.com/fkling/deep-equal-ident/issues/3
+
+  a = [[]]
+  case1 = [a, a[0]]
+  case2 = [a, []]
+
+  t.deepEqual(case1, case2,  "objects are deep-equal as values")
+  t.notOk(cyclicDeepEqual(case1, case2), "objects are not cyclic-deep-equal")
+  t.notOk(cyclicDeepEqual(case2, case1), "objects are not cyclic-deep-equal")
+
+  t.end()
+
 test "Prototypes are checked appropriately", (t) ->
   make1 = ->
     a = {x: {}, y: {}}
