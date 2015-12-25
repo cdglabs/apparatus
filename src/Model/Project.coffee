@@ -1,6 +1,7 @@
 _ = require "underscore"
 Model = require "./Model"
 Dataflow = require "../Dataflow/Dataflow"
+NodeVisitor = require "../Util/NodeVisitor"
 
 
 module.exports = class Project
@@ -101,6 +102,33 @@ module.exports = class Project
     # Insert master into createPanelElements.
     index = @createPanelElements.indexOf(@editingElement)
     @createPanelElements.splice(index, 0, master)
+
+  findUnnecessaryNodes: ->
+    # These nodes are necessary per se.
+    rootNodes = @createPanelElements.slice()
+    for name, obj of Model
+      if Model.Node.isPrototypeOf(obj)
+        rootNodes.push(obj)
+
+    unnecessaryNodes = []
+
+    # If a node is necessary, its master is necessary and its children are
+    # necessary. Its parent and its variants are not necessarily necessary.
+    necessaryNodeVisitor = new NodeVisitor
+      linksToFollow: {master: yes, variants: no, parent: no, children: yes}
+    necessaryNodeVisitor.visit(rootNode) for rootNode in rootNodes
+
+    connectedNodeVisitor = new NodeVisitor
+      linksToFollow: {master: yes, variants: yes, parent: yes, children: yes}
+      onVisit: (node) ->
+        if !necessaryNodeVisitor.hasVisited(node)
+          unnecessaryNodes.push(node)
+    connectedNodeVisitor.visit(rootNode) for rootNode in rootNodes
+
+    connectedNodeVisitor.finish()
+    necessaryNodeVisitor.finish()
+
+    return unnecessaryNodes
 
 
   # ===========================================================================
