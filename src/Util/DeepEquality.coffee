@@ -10,9 +10,14 @@ module.exports = DeepEquality = {}
 #   Opts:
 #     checkPrototypes (default: true) -- whether equality of prototypes should
 #       be included in the checking process
-DeepEquality.cyclicDeepEqual = (a, b, opts={checkPrototypes: true}) ->
+DeepEquality.cyclicDeepEqual = (a, b, opts) ->
   # This code is adapted from Anders Kaseorg's post at
   # http://stackoverflow.com/a/32794387/668144.
+
+  opts ?= {}
+  _.defaults(opts, {
+    checkPrototypes: true,
+  })
 
   left = []
   right = []
