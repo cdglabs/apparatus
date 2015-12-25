@@ -116,7 +116,11 @@ test "Prototypes are checked appropriately", (t) ->
   t.notOk(
     cyclicDeepEqual(make1(), make2())
     "test objects are not equal if you check prototypes")
-  t.ok(cyclicDeepEqual(make1(), make1()))
-  t.ok(cyclicDeepEqual(make2(), make2()))
+  t.ok(
+    cyclicDeepEqual(make1(), make1()),
+    "first kind is cyclic-deep-equal to itself")
+  t.ok(
+    cyclicDeepEqual(make2(), make2()),
+    "second kind is cyclic-deep-equal to itself")
 
   t.end()
