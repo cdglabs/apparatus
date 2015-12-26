@@ -74,6 +74,8 @@ _ = require "underscore"
 
 
 module.exports = Node = {
+  label: "Node"
+
   constructor: ->
     @_master = null
     @_variants = []
@@ -261,6 +263,50 @@ module.exports = Node = {
     @removeChild(childToReplace)
     @addChild(replacementNode, index)
 
+
+  # ===========================================================================
+  # Dev tools
+  # ===========================================================================
+
+  devLabel: ->
+    return @devLabel || @label || "[NO LABEL]"
+
+  # Returns a chain of masters.
+  masterLineage: (labelsOnly=false) ->
+    @lineage("master", labelsOnly)
+
+  # Returns a chain by following these rules:
+  #   * If you have a parent, it comes next.
+  #   * Otherwise, if you have a master, it comes next.
+  #   * Otherwise, we're done.
+  parentThenMasterLineage: (labelsOnly=false)->
+    @lineage(["parent", "master"], labelsOnly)
+
+  # Returns a chain by following these rules:
+  #   * If you have a head (other than yourself), it comes next.
+  #   * Otherwise, if you have a master, it comes next.
+  #   * Otherwise, we're done.
+  headThenMasterLineage:  (labelsOnly=false)->
+    @lineage(["head", "master"], labelsOnly)
+
+  # Returns a chain by following links in a provided order of precedence. Step
+  # type annotations are provided if `precedence` is an array, rather than a
+  # single type.
+  lineage: (precedence, labelsOnly=false) ->
+    entry = if labelsOnly then @devLabel() else this
+    precedenceIsArray = _.isArray(precedence)
+    precedenceArray = if precedenceIsArray then precedence else [precedence]
+    for stepType in precedenceArray
+      possibleNextStep = @["_" + stepType]
+      if possibleNextStep and (possibleNextStep != this)
+        nextStepType = stepType
+        lineage = possibleNextStep.lineage(precedence, labelsOnly)
+        break
+    if not nextStepType
+      nextStepType = "end"
+      lineage = []
+    lineage.unshift(if precedenceIsArray then [entry, nextStepType] else entry)
+    return lineage
 }
 
 Node.constructor()

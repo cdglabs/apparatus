@@ -8,6 +8,8 @@ Model = require "./Model"
 
 
 module.exports = Attribute = Node.createVariant
+  label: "Attribute"
+
   constructor: ->
     # Call "super" constructor
     Node.constructor.apply(this, arguments)

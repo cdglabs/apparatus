@@ -7,6 +7,8 @@ Util = require "../Util/Util"
 
 
 module.exports = Element = Node.createVariant
+  label: "Element"
+
   constructor: ->
     # Call "super" constructor
     Node.constructor.apply(this, arguments)
