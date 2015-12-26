@@ -464,7 +464,7 @@ R.create "Swatches",
     spreadOrigins = Spread.origins(value)
 
     R.span {
-      className: "Swatches FlexRow"
+      className: "Swatches FlexRowInline"
       style
     },
       spreadOrigins.map (origin, i) =>

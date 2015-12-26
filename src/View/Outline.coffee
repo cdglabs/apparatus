@@ -111,6 +111,14 @@ R.create "OutlineItem",
 
     layout = @context.editor.layout
 
+    if @context.editor.experimental
+      # headMaster is the non-built-in master of a head
+      master = element.master()
+      builtIn = _.values(Model)
+      isHead = (element.head() == element) and !_.contains(builtIn, master)
+      if isHead
+        headMaster = master
+
     R.div {
       className: R.cx {
         OutlineItem: true
@@ -137,7 +145,12 @@ R.create "OutlineItem",
             setValue: @_setLabelValue
             onClick: => @_select()
           }
-        R.SwatchesForElement {element}
+          R.SwatchesForElement {element}
+        if headMaster
+          R.a {className: "ElementRowHeadMasterLink", href: "#", onClick: @_onClickHeadMaster},
+            if element.hasOwnProperty('label')
+              "#{headMaster.label} "
+            R.span {className: "icon-copy"}
       if layout.showAttributesInOutline
         R.NovelAttributesList {element, context: "Outline"}
 
@@ -185,6 +198,11 @@ R.create "OutlineItem",
     particularElement = new Model.ParticularElement(element)
     project.select(particularElement)
 
+  _onClickHeadMaster: (ev) ->
+    ev.preventDefault()
+    project = @context.project
+    element = @props.element
+    project.setEditing(element.master())
 
   # ===========================================================================
   # Drag Reorder

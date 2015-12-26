@@ -6,6 +6,7 @@
   font-family: "icons";
   src: url("./icons.eot");
   src: url("./icons.eot?#iefix") format("embedded-opentype"),
+       url("./icons.woff2") format("woff2"),
        url("./icons.woff") format("woff"),
        url("./icons.ttf") format("truetype"),
        url("./icons.svg#icons") format("svg");
@@ -23,6 +24,7 @@
 [data-icon]:before { content: attr(data-icon); }
 
 [data-icon]:before,
+.icon-copy:before,
 .icon-edit:before,
 .icon-fullscreen:before,
 .icon-grip:before,
@@ -43,6 +45,7 @@
   font-smoothing: antialiased;
 }
 
+.icon-copy:before { content: "\f106"; }
 .icon-edit:before { content: "\f100"; }
 .icon-fullscreen:before { content: "\f101"; }
 .icon-grip:before { content: "\f102"; }

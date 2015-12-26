@@ -75,6 +75,10 @@ canvas
   display flex
   flex-direction row
 
+.FlexRowInline
+  display inline-flex
+  flex-direction row
+
 .FlexColumn
   display flex
   flex-direction column
@@ -337,14 +341,21 @@ HeaderSize = 18px
   &.isSelected
     background-color tint(selectedColor, 88%)
   &.isController
-    .ElementRow
+    .ElementRowLabel
       color #c66
 
 
 .ElementRow
-  padding: 0.175em 0
+  display flex
+  padding: 0.175em 0.35em 0.175em 0
   .ElementRowDisclosure
     width 1.5em
+  .ElementRowLabel
+    flex-grow 1
+  .ElementRowHeadMasterLink
+    flex-grow 0
+    opacity 0.4
+    padding-right 0.5em
 
 
 .DisclosureTriangle
