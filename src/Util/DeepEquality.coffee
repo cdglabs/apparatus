@@ -4,135 +4,56 @@ _ = require "underscore"
 module.exports = DeepEquality = {}
 
 
-# Terminology: A "part" of a JS value is an object or array accessible from the
-# value through recursive property access (including array indexing). If we
-# like, we can also include prototype access as part of our recursive process,
-# though its best to ignore the boring prototype Object.prototype.
-
-
 # cyclicDeepEqual compares two Javascript values. It is comfortable with values
 # which have cyclic references between their parts. In this case, it will ensure
 # that the two values have isomorphic reference graphs.
 #   Opts:
 #     checkPrototypes (default: true) -- whether equality of prototypes should
 #       be included in the checking process
-#     log (default: false) -- whether to log debugging info
 DeepEquality.cyclicDeepEqual = (a, b, opts) ->
-  # PLAN:
-  # Recursively check that each piece of a matches a corresponding piece of b.
-  # checkPartsEqual should do real work for each part aPart of a only once. This
-  # is possible with the following strategy:
-  #  * The first time checkPartsEqual is called on aPart, it checks that bPart
-  #    is a valid, unclaimed part of b, and then records the association between
-  #    aPart and bPart in an array called aPartToBPart. checkPartsEqual can then
-  #    go on to check that aPart and bPart are in fact equal, largely via
-  #    recursive calls.
-  #  * If checkPartsEqual is called on aPart a second time, this is the result
-  #    of either a cyclic reference during the checking of aPart, or the
-  #    checking of some unrelated part of a. In either case, it suffices to
-  #    check that bPart matches the part of b previously recorded in
-  #    aPartToBPart.
+  # This code is adapted from Anders Kaseorg's post at
+  # http://stackoverflow.com/a/32794387/668144.
+
+  # Note that deep-equal-ident should not be used unless
+  # https://github.com/fkling/deep-equal-ident/issues/3
+  # is fixed.
 
   opts ?= {}
   _.defaults(opts, {
-    log: false,
     checkPrototypes: true,
   })
 
-  context = {
-    aParts: _extractParts(a, opts),
-    bParts: _extractParts(b, opts),
-    aPartToBPart: [],
-  }
+  left = []
+  right = []
+  has = Object.prototype.hasOwnProperty
 
-  if context.log then console.log 'aParts', context.aParts
-  if context.log then console.log 'bParts', context.bParts
+  visit = (a, b) ->
+    if typeof a != 'object' || typeof b != 'object' || a == null || b == null
+      return a == b
 
-  return _checkValuesEqual(a, b, opts, context)
+    for i in [0...left.length]
+      if (a == left[i])
+        return b == right[i]
+      if (b == right[i])
+        return a == left[i]
 
+    for own k of a
+      return false if !has.call(b, k)
+    for own k of b
+      return false if !has.call(a, k)
 
-_extractParts = (value, opts, toReturn = []) ->
-  {checkPrototypes} = opts
+    left.push(a)
+    right.push(b)
 
-  if _.isArray(value)
-    if toReturn.indexOf(value) != -1
-      return
-    toReturn.push(value)
-    for subValue in value
-      _extractParts(subValue, opts, toReturn)
-  else if _.isObject(value)
-    if toReturn.indexOf(value) != -1
-      return
-    toReturn.push(value)
-    for key, subValue of value
-      _extractParts(subValue, opts, toReturn)
-    if checkPrototypes
-      valuePrototype = Object.getPrototypeOf(value)
-      if valuePrototype != Object.prototype
-        _extractParts(valuePrototype, opts, toReturn)
-  return toReturn
+    for own k of a
+      return false if !visit(a[k], b[k])
 
-
-# For this helper, aValue should be a part of a or a primitive value.
-_checkValuesEqual = (aValue, bValue, opts, context) ->
-  {log} = opts
-  {aParts, bParts, aPartToBPart} = context
-
-  if log then console.log 'checkValuesEqual', aValue, bValue
-  if _.isArray(aValue) or _.isObject(aValue)
-    return _checkPartsEqual(aValue, bValue, opts, context)
-  else
-    return aValue == bValue
-
-# For this helper, aPart should be a part of a.
-_checkPartsEqual = (aPart, bPart, opts, context) ->
-  {log, checkPrototypes} = opts
-  {aParts, bParts, aPartToBPart} = context
-
-  if log then console.log 'checkPartsEqual', aPart, bPart
-
-  aPartIndex = aParts.indexOf(aPart)
-  if log then console.log '  aPartIndex', aPartIndex
-
-  bPartIndex = bParts.indexOf(bPart)
-  if log then console.log '  bPartIndex', bPartIndex
-  if aPartToBPart[aPartIndex]?
-    # aPart has a corresponding bPart recorded in aPartToBPart. This is all we
-    # need to check.
-    return aPartToBPart[aPartIndex] == bPartIndex
-
-  if aPartToBPart.indexOf(bPartIndex) != -1
-    # bPart is already claimed by a different a part!
-    return false
-
-  aPartToBPart[aPartIndex] = bPartIndex
-
-  if _.isArray(aPart)
-    if !_.isArray(bPart)
-      return false
-    if aPart.length != bPart.length
-      return false
-    for aSubValue, i in aPart
-      if !_checkValuesEqual(aSubValue, bPart[i], opts, context)
-        return false
-    return true
-  else if _.isObject(aPart)
-    if !_.isObject(bPart)
-      return false
-    if _.keys(aPart).length != _.keys(bPart).length
-      return false
-    for own key, aSubValue of aPart
-      if !_checkValuesEqual(aSubValue, bPart[key], opts, context)
-        return false
-    if checkPrototypes
-      aPartProto = Object.getPrototypeOf(aPart)
-      bPartProto = Object.getPrototypeOf(bPart)
-      if !(aPartProto == Object.prototype and bPartProto == Object.prototype)
-        # one of them is interesting!
-        if aPartProto == Object.prototype or bPartProto == Object.prototype
-          # one of them isn't interesting!
-          return false
-        if !_checkValuesEqual(aPartProto, bPartProto, opts, context)
-          return false
+    if opts.checkPrototypes
+      # NOTE: This is changed from StackOverflow version, to allow prototypes to
+      # be part of the maybe-isomorphic reference graphs rather than strictly
+      # equal to one another.
+      return false if !visit(Object.getPrototypeOf(a), Object.getPrototypeOf(b))
 
     return true
+
+  return visit(a, b)
