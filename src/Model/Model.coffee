@@ -149,7 +149,7 @@ createAnchor = (x, y) ->
 
 
 Model.PathComponent = Model.Component.createVariant
-  devLabel: "PathComponent"
+  _devLabel: "PathComponent"
   label: "Path"
   graphicClass: Graphic.PathComponent
 
@@ -185,7 +185,7 @@ Model.Rectangle.addChildren [
 
 
 Model.TextComponent = Model.Component.createVariant
-  devLabel: "TextComponent"
+  _devLabel: "TextComponent"
   label: "Text"
   graphicClass: Graphic.TextComponent
 

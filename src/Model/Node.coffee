@@ -269,7 +269,7 @@ module.exports = Node = {
   # ===========================================================================
 
   devLabel: ->
-    return @devLabel || @label || "[NO LABEL]"
+    return @_devLabel || @label || "[NO LABEL]"
 
   # Returns a chain of masters.
   masterLineage: (labelsOnly=false) ->
