@@ -33,6 +33,14 @@ R.create "Menubar",
       # R.MenubarItem {title: "Duplicate", isDisabled: !isSelection, fn: @_duplicateSelectedElement}
       R.MenubarItem {title: "Create Symbol", isDisabled: !isSelection, fn: @_createSymbolFromSelectedElement}
 
+      if editor.experimental
+        [
+          R.div {className: "MenubarSeparator"}
+          R.div {className: "MenubarSeparator"}
+
+          R.div {style: {color: "red"}}, "Experimental mode is on"
+        ]
+
   componentDidMount: ->
     key "command+o, ctrl+o", (e) =>
       e.preventDefault()

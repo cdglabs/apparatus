@@ -35,6 +35,8 @@ module.exports = class Editor
   # (the ?stuff at the end of the URL).
   _parseQueryString: ->
     parsed = queryString.parse(location.search)
+    if parsed.experimental == '1'
+      @experimental = true
     if parsed.load
       @loadFromURL(parsed.load)
 
