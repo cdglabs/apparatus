@@ -4,6 +4,7 @@ Dataflow = require "../Dataflow/Dataflow"
 Model = require "./Model"
 Util = require "../Util/Util"
 Storage = require "../Storage/Storage"
+FirebaseAccess = require "../Storage/FirebaseAccess"
 
 
 module.exports = class Editor
@@ -39,6 +40,8 @@ module.exports = class Editor
       @experimental = true
     if parsed.load
       @loadFromURL(parsed.load)
+    else if parsed.loadFirebase
+      @loadFromFirebase(parsed.loadFirebase)
 
   # builtIn returns all of the built in classes and objects that are used as
   # the "anchors" for serialization and deserialization. That is, all of the
@@ -127,6 +130,33 @@ module.exports = class Editor
       @loadJsonStringIntoProjectFromExternalSource(jsonString)
     xhr.open("GET", url, true)
     xhr.send()
+
+  loadFromFirebase: (key) ->
+    @firebaseAccess ?= new FirebaseAccess()
+
+    @firebaseAccess.loadDrawingPromise(key)
+      .then (drawingData) =>
+        jsonString = drawingData.source
+        @loadJsonStringIntoProjectFromExternalSource(jsonString)
+      .catch (error) =>
+        if error instanceof FirebaseAccess.DrawingNotFoundError
+          console.warn "Drawing #{key} not found in Firebase!"
+        else
+          throw error
+      .done()
+
+  saveToFirebase: ->
+    @firebaseAccess ?= new FirebaseAccess()
+
+    jsonString = @getJsonStringOfProject()
+    @firebaseAccess.saveDrawingPromise(jsonString)
+      .then (key) ->
+        window.prompt(
+          'Saved successfully! Copy this link:',
+          # TODO: Remove experimental=1 when Firebase access is taken out of
+          # experimental mode
+          'http://aprt.us/editor/?experimental=1&loadFirebase=' + key)
+      .done()
 
 
   # ===========================================================================

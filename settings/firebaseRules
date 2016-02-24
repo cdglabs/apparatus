@@ -1,0 +1,26 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "drawings": {
+      ".read": true,
+
+      "$drawing": {
+        ".write": "!data.exists() && newData.exists()            // this is a create (not a delete or update)
+                   && auth != null                               // you are authenticated
+                   && newData.child('uid').val() == auth.uid     // you are including a uid which matches your auth uid
+                   && root.child('users/' + auth.uid).exists()"  // your uid is registered in `users`
+      }
+    },
+
+    "users": {
+      "$uid": {
+        ".write": "newData.exists()      // this is a create or an update (not a delete)
+                   && auth != null       // you are authenticated
+                   && $uid == auth.uid"  // you are editing the user entry corresponding to your auth uid
+
+      }
+    }
+  }
+}
