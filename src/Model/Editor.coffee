@@ -69,6 +69,21 @@ module.exports = class Editor
     @checkpoint()
     Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
 
+  mergeJsonStringIntoProject: (jsonString) ->
+    json = JSON.parse(jsonString)
+    # TODO: If the file format changes, this will need to check the version
+    # and convert or fail appropriately.
+    if json.type == "Apparatus"
+      otherProject = @serializer.dejsonify(json)
+      for createPanelElement in otherProject.createPanelElements
+        if createPanelElement not in @project.createPanelElements
+          @project.createPanelElements.push(createPanelElement)
+
+  mergeJsonStringIntoProjectFromExternalSource: (jsonString) ->
+    @mergeJsonStringIntoProject(jsonString)
+    @checkpoint()
+    Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
+
   getJsonStringOfProject: ->
     json = @serializer.jsonify(@project)
     json.type = "Apparatus"
@@ -112,6 +127,10 @@ module.exports = class Editor
   loadFromFile: ->
     Storage.loadFile (jsonString) =>
       @loadJsonStringIntoProjectFromExternalSource(jsonString)
+
+  mergeFromFile: ->
+    Storage.loadFile (jsonString) =>
+      @mergeJsonStringIntoProjectFromExternalSource(jsonString)
 
 
   # ===========================================================================

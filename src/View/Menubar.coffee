@@ -19,6 +19,8 @@ R.create "Menubar",
     R.div { className: "Menubar" },
       R.MenubarItem {title: "New", isDisabled: false, fn: @_new}
       R.MenubarItem {title: "Load", isDisabled: false, fn: @_load}
+      if editor.experimental
+        R.MenubarItem {title: "Merge", isDisabled: false, fn: @_merge}
       R.MenubarItem {title: "Save", isDisabled: false, fn: @_save}
       if editor.experimental
         R.MenubarItem {title: "Share", isDisabled: false, fn: @_share}
@@ -78,6 +80,10 @@ R.create "Menubar",
   _load: ->
     {editor} = @context
     editor.loadFromFile()
+
+  _merge: ->
+    {editor} = @context
+    editor.mergeFromFile()
 
   _save: ->
     {editor} = @context
