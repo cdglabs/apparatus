@@ -179,6 +179,25 @@ module.exports = class Editor
 
 
   # ===========================================================================
+  # Export
+  # ===========================================================================
+
+  exportSvg: ->
+    # These scaling parameters are arbitrary. They should be configurable when
+    # you export.
+    viewMatrix = new Util.Matrix(100, 0, 0, -100, 0, 0) # scale, flip Y
+    opts = {viewMatrix}
+    graphics = @project.editingElement.allGraphics()
+    svgString = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"700\" height=\"700\">"
+    for graphic in graphics
+      svgString += graphic.toSvg(opts)
+    svgString += "</svg>"
+
+    fileName = @project.editingElement.label + ".svg"
+    Storage.saveFile(svgString, fileName, "image/svg+xml;charset=utf-8")
+
+
+  # ===========================================================================
   # Revision History
   # ===========================================================================
 

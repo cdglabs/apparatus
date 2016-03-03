@@ -60,6 +60,19 @@ class Graphic.Element
     ###
     throw "Not implemented"
 
+  toSvg: (opts) ->
+    ###
+
+    Returns an svg for the graphic as a string. The svg string does not have a
+    wrapper <svg> element.
+
+    Opts:
+
+    viewMatrix:
+
+    ###
+    throw "Not implemented"
+
 
   # ===========================================================================
   # Helpers
@@ -91,6 +104,11 @@ class Graphic.Group extends Graphic.Element
     else
       return null
 
+  toSvg: (opts) ->
+    svgString = ""
+    for childGraphic in @childGraphics
+      svgString += childGraphic.toSvg(opts)
+    return svgString
 
 
 class Graphic.Anchor extends Graphic.Element
@@ -117,9 +135,28 @@ class Graphic.Path extends Graphic.Element
     else
       return null
 
+  toSvg: ({viewMatrix}) ->
+    anchors = @collectAnchors()
+    pointStrings = []
+    for anchor in anchors
+      [x, y] = viewMatrix.compose(anchor.matrix).origin()
+      pointStrings.push("#{x},#{y}")
+    pointsAttribute = "points=\"#{pointStrings.join(" ")}\""
+    paintAttributes = @svgPaintAttributes()
+    elementName = if @isClosed() then "polygon" else "polyline"
+    return "<#{elementName} #{pointsAttribute} #{paintAttributes} />"
+
+
   performPaintOps: ({ctx}) ->
     for component in @componentsOfType(Graphic.PaintOp)
       component.paint(ctx)
+
+  svgPaintAttributes: ->
+    # Note: below needs to be fixed once Elements are allowed to have multiple
+    # fill, stroke, etc. Components.
+    fillAttribute = @componentOfType(Graphic.Fill).toSvg()
+    strokeAttribute = @componentOfType(Graphic.Stroke).toSvg()
+    return "#{fillAttribute} #{strokeAttribute}"
 
   highlightIfNecessary: ({highlight, ctx}) ->
     return unless highlight
@@ -168,6 +205,21 @@ class Graphic.Circle extends Graphic.Path
     ctx.arc(0, 0, 1, 0, 2 * Math.PI, false)
     ctx.restore()
 
+  toSvg: ({viewMatrix}) ->
+    matrix = viewMatrix.compose(@matrix)
+    # TODO: In canvas we can transform a path without transforming a stroke.
+    # In SVG, the only way to do this is with the vector-effect attribute. But
+    # that is not supported in SVG 1.1, and I want this to work with CairoSVG,
+    # laser cutter, etc. So for now, I'm just going to assume all circles are
+    # transformed with only translation, rotation, and uniform scaling; not
+    # the more general case of all affine transformations.
+    r = Math.sqrt(matrix.a*matrix.a + matrix.b*matrix.b)
+    cx = matrix.e
+    cy = matrix.f
+    paintAttributes = @svgPaintAttributes()
+    return "<circle cx=\"#{cx}\" cy=\"#{cy}\" r=\"#{r}\" #{paintAttributes} />"
+
+
 
 class Graphic.Text extends Graphic.Path
   render: (opts) ->
@@ -179,6 +231,10 @@ class Graphic.Text extends Graphic.Path
     if opts.highlight
       @buildPath(opts)
       @highlightIfNecessary(opts)
+
+  toSvg: ({viewMatrix}) ->
+    # TODO
+    return ""
 
   textComponent: ->
     @componentOfType(Graphic.TextComponent)
@@ -264,10 +320,20 @@ class Graphic.PaintOp extends Graphic.Component
 
 class Graphic.Fill extends Graphic.PaintOp
   paint: (ctx) ->
-    ctx.save()
-    ctx.fillStyle = @color
-    ctx.fill()
-    ctx.restore()
+    unless @isTransparent()
+      ctx.save()
+      ctx.fillStyle = @color
+      ctx.fill()
+      ctx.restore()
+
+  toSvg: ->
+    if @isTransparent()
+      return "fill=\"none\""
+    else
+      return "fill=\"#{@color}\""
+
+  isTransparent: ->
+    return @color == "transparent" or /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*0\s*\)$/.test(@color)
 
 class Graphic.Stroke extends Graphic.PaintOp
   paint: (ctx) ->
@@ -277,6 +343,9 @@ class Graphic.Stroke extends Graphic.PaintOp
     ctx.lineWidth = @lineWidth
     ctx.stroke()
     ctx.restore()
+
+  toSvg: ->
+    return "stroke=\"#{@color}\" stroke-width=\"#{@lineWidth}\""
 
 class Graphic.PathComponent extends Graphic.Component
 
