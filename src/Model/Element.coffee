@@ -1,17 +1,17 @@
 _ = require "underscore"
-Node = require "./Node"
+NodeWithAttributes = require "./NodeWithAttributes"
 Link = require "./Link"
 Model = require "./Model"
 Dataflow = require "../Dataflow/Dataflow"
 Util = require "../Util/Util"
 
 
-module.exports = Element = Node.createVariant
+module.exports = Element = NodeWithAttributes.createVariant
   label: "Element"
 
   constructor: ->
     # Call "super" constructor
-    Node.constructor.apply(this, arguments)
+    NodeWithAttributes.constructor.apply(this, arguments)
 
     # Because the expanded properly is not inherited, it is initialized in
     # the constructor for every Element.
@@ -45,7 +45,8 @@ module.exports = Element = Node.createVariant
 
   components: -> @childrenOfType(Model.Component)
 
-  attributes: ->
+  # Includes attributes of components!
+  allAttributes: ->
     result = []
     for variable in @variables()
       result.push(variable)
