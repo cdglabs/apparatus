@@ -13,6 +13,7 @@ Model.Layout = require "./Layout"
 
 # These are *variants of the Node object*
 Model.Node = require "./Node"
+Model.NodeWithAttributes = require "./NodeWithAttributes"
 Model.Link = require "./Link"
 Model.Attribute = require "./Attribute"
 Model.Element = require "./Element"
@@ -43,22 +44,8 @@ createAttribute = (label, name, exprString) ->
 # Components
 # =============================================================================
 
-Model.Component = Model.Node.createVariant
+Model.Component = Model.NodeWithAttributes.createVariant
   label: "Component"
-
-  attributes: ->
-    @childrenOfType(Model.Attribute)
-
-  getAttributesByName: ->
-    _.indexBy @attributes(), "name"
-
-  getAttributesValuesByName: ->
-    result = {}
-    for attribute in @attributes()
-      name = attribute.name
-      value = attribute.value()
-      result[name] = value
-    return result
 
   graphicClass: Graphic.Component
 

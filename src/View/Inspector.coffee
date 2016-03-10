@@ -79,7 +79,7 @@ R.create "NovelAttributesList",
     {project} = @context
 
     R.div {className: "AttributesList"},
-      for attribute in element.attributes()
+      for attribute in element.allAttributes()
         shouldShow = attribute.isNovel() or attribute.isVariantOf(Model.Variable)
         if shouldShow
           R.AttributeRow {attribute}
