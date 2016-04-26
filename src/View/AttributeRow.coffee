@@ -192,16 +192,3 @@ R.create "AttributeToken",
     {dragManager, hoverManager} = @context
     return if dragManager.drag?
     hoverManager.hoveredAttribute = null
-
-
-
-
-
-
-
-
-
-
-
-
-
