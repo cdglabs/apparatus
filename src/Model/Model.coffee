@@ -85,6 +85,28 @@ Model.Transform.addChildren [
 ]
 
 
+Model.Position = Model.Component.createVariant
+  label: "Position"
+  matrix: ->
+    {x, y} = @getAttributesValuesByName()
+    return Util.Matrix.naturalConstruct(x, y, 1, 1, 0)
+  defaultAttributesToChange: ->
+    {x, y} = @getAttributesByName()
+    return [x, y]
+  controllableAttributes: ->
+    {x, y} = @getAttributesByName()
+    return [x, y]
+  controlPoints: ->
+    {x, y} = @getAttributesByName()
+    return [
+      {point: [0, 0], attributesToChange: [x, y], filled: true}
+    ]
+
+Model.Position.addChildren [
+  createAttribute("X", "x", "0.00")
+  createAttribute("Y", "y", "0.00")
+]
+
 
 Model.Fill = Model.Component.createVariant
   label: "Fill"
@@ -117,19 +139,25 @@ Model.Shape.addChildren [
 ]
 
 
+Model.Point = Model.Element.createVariant()
+Model.Point.addChildren [
+  Model.Position.createVariant()
+]
+
+
 Model.Group = Model.Shape.createVariant
   label: "Group"
   graphicClass: Graphic.Group
 
 
-Model.Anchor = Model.Shape.createVariant
+Model.Anchor = Model.Point.createVariant
   label: "Anchor"
   graphicClass: Graphic.Anchor
 
 createAnchor = (x, y) ->
   anchor = Model.Anchor.createVariant()
-  transform = anchor.childOfType(Model.Transform)
-  attributes = transform.getAttributesByName()
+  position = anchor.childOfType(Model.Position)
+  attributes = position.getAttributesByName()
   attributes.x.setExpression(x)
   attributes.y.setExpression(y)
   return anchor
