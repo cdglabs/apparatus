@@ -30,7 +30,7 @@ Apparatus.editor = editor
 
 render = ->
   Dataflow.run ->
-    R.render(R.Editor({editor}), document.body)
+    R.render(R.Editor({editor}), document.getElementById("apparatus-container"))
 
 render()
 
@@ -75,4 +75,3 @@ refreshEventNames = [
 
 for eventName in refreshEventNames
   window.addEventListener(eventName, refresh)
-

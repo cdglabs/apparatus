@@ -1,4 +1,5 @@
 React = require "react"
+ReactDOM = require "react-dom"
 _ = require "underscore"
 
 Model = require "../Model/Model"
@@ -24,10 +25,10 @@ R.AnnotateMixin = {
   componentDidUpdate: -> @_annotateDOMNode()
   componentWillUnmount: -> @_clearAnnotation()
   _annotateDOMNode: ->
-    el = @getDOMNode()
+    el = ReactDOM.findDOMNode(@)
     el.annotation = @annotation()
   _clearAnnotation: ->
-    el = @getDOMNode()
+    el = ReactDOM.findDOMNode(@)
     delete el.annotation
 }
 
@@ -44,7 +45,8 @@ R.create = (name, spec) ->
   R[name] = React.createFactory(component)
 
 
-R.render = React.render
+R.render = ReactDOM.render
+R.findDOMNode = ReactDOM.findDOMNode
 
 
 desugarPropTypes = (propTypes) ->

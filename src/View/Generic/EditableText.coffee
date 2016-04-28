@@ -22,20 +22,20 @@ R.create "EditableText",
     @_refresh()
     # Autofocus if empty string value.
     if @props.value == "" or !@props.value
-      @getDOMNode().focus()
+      R.findDOMNode(@).focus()
 
   componentDidUpdate: ->
     @_refresh()
 
   _refresh: ->
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
     if el.textContent != @props.value
       el.textContent = @props.value
     @_isDirty = false
 
   _onInput: ->
     @_isDirty = true
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
     newValue = el.textContent
     @props.setValue(newValue)
 

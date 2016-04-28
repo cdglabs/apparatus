@@ -175,7 +175,7 @@ R.create "OutlineItem",
     {element} = @props
     {dragManager} = @context
 
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
     outlineTreeEl = Util.closest(el, ".OutlineTree")
     outlineEl = Util.closest(el, ".Outline")
     rect = outlineTreeEl.getBoundingClientRect()
