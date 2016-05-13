@@ -66,7 +66,8 @@ R.create "OutlineChildren",
 
   render: ->
     {element} = @props
-    R.div {className: "OutlineChildren"},
+    interpretationClasses = element.getAllowedShapeInterpretationContextForChildren().join(" ")
+    R.div {className: "OutlineChildren " + interpretationClasses},
       for childElement in element.childElements()
         R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
@@ -204,6 +205,7 @@ R.create "OutlineItem",
   # then insert at the end). If nothing is close enough, it will return null.
   _findDropSpot: (drag) ->
     {x, y, outlineEl} = drag
+    {element} = @props
     dragPosition = [x, y]
 
     # Temporarily hide OutlinePlaceholder for the purpose of this calculation.
@@ -219,8 +221,11 @@ R.create "OutlineItem",
       if quadrance < bestDropSpot.quadrance
         bestDropSpot = {quadrance, outlineChildrenEl, beforeOutlineTreeEl}
 
+    allowedDraggingClasses = element.getAllowedShapeInterpretationContext().map((interpretationContext) -> 
+      ".OutlineChildren." + interpretationContext).join(", ")
+
     # All the places within which we could drop.
-    outlineChildrenEls = outlineEl.querySelectorAll(".OutlineChildren")
+    outlineChildrenEls = outlineEl.querySelectorAll(allowedDraggingClasses)
 
     for outlineChildrenEl in outlineChildrenEls
       # Don't try to insert it into itself!
