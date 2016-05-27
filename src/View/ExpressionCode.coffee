@@ -66,6 +66,7 @@ R.create "ExpressionCode",
 
     @mirror.on("change", @_onChange)
     @mirror.on("mousedown", @_onMirrorMouseDown)
+    @mirror.on("dblclick", @_onMirrorDoubleClick)
     @componentDidUpdate()
 
   componentDidUpdate: ->
@@ -81,6 +82,12 @@ R.create "ExpressionCode",
     if Util.matches(el, ".cm-number")
       mouseDownEvent.preventDefault()
       @_startNumberScrub(mouseDownEvent)
+
+  _onMirrorDoubleClick: (mirror, dblClickEvent) ->
+    el = dblClickEvent.target
+    if Util.matches(el, ".cm-number")
+      dblClickEvent.preventDefault()
+      @_endNumberScrub(dblClickEvent) 
 
   _onMouseUp: (mouseUpEvent) ->
     {attribute} = @props
@@ -334,6 +341,10 @@ R.create "ExpressionCode",
     @mirror.focus()
     @mirror.setSelection(start, end)
     @_startScrubbingSelection(mouseDownEvent)
+
+  _endNumberScrub: (dblClickEvent) ->
+    position = @mirror.coordsChar({left: dblClickEvent.clientX, top: dblClickEvent.clientY})
+    @mirror.setCursor(position)
 
   _getTokenPositionFromCursor: (mouseDownEvent) ->
     position = @mirror.coordsChar({left: mouseDownEvent.clientX, top: mouseDownEvent.clientY})
