@@ -13,6 +13,7 @@
    "url" : "http://github.com/cdglabs/apparatus.git"
   },
   "dependencies": {
+    "autoprefixer": "^6.3.6",
     "codemirror": "^5.4.0",
     "firebase": "^2.3.2",
     "keymaster": "^1.6.2",
