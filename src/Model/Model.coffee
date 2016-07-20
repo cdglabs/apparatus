@@ -194,7 +194,7 @@ Model.Circle = Model.Path.createVariant
   label: "Circle"
   getAllowedShapeInterpretationContextForChildren: () ->
     return [NONE]
-  
+
   graphicClass: Graphic.Circle
 
 
@@ -233,4 +233,25 @@ Model.Text = Model.Shape.createVariant
 
 Model.Text.addChildren [
   Model.TextComponent.createVariant()
+]
+
+
+Model.HtmlComponent = Model.Component.createVariant
+  _devLabel: "HtmlComponent"
+  label: "Html"
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
+
+  graphicClass: Graphic.HtmlComponent
+
+Model.HtmlComponent.addChildren [
+  createAttribute("Html", "html", '"<i>Html</i>"')
+]
+
+Model.Html = Model.Shape.createVariant
+  label: "Html"
+  graphicClass: Graphic.Html
+
+Model.Html.addChildren [
+  Model.HtmlComponent.createVariant()
 ]

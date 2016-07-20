@@ -254,6 +254,24 @@ class Graphic.Text extends Graphic.Path
     ctx.restore()
 
 
+class Graphic.Html extends Graphic.Element
+  render: (opts) ->
+    ctx = opts.ctx
+    ctx.save()
+
+    {html} = @htmlComponent()
+    ctx.fillText(html, 0, 0)
+
+    ctx.restore()
+
+  htmlComponent: ->
+    @componentOfType(Graphic.HtmlComponent)
+
+  hitDetect: (opts) ->
+    # TODO
+    return null
+
+
 # =============================================================================
 # Components
 # =============================================================================
@@ -281,6 +299,8 @@ class Graphic.Stroke extends Graphic.PaintOp
 class Graphic.PathComponent extends Graphic.Component
 
 class Graphic.TextComponent extends Graphic.Component
+
+class Graphic.HtmlComponent extends Graphic.Component
 
 # =============================================================================
 # Dummy Canvas
