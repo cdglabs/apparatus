@@ -32,8 +32,9 @@ R.create "AttributeRow",
           }
           onClick: @_toggleControl
         }
-      R.div {className: "AttributeRowLabel"},
-        R.AttributeLabel {attribute}
+      R.div {style: {width: '9em'}},
+        R.div {className: "AttributeRowLabel"},
+          R.AttributeLabel {attribute}
       R.div {className: "AttributeRowExpression"},
         R.Expression {attribute}
 
