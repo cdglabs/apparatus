@@ -90,17 +90,34 @@ R.create "AttributeLabel",
         Interactive: true
         isHovered: hoverManager.hoveredAttribute == attribute
         isGoingToChange: _.contains(hoverManager.attributesToChange, attribute)
+        isMenuHovered: @isMenuHovered
       }
-      onMouseDown: @_onMouseDown
-      onMouseEnter: @_onMouseEnter
-      onMouseLeave: @_onMouseLeave
     },
-      R.EditableText {
-        className: "EditableTextInline Interactive"
-        value: attribute.label
-        setValue: (newValue) ->
-          attribute.label = newValue
-      }
+      R.span {
+        className: R.cx {
+          AttributeLabelMainPart: true
+        }
+        onMouseDown: @_onMouseDown
+        onMouseEnter: @_onMouseEnter
+        onMouseLeave: @_onMouseLeave
+      },
+        R.EditableText {
+          className: "EditableTextInline Interactive"
+          value: attribute.label
+          setValue: (newValue) ->
+            attribute.label = newValue
+        }
+      R.span {
+        className: R.cx {
+          AttributeLabelMenuPart: true
+        }
+        onMouseDown: @_onMenuMouseDown
+        onMouseEnter: @_onMenuMouseEnter
+        onMouseLeave: @_onMenuMouseLeave
+      },
+        R.span {className: R.cx {AttributeLabelMenuPartIcon: true}},
+          "\u25BE"
+
 
   annotation: ->
     # For autocomplete to find all the attributes on the screen.
@@ -145,6 +162,11 @@ R.create "AttributeLabel",
     return if dragManager.drag?
     hoverManager.hoveredAttribute = null
 
+  _onMenuMouseEnter: (e) ->
+    @isMenuHovered = true
+
+  _onMenuMouseLeave: (e) ->
+    @isMenuHovered = false
 
 R.create "AttributeToken",
   propTypes:
