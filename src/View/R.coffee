@@ -95,6 +95,7 @@ require "./Inspector"
 require "./AttributeRow"
 require "./Expression"
 require "./ExpressionCode"
+require "./Viewer"
 
 
 Dropzone = require "react-dropzone"

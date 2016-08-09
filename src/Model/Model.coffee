@@ -7,6 +7,8 @@ TestImage = require "../Util/TestImage"
 
 module.exports = Model = {}
 
+Model.SerializerWithBuiltIns = require "./SerializerWithBuiltIns"
+
 # These are *classes*
 Model.Project = require "./Project"
 Model.ParticularElement = require "./ParticularElement"
