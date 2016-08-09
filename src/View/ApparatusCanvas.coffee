@@ -6,18 +6,39 @@ Model = require "../Model/Model"
 Util = require "../Util/Util"
 
 
-R.create "Canvas",
+# "ApparatusCanvas" is a component which shows a rendered Apparatus diagram. It
+# is used in two different contexts:
+#   * EditorCanvas: the main direct-manipulation region of the Apparatus editor,
+#   * ThumbnailCanvas: the symbol previews on the left-hand side
+
+R.create "ApparatusCanvas",
   contextTypes:
-    editor: Model.Editor
     project: Model.Project
     hoverManager: R.HoverManager
     dragManager: R.DragManager
 
+  propTypes:
+    className: String
+    element: Model.Element
+    cacheRect: Boolean  # should the element's size / position be cached?
+
+    # display
+    screenMatrixScale: Number
+    hideGrid: Boolean
+    highlightControllers: Boolean
+    highlightNonControllers: Boolean
+    showControlPoints: Boolean
+
+    # interaction
+    enableGeneralInteraction: Boolean
+    enableControllerInteraction: Boolean
+    enablePanAndZoom: Boolean
+
   render: ->
-    layout = @context.editor.layout
+    {className, children} = @props
 
     R.div {
-      className: "Canvas"
+      className: className
       onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
@@ -28,15 +49,7 @@ R.create "Canvas",
         ref: "HTMLCanvas"
         draw: @_draw
       }
-      R.div {
-        className: R.cx {
-          LayoutMode: true
-          FullScreen: layout.fullScreen
-          "icon-fullscreen": !layout.fullScreen
-          "icon-edit": layout.fullScreen
-        }
-        onClick: @_toggleLayout
-      }
+      children
 
   componentDidMount: ->
     window.addEventListener "resize", @_onResize
@@ -46,29 +59,33 @@ R.create "Canvas",
   # ===========================================================================
 
   _draw: (ctx) ->
+    {element} = @props
     {project, hoverManager} = @context
     viewMatrix = @_viewMatrix()
 
-    highlight = (graphic) ->
+    highlight = (graphic) =>
       particularElement = graphic.particularElement
-      if hoverManager.controllerParticularElement?.isAncestorOf(particularElement)
-        return {color: "#c00", lineWidth: 2.5}
-      if project.selectedParticularElement?.isAncestorOf(particularElement)
-        return {color: "#09c", lineWidth: 2.5}
-      if hoverManager.hoveredParticularElement?.isAncestorOf(particularElement)
-        return {color: "#0c9", lineWidth: 2.5}
+      if @props.highlightControllers
+        if hoverManager.controllerParticularElement?.isAncestorOf(particularElement)
+          return {color: "#c00", lineWidth: 2.5}
+      if @props.highlightNonControllers
+        if project.selectedParticularElement?.isAncestorOf(particularElement)
+          return {color: "#09c", lineWidth: 2.5}
+        if hoverManager.hoveredParticularElement?.isAncestorOf(particularElement)
+          return {color: "#0c9", lineWidth: 2.5}
 
     renderOpts = {ctx, viewMatrix, highlight}
 
     # HACK: This feature should exist but there is currently no way to set
     # isGridHidden in the UI (you can only set it in the console...)
-    unless @_editingElement().isGridHidden
+    if not @props.hideGrid and not element.isGridHidden
       @_drawBackgroundGrid(ctx)
 
     for graphic in @_graphics()
       graphic.render(renderOpts)
 
-    @_drawControlPoints(ctx)
+    if @props.showControlPoints
+      @_drawControlPoints(ctx)
 
   _drawControlPoints: (ctx) ->
     {hoverManager} = @context
@@ -191,15 +208,16 @@ R.create "Canvas",
     {dragManager} = @context
     return unless dragManager.drag?.type == "createElement"
 
-    element = dragManager.drag.element
-    @_createElement(mouseEvent, element)
+    elementToCreate = dragManager.drag.element
+    @_createElement(mouseEvent, elementToCreate)
 
   _onMouseLeave: (mouseEvent) ->
     # TODO
 
   _onWheel: (wheelEvent) ->
-    wheelEvent.preventDefault()
-    @_zoom(wheelEvent)
+    if @props.enablePanAndZoom
+      wheelEvent.preventDefault()
+      @_zoom(wheelEvent)
 
   _isDoubleClick: ->
     doubleClickThreshold = 400
@@ -271,18 +289,24 @@ R.create "Canvas",
   _updateHoverAndCursor: (mouseEvent) ->
     {hoverManager} = @context
     {controlPoint, controller, nextSelectSingle, attributesToChange} = @_intent(mouseEvent)
-    hoverManager.hoveredParticularElement = nextSelectSingle
-    hoverManager.controllerParticularElement = controller
-    hoverManager.attributesToChange = attributesToChange
+
+    if @props.enableGeneralInteraction
+      hoverManager.hoveredParticularElement = nextSelectSingle
+
+    if @props.enableControllerInteraction
+      hoverManager.controllerParticularElement = controller
+      hoverManager.attributesToChange = attributesToChange
+
     # TODO: set cursor
 
   _updateSelected: (mouseEvent, isDoubleClick) ->
-    {project} = @context
-    {nextSelectDouble, nextSelectSingle} = @_intent(mouseEvent)
-    if isDoubleClick
-      project.select(nextSelectDouble)
-    else
-      project.select(nextSelectSingle)
+    if @props.enableGeneralInteraction
+      {project} = @context
+      {nextSelectDouble, nextSelectSingle} = @_intent(mouseEvent)
+      if isDoubleClick
+        project.select(nextSelectDouble)
+      else
+        project.select(nextSelectSingle)
 
 
   # ===========================================================================
@@ -295,15 +319,17 @@ R.create "Canvas",
 
     if controlPoint
       particularElementToDrag = project.selectedParticularElement
-    else
-      particularElementToDrag = controller ? nextSelectSingle
+    if @props.enableControllerInteraction
+      particularElementToDrag ?= controller
+    if @props.enableGeneralInteraction
+      particularElementToDrag ?= nextSelectSingle
 
     if particularElementToDrag
       accumulatedMatrix = particularElementToDrag.accumulatedMatrix()
       originalMousePixel = @_mousePosition(mouseDownEvent)
       originalMouseLocal = @_viewMatrix().compose(accumulatedMatrix).toLocal(originalMousePixel)
       @_startDrag(mouseDownEvent, particularElementToDrag, attributesToChange, originalMouseLocal)
-    else
+    else if @props.enablePanAndZoom
       @_startPan(mouseDownEvent)
 
   _startDrag: (mouseDownEvent, particularElementToDrag, attributesToChange, originalMouseLocal, startImmediately=false) ->
@@ -347,11 +373,12 @@ R.create "Canvas",
     if startImmediately
       dragManager.drag.onMove(mouseDownEvent)
 
-  _createElement: (mouseEvent, element) ->
+  _createElement: (mouseEvent, elementToCreate) ->
+    {element} = @props
     {project} = @context
 
-    parent = @_editingElement()
-    newElement = element.createVariant()
+    parent = element
+    newElement = elementToCreate.createVariant()
     parent.addChild(newElement)
 
     newParticularElement = new Model.ParticularElement(newElement)
@@ -367,8 +394,8 @@ R.create "Canvas",
   # ===========================================================================
 
   _startPan: (mouseDownEvent) ->
+    {element} = @props
     {dragManager} = @context
-    element = @_editingElement()
     originalMousePixel = @_mousePosition(mouseDownEvent)
     originalMouseLocal = @_viewMatrix().toLocal(originalMousePixel)
     dragManager.start mouseDownEvent,
@@ -380,7 +407,7 @@ R.create "Canvas",
         element.viewMatrix = element.viewMatrix.translate(offset...)
 
   _zoom: (wheelEvent) ->
-    element = @_editingElement()
+    {element} = @props
     scaleFactor = Math.pow(1.001, -wheelEvent.deltaY)
     mousePixel = @_mousePosition(wheelEvent)
     [x, y] = @_viewMatrix().toLocal(mousePixel)
@@ -390,10 +417,6 @@ R.create "Canvas",
     matrix = matrix.scale(scaleFactor, scaleFactor)
     matrix = matrix.translate(-x, -y)
     element.viewMatrix = matrix
-
-  _toggleLayout: ->
-    { layout } = @context.editor
-    layout.toggleFullScreen()
 
   # ===========================================================================
   # Hit Detection
@@ -423,25 +446,74 @@ R.create "Canvas",
   # ===========================================================================
 
   _rect: ->
-    return @_rectCached if @_rectCached?
+    return @_rectCached if @_rectCached? and @props.cacheRect
     el = R.findDOMNode(@)
     return @_rectCached = el.getBoundingClientRect()
-
-  _editingElement: ->
-    project = @context.project
-    element = project.editingElement
-    return element
 
   _graphics: (useCached=false) ->
     if useCached and @_cachedGraphics
       return @_cachedGraphics
-    element = @_editingElement()
+    {element} = @props
     return @_cachedGraphics = element.allGraphics()
 
   _viewMatrix: ->
-    element = @_editingElement()
+    {element, screenMatrixScale} = @props
     rect = @_rect()
     {width, height} = rect
-    screenMatrix = new Util.Matrix(1, 0, 0, -1, width / 2, height / 2)
+    screenMatrix = new Util.Matrix(screenMatrixScale, 0, 0, -screenMatrixScale, width / 2, height / 2)
     elementViewMatrix = element.viewMatrix
     return screenMatrix.compose(elementViewMatrix)
+
+
+R.create "EditorCanvas",
+  contextTypes:
+    editor: Model.Editor
+    project: Model.Project
+
+  render: ->
+    {editor, project} = @context
+    {editingElement} = project
+    {layout} = editor
+
+    R.ApparatusCanvas {
+      className: "EditorCanvas"
+      element: editingElement
+      cacheRect: true
+      screenMatrixScale: 1
+      hideGrid: false
+      highlightControllers: true
+      highlightNonControllers: true
+      showControlPoints: true
+      enableGeneralInteraction: true
+      enableControllerInteraction: true
+      enablePanAndZoom: true
+    },
+      R.div {
+        className: R.cx
+          LayoutMode: true
+          FullScreen: layout.fullScreen
+          "icon-fullscreen": !layout.fullScreen
+          "icon-edit": layout.fullScreen
+        onClick: @_toggleLayout
+      }
+
+  _toggleLayout: ->
+    {layout} = @context.editor
+    layout.toggleFullScreen()
+
+
+R.create "ThumbnailCanvas",
+  render: ->
+    R.ApparatusCanvas {
+      className: "ThumbnailCanvas"
+      element: @props.element
+      cacheRect: true  # no interaction so it's just for size
+      screenMatrixScale: 0.1
+      hideGrid: true
+      highlightControllers: true
+      highlightNonControllers: true
+      showControlPoints: false
+      enableGeneralInteraction: false
+      enableControllerInteraction: false
+      enablePanAndZoom: false
+    }
