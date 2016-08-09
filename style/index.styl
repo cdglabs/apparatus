@@ -111,14 +111,13 @@ RightResizeWidth = 10px
   border-right 1px solid #ccc
 
 .RightPanel
-  position relative
   // this panel should not shrink
   flex-shrink 0
   box-sizing border-box
 
-.CreatePanelContainer, .RightPanelContainer
-  position absolute
-  width 100%
+.RightPanelContainer
+  display flex
+  flex-direction column
   height 100%
 
 .RightResize
@@ -129,26 +128,13 @@ RightResizeWidth = 10px
   height 100%
   cursor ew-resize
 
-.Outline
+.Outline, .Inspector
   noSelect()
 
-  position absolute
-  top 0
-  bottom InspectorHeight
-  left 0
-  right 0
-  box-sizing border-box
-  background-color #fff
-  border-left 1px solid #ccc
-
-.Inspector
-  noSelect()
-
-  position absolute
-  top InspectorHeight
-  bottom 0
-  left 0
-  right 0
+  flex 1 1 auto
+  display flex
+  flex-direction column
+  position relative
   box-sizing border-box
   background-color #fff
   border-left 1px solid #ccc
@@ -205,10 +191,9 @@ HeaderSize = 18px
   background-image linear-gradient(to bottom, #fff, #ddd)
   border-top 1px solid #e6e6e6
   border-bottom 1px solid #d3d3d3
+  flex-shrink 0
 
 .Scroller
-  width 100%
-  height "calc(100% - %s)" % HeaderSize
   overflow-y auto
   overflow-x hidden
 

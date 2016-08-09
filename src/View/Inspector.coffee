@@ -11,12 +11,14 @@ R.create "Inspector",
     project = @context.project
     element = project.selectedParticularElement?.element
 
-    R.div {className: "Inspector"},
-      R.div {className: "Header"},
-        element?.label ? ""
-      R.div {className: "Scroller"},
-        if element
+    if element?
+      R.div {className: "Inspector"},
+        R.div {className: "Header"},
+          element?.label ? ""
+        R.div {className: "Scroller"},
           R.FullAttributesList {element}
+    else
+      R.div {className: "Inspector"}
 
 
 R.create "FullAttributesList",
