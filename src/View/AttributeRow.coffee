@@ -115,6 +115,8 @@ R.create "AttributeLabel",
         onMouseDown: @_onMenuMouseDown
         onMouseEnter: @_onMenuMouseEnter
         onMouseLeave: @_onMenuMouseLeave
+        style:
+          visibility: if hoverManager.hoveredAttribute == attribute then "visible" else "hidden"
       },
         R.span {className: R.cx {AttributeLabelMenuPartIcon: true}},
           "\u25BE"
