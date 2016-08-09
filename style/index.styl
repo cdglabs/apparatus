@@ -456,6 +456,7 @@ HeaderSize = 18px
 
 .ExpressionValue
   color #ccc
+  clear both
 
 .ReferenceToken
   border-radius 20px
@@ -490,6 +491,8 @@ HeaderSize = 18px
 
 .CodeMirror
   height auto
+  float left  // shrink horizontally
+  min-width 100px  // target when expressions are small or absent
   background-color transparent
   font-family inherit
   font-size inherit
