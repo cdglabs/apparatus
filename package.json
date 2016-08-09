@@ -28,7 +28,6 @@
     "coffee-loader": "^0.7.2",
     "coffeetape": "^1.0.1",
     "css-loader": "^0.23.1",
-    "extract-text-webpack-plugin": "^1.0.1",
     "postcss-loader": "^0.8.2",
     "style-loader": "^0.13.1",
     "stylus": "^0.54.2",

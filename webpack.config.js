@@ -1,18 +1,13 @@
 var path = require("path");
 var webpack = require("webpack");
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var autoprefixer = require('autoprefixer');
 
 
 var PROD = (process.env.NODE_ENV == "production");
 
-stylePlugin = new ExtractTextPlugin("apparatus.css", {
-  allChunks: true
-})
-
 module.exports = {
   devtool: PROD ? "source-map" : "eval",
-  entry: ["./src/index", "./style/index.styl"],
+  entry: ["./src/index"],
   output: {
     path: path.join(__dirname, "dist"),
     filename: "apparatus.js",
@@ -31,13 +26,11 @@ module.exports = {
           compressor: {
             warnings: false
           }
-        }),
-        stylePlugin
+        })
       ]
     : [
         new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.NoErrorsPlugin(),
-        stylePlugin
+        new webpack.NoErrorsPlugin()
       ],
   resolve: {
     extensions: ["", ".js", ".coffee"]
@@ -50,7 +43,7 @@ module.exports = {
       },
       {
         test: /\.styl$/,
-        loader: ExtractTextPlugin.extract("style-loader", "css-loader!postcss-loader!stylus-loader")
+        loader: "style-loader!css-loader!postcss-loader!stylus-loader"
       }
     ]
   },

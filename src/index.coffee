@@ -1,3 +1,5 @@
+require "../style/index.styl"
+
 _ = require "underscore"
 R = require "./View/R"
 Model = require "./Model/Model"
