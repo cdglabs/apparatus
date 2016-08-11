@@ -9,38 +9,53 @@ R.create "Editor",
   childContextTypes:
     editor: Model.Editor
     project: Model.Project
-    dragManager: R.DragManager
-    hoverManager: R.HoverManager
-
-  componentWillMount: ->
-    @_dragManager = new R.DragManager()
-    @_hoverManager = new R.HoverManager()
 
   getChildContext: ->
     {editor} = @props
     {
       editor: editor
       project: editor.project
-      dragManager: @_dragManager
-      hoverManager: @_hoverManager
     }
 
   render: ->
-    layout = @props.editor.layout
+    R.MouseManagersWrapper {},
+      R.div { className: "Editor" },
+        R.DragHint {}
+        R.CreatePanel {}
+        R.div { className: "Center" },
+          R.Menubar {}
+          R.EditorCanvas {}
+        R.RightPanel {}
+
+
+# This wrapper provides a DragManager and HoverManager for its children to
+# share. It also sets a global cursor if the current drag wants one.
+R.create "MouseManagersWrapper",
+  childContextTypes:
+    dragManager: R.DragManager
+    hoverManager: R.HoverManager
+
+  getChildContext: ->
+    dragManager: @_dragManager
+    hoverManager: @_hoverManager
+
+  componentWillMount: ->
+    @_dragManager = new R.DragManager()
+    @_hoverManager = new R.HoverManager()
+
+  render: ->
+    {className, children} = @props
     cursor = @_dragManager.drag?.cursor
+
     R.div {
-       className: R.cx {
-         Editor: true
-         CursorOverride: cursor?
-       }
-       style: {cursor: cursor ? ""}
+      className: R.cx
+        MouseManagersWrapper: true
+        CursorOverride: cursor?
+      style:
+        cursor: cursor ? ""
     },
-      R.DragHint {}
-      R.CreatePanel {}
-      R.div { className: "Center" },
-        R.Menubar {}
-        R.Canvas {}
-      R.RightPanel {}
+      children
+
 
 # This wrapper is used in Expression where we need to be able to render
 # ReactElements within a CodeMirror mark. It may not be needed in the future
@@ -63,7 +78,6 @@ R.create "ContextWrapper",
   render: -> @props.childRender()
 
 
-
 R.create "DragHint",
   contextTypes:
     dragManager: R.DragManager
@@ -82,5 +96,3 @@ R.create "DragHint",
             top:  drag.y + 5
         },
           R.AttributeToken {attribute: drag.attribute, contextElement: null}
-
-
