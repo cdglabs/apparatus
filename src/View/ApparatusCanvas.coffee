@@ -4,6 +4,7 @@ key = require "keymaster"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
+ImageCache = require "../Util/ImageCache"
 
 
 # "ApparatusCanvas" is a component which shows a rendered Apparatus diagram. It
@@ -51,6 +52,9 @@ R.create "ApparatusCanvas",
       }
       children
 
+  componentWillMount: ->
+    @_imageCache = new ImageCache()
+
   componentDidMount: ->
     window.addEventListener "resize", @_onResize
 
@@ -61,7 +65,6 @@ R.create "ApparatusCanvas",
   _draw: (ctx) ->
     {element} = @props
     {project, hoverManager} = @context
-    viewMatrix = @_viewMatrix()
 
     highlight = (graphic) =>
       particularElement = graphic.particularElement
@@ -74,7 +77,7 @@ R.create "ApparatusCanvas",
         if hoverManager.hoveredParticularElement?.isAncestorOf(particularElement)
           return {color: "#0c9", lineWidth: 2.5}
 
-    renderOpts = {ctx, viewMatrix, highlight}
+    renderOpts = _.extend(@_graphicsOpts(), {ctx, highlight})
 
     # HACK: This feature should exist but there is currently no way to set
     # isGridHidden in the UI (you can only set it in the console...)
@@ -426,7 +429,7 @@ R.create "ApparatusCanvas",
     viewMatrix = @_viewMatrix()
     [x, y] = @_mousePosition(mouseEvent)
 
-    hitDetectOpts = {viewMatrix, x, y}
+    hitDetectOpts = _.extend(@_graphicsOpts(), {x, y})
 
     hits = null
     for graphic in @_graphics(true)
@@ -464,6 +467,12 @@ R.create "ApparatusCanvas",
     elementViewMatrix = element.viewMatrix
     return screenMatrix.compose(elementViewMatrix)
 
+  # Common options required for render/hit-detection calls to graphics objects
+  _graphicsOpts: ->
+    viewMatrix = @_viewMatrix()
+    imageCache = @_imageCache
+    return {viewMatrix, imageCache}
+
 
 R.create "EditorCanvas",
   contextTypes:
@@ -475,31 +484,64 @@ R.create "EditorCanvas",
     {editingElement} = project
     {layout} = editor
 
-    R.ApparatusCanvas {
-      className: "EditorCanvas"
-      element: editingElement
-      cacheRect: true
-      screenMatrixScale: 1
-      hideGrid: false
-      highlightControllers: true
-      highlightNonControllers: true
-      showControlPoints: true
-      enableGeneralInteraction: true
-      enableControllerInteraction: true
-      enablePanAndZoom: true
+    R.Dropzone {
+      className: "EditorCanvasDropzone"
+      onDrop: @_onFilesDrop
+      disableClick: true
+      activeClassName: "dropActive"
+      rejectClassName: "dropReject"
+      accept: "image/*"
+      multiple: false
     },
-      R.div {
-        className: R.cx
-          LayoutMode: true
-          FullScreen: layout.fullScreen
-          "icon-fullscreen": !layout.fullScreen
-          "icon-edit": layout.fullScreen
-        onClick: @_toggleLayout
-      }
+      R.ApparatusCanvas {
+        className: "EditorCanvas"
+        element: editingElement
+        cacheRect: true
+        screenMatrixScale: 1
+        hideGrid: false
+        highlightControllers: true
+        highlightNonControllers: true
+        showControlPoints: true
+        enableGeneralInteraction: true
+        enableControllerInteraction: true
+        enablePanAndZoom: true
+      },
+        R.div {
+          className: R.cx
+            LayoutMode: true
+            FullScreen: layout.fullScreen
+            "icon-fullscreen": !layout.fullScreen
+            "icon-edit": layout.fullScreen
+          onClick: @_toggleLayout
+        }
 
   _toggleLayout: ->
     {layout} = @context.editor
     layout.toggleFullScreen()
+
+
+  # ===========================================================================
+  # File Dropping
+  # ===========================================================================
+
+  _onFilesDrop: (files) ->
+    if not files[0] then return
+    file = files[0]
+    reader = new FileReader()
+    reader.onloadend = =>
+      dataURL = reader.result
+      @_createImageElement(dataURL)
+    reader.readAsDataURL(file)
+
+  _createImageElement: (dataURL) ->
+    {project} = @context
+    {editingElement} = project
+
+    newElement = Model.Image.createVariant()
+    imageComponent = newElement.childOfType(Model.ImageComponent)
+    urlAttribute = imageComponent.getAttributesByName().url
+    urlAttribute.setExpression("\"#{dataURL}\"")
+    editingElement.addChild(newElement)
 
 
 R.create "ThumbnailCanvas",

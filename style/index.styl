@@ -154,12 +154,24 @@ RightResizeWidth = 10px
   border-left 1px solid #ccc
 
 .EditorCanvas
-  box-sizing border-box
-  flex-grow 2
   position relative
+  flex-basis 100%
 
   canvas
     position absolute
+
+.EditorCanvasDropzone
+  flex-grow 2
+
+  display flex
+  flex-direction row
+
+  &.dropActive
+    background-color #F8FFF8
+
+  &.dropReject
+    background-color #FFF8F8
+
 
 .LayoutMode
   noSelect()

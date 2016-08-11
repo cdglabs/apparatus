@@ -2,6 +2,7 @@ _ = require "underscore"
 Dataflow = require "../Dataflow/Dataflow"
 Graphic = require "../Graphic/Graphic"
 Util = require "../Util/Util"
+TestImage = require "../Util/TestImage"
 
 
 module.exports = Model = {}
@@ -194,7 +195,7 @@ Model.Circle = Model.Path.createVariant
   label: "Circle"
   getAllowedShapeInterpretationContextForChildren: () ->
     return [NONE]
-  
+
   graphicClass: Graphic.Circle
 
 
@@ -214,8 +215,6 @@ Model.Rectangle.addChildren [
 Model.TextComponent = Model.Component.createVariant
   _devLabel: "TextComponent"
   label: "Text"
-  getAllowedShapeInterpretationContextForChildren: () ->
-    return [NONE]
 
   graphicClass: Graphic.TextComponent
 
@@ -230,7 +229,30 @@ Model.TextComponent.addChildren [
 Model.Text = Model.Shape.createVariant
   label: "Text"
   graphicClass: Graphic.Text
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
 
 Model.Text.addChildren [
   Model.TextComponent.createVariant()
+]
+
+
+Model.ImageComponent = Model.Component.createVariant
+  _devLabel: "ImageComponent"
+  label: "Image"
+
+  graphicClass: Graphic.ImageComponent
+
+Model.ImageComponent.addChildren [
+  createAttribute("URL", "url", "\"#{TestImage}\"")
+]
+
+Model.Image = Model.Shape.createVariant
+  label: "Image"
+  graphicClass: Graphic.Image
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
+
+Model.Image.addChildren [
+  Model.ImageComponent.createVariant()
 ]

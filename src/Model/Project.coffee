@@ -15,6 +15,7 @@ module.exports = class Project
       Model.Rectangle
       Model.Circle
       Model.Text
+      Model.Image
       initialElement
     ]
 

@@ -1,4 +1,6 @@
 _ = require "underscore"
+Util = require "../Util/Util"
+
 
 module.exports = Graphic = {}
 
@@ -254,6 +256,73 @@ class Graphic.Text extends Graphic.Path
     ctx.restore()
 
 
+class Graphic.Image extends Graphic.Path
+  render: (opts) ->
+    {imageCache} = opts
+    {url} = @imageComponent()
+
+    imageCache.get(url, (image) => @drawImage(opts, image))
+
+  imageComponent: ->
+    @componentOfType(Graphic.ImageComponent)
+
+  fullMatrix: (opts, image) ->
+    {viewMatrix} = opts
+
+    scale = 0.01
+    matrix =
+      viewMatrix
+      .compose(@matrix)
+      .compose(new Util.Matrix(scale, 0, 0, -scale, 0, scale * image.height))
+
+  drawImage: (opts, image) ->
+    {ctx} = opts
+    matrix = @fullMatrix(opts, image)
+
+    ctx.save()
+    matrix.canvasTransform(ctx)
+
+    ctx.drawImage(image, 0, 0)
+
+    if opts.highlight
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(0, image.height)
+      ctx.lineTo(image.width, image.height)
+      ctx.lineTo(image.width, 0)
+      ctx.closePath()
+      @highlightIfNecessary(opts)
+
+    ctx.restore()
+
+  hitDetect: (opts) ->
+    {imageCache} = opts
+    {url} = @imageComponent()
+
+    image = imageCache.getSync(url)
+    if not image
+      return null
+
+    matrix = @fullMatrix(opts, image)
+    {x, y} = opts
+    [localX, localY] = matrix.toLocal([x, y])
+    if not (0 <= localX <= image.width) or not (0 <= localY <= image.height)
+      return null
+
+    ctx = getDummyCanvasCtx()
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+
+    opts.ctx = ctx
+    @drawImage(opts, image)
+    pixel = ctx.getImageData(x, y, 1, 1).data
+
+    if pixel[3] > 0  # alpha layer
+      return [@particularElement]
+    else
+      return null
+
+
 # =============================================================================
 # Components
 # =============================================================================
@@ -281,6 +350,8 @@ class Graphic.Stroke extends Graphic.PaintOp
 class Graphic.PathComponent extends Graphic.Component
 
 class Graphic.TextComponent extends Graphic.Component
+
+class Graphic.ImageComponent extends Graphic.Component
 
 # =============================================================================
 # Dummy Canvas

@@ -95,3 +95,7 @@ require "./Inspector"
 require "./AttributeRow"
 require "./Expression"
 require "./ExpressionCode"
+
+
+Dropzone = require "react-dropzone"
+R.Dropzone = React.createFactory(Dropzone)
