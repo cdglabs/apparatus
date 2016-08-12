@@ -76,9 +76,11 @@ module.exports = Attribute = Node.createVariant
   isNumber: ->
     return Util.isNumberString(@exprString)
 
+  isString: ->
+    return Util.isStringLiteral(@exprString)
+
   isTrivial: ->
-    # TODO
-    return @isNumber()
+    return @isNumber() or @isString()
 
   isNovel: ->
     @hasOwnProperty("exprString")

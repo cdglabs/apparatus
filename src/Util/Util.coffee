@@ -151,3 +151,6 @@ Util.charToLineCh = (string, char) ->
 
 Util.isNumberString = (string) ->
   return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(string)
+
+Util.isStringLiteral = (string) ->
+  return /^(?:"(?:\\"|[^"\r\n])*"|'(?:\\'|[^'\r\n])*')$/.test(string)
