@@ -58,6 +58,9 @@ R.create "ApparatusCanvas",
   componentDidMount: ->
     window.addEventListener "resize", @_onResize
 
+  componentWillUnmount: ->
+    window.removeEventListener "resize", @_onResize
+
   # ===========================================================================
   # Drawing
   # ===========================================================================
