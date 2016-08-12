@@ -87,7 +87,7 @@ R.create "ExpressionCode",
     el = dblClickEvent.target
     if Util.matches(el, ".cm-number")
       dblClickEvent.preventDefault()
-      @_endNumberScrub(dblClickEvent) 
+      @_endNumberScrub(dblClickEvent)
 
   _onMouseUp: (mouseUpEvent) ->
     {attribute} = @props
@@ -226,6 +226,7 @@ R.create "ExpressionCode",
         @_renderMark(mark, el)
         newMark = @mirror.markText(mark.from, mark.to, {
           replacedWith: el
+          handleMouseEvents: true
         })
         newMark.el = el
         @_existingMarks.push(newMark)

@@ -511,6 +511,11 @@ HeaderSize = 18px
     .CodeMirror-selected
       opacity 1
 
+  // We float CodeMirror left, but this causes a problem with not being able to
+  // see a cursor at the very end of a line. This should fix that.
+  .CodeMirror-sizer
+    padding-right 1px !important
+
 // Numbers are scrubbable
 .cm-number
   cursor ew-resize
