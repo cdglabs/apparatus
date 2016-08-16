@@ -15,6 +15,8 @@
   "dependencies": {
     "autoprefixer": "^6.3.6",
     "codemirror": "^5.4.0",
+    "d3": "^4.2.2",
+    "d3-scale-chromatic": "^1.0.2",
     "firebase": "^2.3.2",
     "keymaster": "^1.6.2",
     "numeric": "^1.2.6",
@@ -23,6 +25,7 @@
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
     "react-dropzone": "^3.5.3",
+    "seedrandom": "^2.4.2",
     "underscore": "^1.8.3"
   },
   "devDependencies": {

@@ -29,11 +29,18 @@ log = Math.log
 max = Math.max
 min = Math.min
 pow = Math.pow
-random = Math.random
 round = Math.round
 sin = Math.sin
 sqrt = Math.sqrt
 tan = Math.tan
+
+random = (seeds...) ->
+  if seeds.length == 0
+    throw "`random` needs at least one seed argument"
+  seed = seeds.map(JSON.stringify).join("")
+  seedrandom = require "seedrandom"
+  rng = seedrandom(seed)
+  return rng()
 
 rgba = (r, g, b, a) ->
   r = Math.round(r * 255)
@@ -44,3 +51,6 @@ rgba = (r, g, b, a) ->
 spread = require "./spread"
 
 _ = require "underscore"
+
+d3 = require "d3"
+_.extend(d3, require "d3-scale-chromatic")
