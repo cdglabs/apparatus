@@ -61,6 +61,12 @@ Model.Transform = Model.Component.createVariant
   label: "Transform"
 
   matrix: ->
+    throw "Not implemented!"
+
+Model.NaturalTransform = Model.Transform.createVariant
+  label: "Natural Transform"
+
+  matrix: ->
     {x, y, sx, sy, rotate} = @getAttributesValuesByName()
     return Util.Matrix.naturalConstruct(x, y, sx, sy, rotate)
   defaultAttributesToChange: ->
@@ -77,7 +83,7 @@ Model.Transform = Model.Component.createVariant
       {point: [0, 1], attributesToChange: [sy], filled: false}
     ]
 
-Model.Transform.addChildren [
+Model.NaturalTransform.addChildren [
   createAttribute("X", "x", "0.00")
   createAttribute("Y", "y", "0.00")
   createAttribute("Scale X", "sx", "1.00")
@@ -85,6 +91,16 @@ Model.Transform.addChildren [
   createAttribute("Rotate", "rotate", "0.00")
 ]
 
+Model.MatrixTransform = Model.Transform.createVariant
+  label: "Matrix Transform"
+
+  matrix: ->
+    {matrix} = @getAttributesValuesByName()
+    return new Util.Matrix(matrix...)
+
+Model.MatrixTransform.addChildren [
+  createAttribute("Matrix", "matrix", "[1.00, 0.00, 0.00, 1.00, 0.00, 0.00]")
+]
 
 
 Model.Fill = Model.Component.createVariant
@@ -142,7 +158,8 @@ Model.Shape = Model.Element.createVariant
       child.clearHoveredAttr()
 
 Model.Shape.addChildren [
-  Model.Transform.createVariant()
+  Model.NaturalTransform.createVariant()
+  Model.MatrixTransform.createVariant()
   Model.Interaction.createVariant()
 ]
 
