@@ -8,9 +8,13 @@ ImageCache = require "../Util/ImageCache"
 
 
 # "ApparatusCanvas" is a component which shows a rendered Apparatus diagram. It
-# is used in two different contexts:
-#   * EditorCanvas: the main direct-manipulation region of the Apparatus editor,
-#   * ThumbnailCanvas: the symbol previews on the left-hand side
+# is used in three different contexts:
+#   EditorCanvas (edit mode, using BareEditorCanvas):
+#     the main direct-manipulation region of the Apparatus editor,
+#   EditorCanvas (preview mode, using BareViewerCanvas):
+#     the full-screen "diagram preview" mode of the Apparatus editor,
+#   ThumbnailCanvas:
+#     the symbol icons on the left-hand side of the Apparatus editor.
 
 R.create "ApparatusCanvas",
   contextTypes:
@@ -477,6 +481,11 @@ R.create "ApparatusCanvas",
     return {viewMatrix, imageCache}
 
 
+# EditorCanvas wraps ApparatusCanvas up with whatever else is needed to show the
+# editor canvas in the Apparatus editor application. (It will show the diagram
+# in edit mode or preview mode, depending on whether full-screen mode is
+# selected.)
+
 R.create "EditorCanvas",
   contextTypes:
     editor: Model.Editor
@@ -487,36 +496,35 @@ R.create "EditorCanvas",
     {editingElement} = project
     {layout} = editor
 
-    R.Dropzone {
-      className: "EditorCanvasDropzone"
-      onDrop: @_onFilesDrop
-      disableClick: true
-      activeClassName: "dropActive"
-      rejectClassName: "dropReject"
-      accept: "image/*"
-      multiple: false
-    },
-      R.ApparatusCanvas {
-        className: "EditorCanvas"
+    fullScreenButton =
+      R.div {
+        className: R.cx
+          LayoutMode: true
+          FullScreen: layout.fullScreen
+          "icon-fullscreen": !layout.fullScreen
+          "icon-edit": layout.fullScreen
+        onClick: @_toggleLayout
+      }
+
+    if layout.fullScreen
+      R.BareViewerCanvas {
         element: editingElement
-        cacheRect: true
-        screenMatrixScale: 1
-        hideGrid: false
-        highlightControllers: true
-        highlightNonControllers: true
-        showControlPoints: true
-        enableGeneralInteraction: true
-        enableControllerInteraction: true
-        enablePanAndZoom: true
       },
-        R.div {
-          className: R.cx
-            LayoutMode: true
-            FullScreen: layout.fullScreen
-            "icon-fullscreen": !layout.fullScreen
-            "icon-edit": layout.fullScreen
-          onClick: @_toggleLayout
-        }
+        fullScreenButton
+    else
+      R.Dropzone {
+        className: "EditorCanvasDropzone"
+        onDrop: @_onFilesDrop
+        disableClick: true
+        activeClassName: "dropActive"
+        rejectClassName: "dropReject"
+        accept: "image/*"
+        multiple: false
+      },
+        R.BareEditorCanvas {
+          element: editingElement
+        },
+          fullScreenButton
 
   _toggleLayout: ->
     {layout} = @context.editor
@@ -546,6 +554,51 @@ R.create "EditorCanvas",
     urlAttribute.setExpression("\"#{dataURL}\"")
     editingElement.addChild(newElement)
 
+
+# BareEditorCanvas is ApparatusCanvas with settings appropriate for editing a
+# diagram.
+
+R.create "BareEditorCanvas",
+  render: ->
+    R.ApparatusCanvas {
+      className: "BareEditorCanvas"
+      element: @props.element
+      cacheRect: true
+      screenMatrixScale: 1
+      hideGrid: false
+      highlightControllers: true
+      highlightNonControllers: true
+      showControlPoints: true
+      enableGeneralInteraction: true
+      enableControllerInteraction: true
+      enablePanAndZoom: true
+      children: @props.children
+    }
+
+
+# BareEditorCanvas is ApparatusCanvas with settings appropriate for viewing a
+# diagram interactively (e.g., in an embedding of the diagram on another page).
+
+R.create "BareViewerCanvas",
+  render: ->
+    R.ApparatusCanvas {
+      className: "BareViewerCanvas"
+      element: @props.element
+      cacheRect: false
+      screenMatrixScale: 1
+      hideGrid: true
+      highlightControllers: true
+      highlightNonControllers: false
+      showControlPoints: false
+      enableGeneralInteraction: false
+      enableControllerInteraction: true
+      enablePanAndZoom: false
+      children: @props.children
+    }
+
+
+# ThumbnailCanvas is ApparatusCanvas with settings appropriate for viewing a
+# non-interactive thumbnail of a diagram (e.g., in the "Symbols" palette).
 
 R.create "ThumbnailCanvas",
   render: ->
