@@ -17,6 +17,9 @@ module.exports = Attribute = Node.createVariant
     @value = Dataflow.cell(@_value.bind(this))
 
   _value: ->
+    if @hasOverrideValue()
+      return @__overrideValue
+
     # Optimization
     if @isNumber()
       return parseFloat(@exprString)
@@ -62,6 +65,12 @@ module.exports = Attribute = Node.createVariant
       referenceLink.key = key
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
+
+  setOverrideValue: (overrideValue) ->
+    @__overrideValue = overrideValue
+
+  hasOverrideValue: () ->
+    @hasOwnProperty('__overrideValue')
 
   references: ->
     references = {}
