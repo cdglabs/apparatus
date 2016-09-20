@@ -106,6 +106,14 @@ Model.Stroke.addChildren [
 ]
 
 
+Model.Interaction = Model.Component.createVariant
+  label: "Interaction"
+
+Model.Interaction.addChildren [
+  createAttribute("Hovered", "hovered", "false")
+]
+
+
 # =============================================================================
 # Elements
 # =============================================================================
@@ -124,8 +132,18 @@ Model.Shape = Model.Element.createVariant
   getAllowedShapeInterpretationContextForChildren: () ->
     return [RENDERING]
 
+  hoveredAttr: () ->
+    interaction = @childOfType(Model.Interaction)
+    return interaction.getAttributesByName().hovered
+
+  clearHoveredAttr: () ->
+    @hoveredAttr().setOverrideValue(false)
+    for child in @childrenOfType(Model.Shape)
+      child.clearHoveredAttr()
+
 Model.Shape.addChildren [
   Model.Transform.createVariant()
+  Model.Interaction.createVariant()
 ]
 
 Model.Group = Model.Shape.createVariant

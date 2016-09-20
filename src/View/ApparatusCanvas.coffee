@@ -246,10 +246,18 @@ R.create "ApparatusCanvas",
   # ===========================================================================
 
   _intent: (mouseEvent) ->
+    {element} = @props
     {project} = @context
     selectedParticularElement = project.selectedParticularElement
 
     hits = @_hitDetect(mouseEvent)
+
+    # Manage the "hovered" attributes of elements:
+    element.clearHoveredAttr()
+    if hits and hits.length
+      for particularElem in hits
+        particularElem.element.hoveredAttr().setOverrideValue(
+          particularElem.spreadEnv.toBooleanSpread())
 
     controlPoint = @_hitDetectControlPoint(mouseEvent)
 
