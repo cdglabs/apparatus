@@ -1,6 +1,7 @@
 _ = require "underscore"
 Model = require "./Model"
 Dataflow = require "../Dataflow/Dataflow"
+Util = require "../Util/Util"
 NodeVisitor = require "../Util/NodeVisitor"
 
 
@@ -23,6 +24,7 @@ module.exports = class Project
       "controlledAttributes"
       "implicitlyControlledAttributes"
       "controllableAttributes"
+      "editingElementNodesById"
     ]
     for prop in propsToMemoize
       this[prop] = Dataflow.memoize(this[prop].bind(this))
@@ -144,3 +146,15 @@ module.exports = class Project
 
   controllableAttributes: ->
     return @selectedParticularElement?.element.controllableAttributes() ? []
+
+  editingElementNodesById: ->
+    nodesById = {}
+
+    nodeVisitor = new NodeVisitor
+      linksToFollow: {master: yes, variants: no, parent: no, children: yes}
+      onVisit: (node) ->
+        nodesById[Util.getId(node)] = node
+    nodeVisitor.visit(@editingElement)
+    nodeVisitor.finish()
+
+    return nodesById

@@ -15,7 +15,7 @@ R.create "ExpressionCode",
 
   contextTypes:
     editor: Model.Editor # extraneous
-    project: Model.Project # extraneous
+    project: Model.Project
     dragManager: R.DragManager
     hoverManager: R.HoverManager # extraneous
     # Note: we need to include all the context variables to pass down to
@@ -108,17 +108,15 @@ R.create "ExpressionCode",
     @_updateMarks()
 
   _updateAttributeFromMirror: ->
+    project = @context.project
     attribute = @props.attribute
     newExprString = @mirror.getValue()
     if attribute.exprString != newExprString
-      # We clean up references to get rid of attribute references which no
-      # longer appear in exprString.
-      oldReferences = attribute.references()
       newReferences = {}
-      for own referenceKey, referenceNode of oldReferences
-        isUsed = (newExprString.indexOf(referenceKey) != -1)
+      for own id, node of project.editingElementNodesById()
+        isUsed = (newExprString.indexOf(id) != -1)
         if isUsed
-          newReferences[referenceKey] = referenceNode
+          newReferences[id] = node
       attribute.setExpression(newExprString, newReferences)
 
 
@@ -135,7 +133,7 @@ R.create "ExpressionCode",
   _replaceSelectionWithReference: (referenceAttribute) ->
     {attribute} = @props
     references = attribute.references()
-    referenceKey = Util.generateId()
+    referenceKey = Util.getId(referenceAttribute)
     references[referenceKey] = referenceAttribute
     exprString = attribute.exprString
     attribute.setExpression(exprString, references)
@@ -144,7 +142,7 @@ R.create "ExpressionCode",
   _replaceAllWithReference: (referenceAttribute) ->
     {attribute} = @props
     references = {}
-    referenceKey = Util.generateId()
+    referenceKey = Util.getId(referenceAttribute)
     references[referenceKey] = referenceAttribute
     exprString = referenceKey
     attribute.setExpression(exprString, references)
@@ -168,18 +166,19 @@ R.create "ExpressionCode",
     value = @mirror.getValue()
     marks = []
     for own referenceKey, referenceAttribute of attribute.references()
-      startChar = value.indexOf(referenceKey)
-      continue if startChar == -1
-      endChar = startChar + referenceKey.length
-      do (referenceAttribute) ->
-        from = Util.charToLineCh(value, startChar)
-        to = Util.charToLineCh(value, endChar)
-        render = ->
-          R.AttributeToken {
-            attribute: referenceAttribute
-            contextElement: attribute.parentElement()
-          }
-        marks.push {from, to, render}
+      startChar = -1
+      while (startChar = value.indexOf(referenceKey, startChar)) > -1
+        endChar = startChar + referenceKey.length
+        do (referenceAttribute) ->
+          from = Util.charToLineCh(value, startChar)
+          to = Util.charToLineCh(value, endChar)
+          render = ->
+            R.AttributeToken {
+              attribute: referenceAttribute
+              contextElement: attribute.parentElement()
+            }
+          marks.push {from, to, render}
+        startChar = endChar
     return marks
 
   _updateMarks: ->
