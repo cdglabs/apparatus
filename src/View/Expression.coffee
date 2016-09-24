@@ -44,7 +44,11 @@ R.create "Value",
       else if _.isNumber(value)
         Util.toMaxPrecision(value, 3)
       else
-        JSON.stringify(value)
+        R.div {style: {opacity: 0.7, display: "inline-block"}},
+          R.ObjectInspector {
+            data: value,
+            theme: R.ObjectInspector.chromeLightTransparent
+          }
 
 # TODO: The styling/formatting for this could be better. Also it should
 # highlight the particular selected item when appropriate.

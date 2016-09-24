@@ -102,3 +102,8 @@ require "./Viewer"
 
 Dropzone = require "react-dropzone"
 R.Dropzone = React.createFactory(Dropzone)
+
+{ObjectInspector, chromeLight} = require 'react-inspector'
+R.ObjectInspector = React.createFactory(ObjectInspector)
+R.ObjectInspector.chromeLightTransparent =
+  _.extend({}, chromeLight, {BASE_BACKGROUND_COLOR: "inherit"})
