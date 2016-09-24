@@ -1,8 +1,9 @@
 
 module.exports = class Layout
-  constructor: ->  
+  constructor: ->
     @rightPanelWidth = 400
     @fullScreen = false
+    @showAttributesInOutline = true
 
     @_rightPanelMin = 100
     @_rightPanelMax = 600
@@ -15,6 +16,9 @@ module.exports = class Layout
   toggleFullScreen: ->
     @fullScreen = !@fullScreen
     @_refreshLayout()
+
+  toggleShowAttributesInOutline: ->
+    @showAttributesInOutline = !@showAttributesInOutline
 
   _refreshLayout: ->
     # Changing the layout will deform the canvas

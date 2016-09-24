@@ -7,12 +7,23 @@ Util = require "../Util/Util"
 R.create "Outline",
   contextTypes:
     project: Model.Project
+    editor: Model.Editor
 
   render: ->
-    {project} = @context
+    {project, editor} = @context
     element = project.editingElement
+    layout = editor.layout
     R.div {className: "Outline"},
-      R.div {className: "Header"}, "Outline"
+      R.div {className: "Header"},
+        "Outline"
+        R.span {
+          className: "HeaderSetting"
+          onClick: -> layout.toggleShowAttributesInOutline()
+        },
+          if layout.showAttributesInOutline
+            "Hide Attributes"
+          else
+            "Show Attributes"
       R.div {className: "Scroller"},
         R.OutlineTree {element}
 
@@ -82,6 +93,7 @@ R.create "OutlineItem",
 
   contextTypes:
     project: Model.Project
+    editor: Model.Editor
     hoverManager: R.HoverManager
     dragManager: R.DragManager
 
@@ -95,6 +107,8 @@ R.create "OutlineItem",
     isActiveController = hoverManager.controllerParticularElement?.element == element
     isController = element.isController()
     isExpanded = element.expanded
+
+    layout = @context.editor.layout
 
     R.div {
       className: R.cx {
@@ -121,7 +135,8 @@ R.create "OutlineItem",
             value: element.label
             setValue: @_setLabelValue
           }
-      R.NovelAttributesList {element}
+      if layout.showAttributesInOutline
+        R.NovelAttributesList {element}
 
 
   # ===========================================================================
@@ -221,7 +236,7 @@ R.create "OutlineItem",
       if quadrance < bestDropSpot.quadrance
         bestDropSpot = {quadrance, outlineChildrenEl, beforeOutlineTreeEl}
 
-    allowedDraggingClasses = element.getAllowedShapeInterpretationContext().map((interpretationContext) -> 
+    allowedDraggingClasses = element.getAllowedShapeInterpretationContext().map((interpretationContext) ->
       ".OutlineChildren." + interpretationContext).join(", ")
 
     # All the places within which we could drop.
