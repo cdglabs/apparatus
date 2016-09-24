@@ -38,12 +38,9 @@ NodeVisitor = require "./Util/NodeVisitor"
 #       Callback to be run after each diagram render operation, with `this`
 #       taking the value of the ApparatusViewer.
 #
-# You can read and write the Apparatus project displayed in `myViewer` using
-# `myViewer.project`.
-#
-# As a convenience, `myViewer.getAttributeByLabel(label)` will grab the
-# attribute node in the displayed element with label `label`, provided this
-# label is unique.
+# Providing `onRender` is one tool for hooking external Javascript code into an
+# embedded Apparatus diagram. The other most important tool is
+# `ApparatusViewer::getAttributeByLabel`. See documentation on that below.
 
 window.ApparatusViewer = class ApparatusViewer
   constructor: (@options) ->
@@ -51,36 +48,46 @@ window.ApparatusViewer = class ApparatusViewer
     @_getElement()
     @_getProjectAndLoad()
 
-  _load: ->
-    # Now we can actually load the diagram!
+  # Returns an object representing the attribute node with label `label`,
+  # provided this label is unique. The object returned is an
+  # `ApparatusViewer.Attribute`. See methods on that class to see what you can
+  # do with it.
+  getAttributeByLabel: (label) ->
+    attribute = undefined
+    foundSome = false
+    foundMultiple = false
 
-    # Use regionOfInterest to compute view matrix:
-    {regionOfInterest} = @options
-    rect = @element.getBoundingClientRect()
-    scaleFactor = Math.min(
-      rect.width / (regionOfInterest.x[1] - regionOfInterest.x[0]),
-      rect.height / (regionOfInterest.y[1] - regionOfInterest.y[0]))
-    matrix = new Util.Matrix()
-    matrix = matrix.scale(scaleFactor, scaleFactor)
-    matrix = matrix.translate(
-      -(regionOfInterest.x[1] + regionOfInterest.x[0])/2,
-      -(regionOfInterest.y[1] + regionOfInterest.y[0])/2)
-    @project.editingElement.viewMatrix = matrix
+    nodeVisitor = new NodeVisitor
+      linksToFollow: {children: yes}
+      onVisit: (node) ->
+        if node.isVariantOf(Model.Attribute) and node.label == label
+          foundSome = true
+          if attribute
+            foundMultiple = true
+          attribute = node
+    nodeVisitor.visit(@_project.editingElement)
+    nodeVisitor.finish()
 
-    @_render()
+    if not foundSome
+      throw "Found no attributes with label #{label}"
+    if foundMultiple
+      throw "Found multiple attributes with label #{label}"
+    return new Attribute(attribute)
 
-    @willRefreshNextFrame = false
-    for eventName in refreshEventNames
-      window.addEventListener(eventName, => @_refresh())
+  # ADVANCED USAGE: Returns a reference to the internal `Project` object being
+  # displayed in the viewer. You can read and write to this object, but beware:
+  # its representation and behavior are subject to change.
+  rawProject: ->
+    return @_project
 
   _getElement: ->
     if @options.element and @options.selector
       throw "Do not provide both `element` and `selector` as options"
 
     if @options.element?
-      @element = @options.element
+      @_element = @options.element
     else if @options.selector?
-      @element = document.querySelector(@options.selector)
+      @_element = document.querySelector(@options.selector)
     else
       throw "Either `element` or `selector` must be provided as an option"
 
@@ -89,14 +96,14 @@ window.ApparatusViewer = class ApparatusViewer
       throw "Do not provide both `projectData` and `url`"
 
     if @options.projectData?
-      @projectData = @options.projectData
+      @_projectData = @options.projectData
       @_deserializeProjectData()
       @_load()
     else if @options.url?
       xhr = new XMLHttpRequest()
       xhr.onreadystatechange = (e) =>
         if xhr.readyState == 4 and xhr.status == 200
-          @projectData = JSON.parse(xhr.responseText)
+          @_projectData = JSON.parse(xhr.responseText)
           @_deserializeProjectData()
           @_load()
       xhr.open("GET", @options.url)
@@ -104,13 +111,47 @@ window.ApparatusViewer = class ApparatusViewer
     else
       throw "Either `projectData` or `url` must be provided as an option"
 
+  _load: ->
+    # Now we can actually load the diagram!
+
+    # Use regionOfInterest to compute view matrix:
+    {regionOfInterest} = @options
+    rect = @_element.getBoundingClientRect()
+    scaleFactor = Math.min(
+      rect.width / (regionOfInterest.x[1] - regionOfInterest.x[0]),
+      rect.height / (regionOfInterest.y[1] - regionOfInterest.y[0]))
+    matrix = new Util.Matrix()
+    matrix = matrix.scale(scaleFactor, scaleFactor)
+    matrix = matrix.translate(
+      -(regionOfInterest.x[1] + regionOfInterest.x[0])/2,
+      -(regionOfInterest.y[1] + regionOfInterest.y[0])/2)
+    @_project.editingElement.viewMatrix = matrix
+
+    @_render()
+
+    refreshEventNames = [
+      "mousedown"
+      "mousemove"
+      "mouseup"
+      "keydown"
+      "keyup"
+      "scroll"
+      "change"
+      "wheel"
+      "mousewheel"
+    ]
+
+    @willRefreshNextFrame = false
+    for eventName in refreshEventNames
+      window.addEventListener(eventName, => @_refresh())
+
   _deserializeProjectData: ->
     serializer = Model.SerializerWithBuiltIns.getSerializer()
-    @project = serializer.dejsonify(@projectData)
+    @_project = serializer.dejsonify(@_projectData)
 
   _render: ->
     Dataflow.run =>
-      R.render(R.Viewer({@project}), @element)
+      R.render(R.Viewer({project: @_project}), @_element)
     @options.onRender?.apply(this)
 
   _refresh: ->
@@ -120,37 +161,21 @@ window.ApparatusViewer = class ApparatusViewer
       @_render()
       @willRefreshNextFrame = false
 
-  getAttributeByLabel: (label) ->
-    toReturn = undefined
-    foundSome = false
-    foundMultiple = false
 
-    nodeVisitor = new NodeVisitor
-      linksToFollow: {children: yes}
-      onVisit: (node) ->
-        if node.isVariantOf(Model.Attribute) and node.label == label
-          foundSome = true
-          if toReturn
-            foundMultiple = true
-          toReturn = node
-    nodeVisitor.visit(@project.editingElement)
-    nodeVisitor.finish()
+ApparatusViewer.Attribute = class Attribute
+  constructor: (@_attribute) ->
 
-    if not foundSome
-      throw "Found no attributes with label #{label}"
-    if foundMultiple
-      throw "Found multiple attributes with label #{label}"
-    return toReturn
+  # Returns the current value of the attribute.
+  value: ->
+    @_attribute.value()
 
+  # Sets the defining expression of the attribute to the string given.
+  setExpression: (exprString) ->
+    @_attribute.setExpression(exprString)
+    return
 
-refreshEventNames = [
-  "mousedown"
-  "mousemove"
-  "mouseup"
-  "keydown"
-  "keyup"
-  "scroll"
-  "change"
-  "wheel"
-  "mousewheel"
-]
+  # ADVANCED USAGE: Returns a reference to the internal `Attribute` node
+  # represented by this object. You can read and write to this object, but
+  # beware: its representation and behavior are subject to change.
+  raw: ->
+    @_attribute

@@ -625,20 +625,3 @@ R.create "ThumbnailCanvas",
       enableControllerInteraction: false
       enablePanAndZoom: false
     }
-
-
-R.create "ViewerCanvas",
-  render: ->
-    R.ApparatusCanvas {
-      className: "ViewerCanvas"
-      element: @props.element
-      cacheRect: false
-      screenMatrixScale: 1
-      hideGrid: true
-      highlightControllers: true
-      highlightNonControllers: false
-      showControlPoints: false
-      enableGeneralInteraction: false
-      enableControllerInteraction: true
-      enablePanAndZoom: false
-    }

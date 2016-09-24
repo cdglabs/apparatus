@@ -14,6 +14,6 @@ R.create "Viewer",
 
   render: ->
     R.MouseManagersWrapper {},
-      R.ViewerCanvas {
+      R.BareViewerCanvas {
         element: @props.project.editingElement
       }
