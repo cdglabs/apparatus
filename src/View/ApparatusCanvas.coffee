@@ -256,7 +256,7 @@ R.create "ApparatusCanvas",
     element.clearHoveredAttr()
     if hits and hits.length
       for particularElem in hits
-        particularElem.element.hoveredAttr().setOverrideValue(
+        particularElem.element.hoveredAttr()?.setOverrideValue(
           particularElem.spreadEnv.toBooleanSpread())
 
     controlPoint = @_hitDetectControlPoint(mouseEvent)

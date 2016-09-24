@@ -134,10 +134,10 @@ Model.Shape = Model.Element.createVariant
 
   hoveredAttr: () ->
     interaction = @childOfType(Model.Interaction)
-    return interaction.getAttributesByName().hovered
+    return interaction?.getAttributesByName().hovered
 
   clearHoveredAttr: () ->
-    @hoveredAttr().setOverrideValue(false)
+    @hoveredAttr()?.setOverrideValue(false)
     for child in @childrenOfType(Model.Shape)
       child.clearHoveredAttr()
 
