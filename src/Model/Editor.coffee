@@ -63,6 +63,7 @@ module.exports = class Editor
     # and convert or fail appropriately.
     if json.type == "Apparatus"
       @project = @serializer.dejsonify(json)
+      @project.performIdempotentCompatibilityFixes()
 
   loadJsonStringIntoProjectFromExternalSource: (jsonString) ->
     @loadJsonStringIntoProject(jsonString)
