@@ -261,6 +261,9 @@ class Graphic.Image extends Graphic.Path
     {imageCache} = opts
     {url} = @imageComponent()
 
+    if not _.isString(url)
+      return  # TODO: error reporting?
+
     imageCache.get(url, (image) => @drawImage(opts, image))
 
   imageComponent: ->
