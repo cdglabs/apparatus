@@ -91,6 +91,7 @@ R.create "AttributeLabel",
         isHovered: hoverManager.hoveredAttribute == attribute
         isGoingToChange: _.contains(hoverManager.attributesToChange, attribute)
       }
+      title: Util.getId(attribute)
       onMouseDown: @_onMouseDown
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave

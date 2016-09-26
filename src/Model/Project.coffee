@@ -1,6 +1,7 @@
 _ = require "underscore"
 Model = require "./Model"
 Dataflow = require "../Dataflow/Dataflow"
+Util = require "../Util/Util"
 NodeVisitor = require "../Util/NodeVisitor"
 
 
@@ -23,6 +24,7 @@ module.exports = class Project
       "controlledAttributes"
       "implicitlyControlledAttributes"
       "controllableAttributes"
+      "editingElementNodesById"
     ]
     for prop in propsToMemoize
       this[prop] = Dataflow.memoize(this[prop].bind(this))
@@ -104,12 +106,16 @@ module.exports = class Project
     index = @createPanelElements.indexOf(@editingElement)
     @createPanelElements.splice(index, 0, master)
 
-  findUnnecessaryNodes: ->
-    # These nodes are necessary per se.
+  rootNodes: ->
     rootNodes = @createPanelElements.slice()
     for name, obj of Model
       if Model.Node.isPrototypeOf(obj)
         rootNodes.push(obj)
+    return rootNodes
+
+  findUnnecessaryNodes: ->
+    # These nodes are necessary per se.
+    rootNodes = @rootNodes()
 
     unnecessaryNodes = []
 
@@ -144,3 +150,51 @@ module.exports = class Project
 
   controllableAttributes: ->
     return @selectedParticularElement?.element.controllableAttributes() ? []
+
+  editingElementNodesById: ->
+    nodesById = {}
+
+    nodeVisitor = new NodeVisitor
+      linksToFollow: {master: yes, variants: no, parent: no, children: yes}
+      onVisit: (node) ->
+        nodesById[Util.getId(node)] = node
+    nodeVisitor.visit(@editingElement)
+    nodeVisitor.finish()
+
+    return nodesById
+
+
+  # ===========================================================================
+  # Compatibility fixes
+  # ===========================================================================
+
+  # Whenever a project is loaded from a saved copy,
+  # `performIdempotentCompatibilityFixes` is run on it. If you want to make a
+  # breaking change to the format of a project, but you can come up with a way
+  # to update old projects, put it in here.
+  performIdempotentCompatibilityFixes: ->
+    @switchExpressionsToUseNodeIdsAsReferences()
+
+  # See https://github.com/cdglabs/apparatus/pull/63
+  switchExpressionsToUseNodeIdsAsReferences: ->
+    rootNodes = @rootNodes()
+
+    nodeVisitor = new NodeVisitor
+      linksToFollow: {master: yes, variants: no, parent: no, children: yes}
+      onVisit: (node) ->
+        if node.isVariantOf(Model.Attribute) and node.isNovel()
+          exprString = node.exprString
+          references = node.references()
+
+          newExprString = exprString
+          newReferences = {}
+
+          _.each references, (reference, key) ->
+            id = Util.getId(reference)
+            newExprString = newExprString.replace(new RegExp(key, "g"), id)
+            newReferences[id] = reference
+
+          node.setExpression(newExprString, newReferences)
+
+    nodeVisitor.visit(rootNode) for rootNode in rootNodes
+    nodeVisitor.finish()
