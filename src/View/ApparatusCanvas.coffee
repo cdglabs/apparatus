@@ -8,13 +8,15 @@ ImageCache = require "../Util/ImageCache"
 
 
 # "ApparatusCanvas" is a component which shows a rendered Apparatus diagram. It
-# is used in three different contexts:
+# is used in four different contexts:
 #   EditorCanvas (edit mode, using BareEditorCanvas):
 #     the main direct-manipulation region of the Apparatus editor,
 #   EditorCanvas (preview mode, using BareViewerCanvas):
 #     the full-screen "diagram preview" mode of the Apparatus editor,
 #   ThumbnailCanvas:
 #     the symbol icons on the left-hand side of the Apparatus editor.
+#   BareViewerCanvas:
+#     the embeddable Apparatus diagram viewer
 
 R.create "ApparatusCanvas",
   contextTypes:

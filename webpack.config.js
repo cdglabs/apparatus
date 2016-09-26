@@ -7,10 +7,13 @@ var PROD = (process.env.NODE_ENV == "production");
 
 module.exports = {
   devtool: PROD ? "source-map" : "eval",
-  entry: ["./src/index"],
+  entry: {
+    'apparatus': ["./src/index"],
+    'apparatus-viewer': ["./src/viewer"]
+  },
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "apparatus.js",
+    filename: "[name].js",
     publicPath: "/dist/"
   },
   plugins:
