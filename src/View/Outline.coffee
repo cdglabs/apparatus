@@ -134,6 +134,7 @@ R.create "OutlineItem",
             className: "EditableTextInline Interactive"
             value: element.label
             setValue: @_setLabelValue
+            onClick: => @_select()
           }
       if layout.showAttributesInOutline
         R.NovelAttributesList {element}
