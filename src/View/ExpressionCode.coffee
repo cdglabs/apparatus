@@ -114,9 +114,10 @@ R.create "ExpressionCode",
     if attribute.exprString != newExprString
       newReferences = {}
       for own id, node of project.editingElementNodesById()
-        isUsed = (newExprString.indexOf(id) != -1)
-        if isUsed
-          newReferences[id] = node
+        if node.isVariantOf(Model.Attribute)
+          isUsed = (newExprString.indexOf(id) != -1)
+          if isUsed
+            newReferences[id] = node
       attribute.setExpression(newExprString, newReferences)
 
 
