@@ -54,3 +54,5 @@ _ = require "underscore"
 
 d3 = require "d3"
 _.extend(d3, require "d3-scale-chromatic")
+
+htmlToImageURL = require "./htmlToImageURL"
