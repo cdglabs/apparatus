@@ -168,7 +168,10 @@ class CompiledExpression
 
     compiled = @_wrapFunctionInSpreadCheck(compiled)
 
-    if @referenceKeys.length == 0
+    # We assume an expression with no references and no parentheses must be a
+    # constant. (Parentheses mean there might be a non-referentially-transparent
+    # function call.)
+    if @referenceKeys.length == 0 and @exprString.indexOf("(") == -1
       try
         value = compiled()
       catch error
