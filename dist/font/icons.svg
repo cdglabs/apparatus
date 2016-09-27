@@ -1,13 +1,13 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd" >
 <!--
-2015-11-10: Created with FontForge (http://fontforge.org)
+2016-9-26: Created with FontForge (http://fontforge.org)
 -->
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
 <metadata>
-Created by FontForge 20150913 at Tue Nov 10 23:07:33 2015
- By Thach Mai
-Copyright (c) 2015, Thach Mai
+Created by FontForge 20160407 at Mon Sep 26 19:50:13 2016
+ By Joshua Horowitz
+Copyright (c) 2016, Joshua Horowitz
 </metadata>
 <defs>
 <font id="icons" horiz-adv-x="512" >
@@ -22,7 +22,7 @@ Copyright (c) 2015, Thach Mai
     bbox="0 -64 512.004 448"
     underline-thickness="25.6"
     underline-position="-51.2"
-    unicode-range="U+0020-F103"
+    unicode-range="U+0020-F104"
   />
     <missing-glyph />
     <glyph glyph-name="space" unicode=" " horiz-adv-x="200" 
@@ -31,9 +31,11 @@ Copyright (c) 2015, Thach Mai
 d="M0 192h256v-256zM256 448l256 -256h-256v256z" />
     <glyph glyph-name="uniF101" unicode="&#xf101;" 
 d="M0 192l256 -256h-256v256zM256 448h256v-256z" />
-    <glyph glyph-name="uniF103" unicode="&#xf103;" 
-d="M256 448c141.376 0 256 -114.624 256 -256s-114.624 -256 -256 -256s-256 114.624 -256 256s114.624 256 256 256zM192 300.992l-44.9922 -44.9922l64 -64l-64 -64l44.9922 -44.9922l64 64l64 -64l44.9922 44.9922l-64 64l64 64l-44.9922 44.9922l-64 -64z" />
     <glyph glyph-name="uniF102" unicode="&#xf102;" 
+d="M0 416h64v-64h-64v64zM0 288h64v-64h-64v64zM0 160h64v-64h-64v64zM0 32h64v-64h-64v64zM128 416h64v-64h-64v64zM128 288h64v-64h-64v64zM128 160h64v-64h-64v64zM128 32h64v-64h-64v64z" />
+    <glyph glyph-name="uniF104" unicode="&#xf104;" 
+d="M256 448c141.376 0 256 -114.624 256 -256s-114.624 -256 -256 -256s-256 114.624 -256 256s114.624 256 256 256zM192 300.992l-44.9922 -44.9922l64 -64l-64 -64l44.9922 -44.9922l64 64l64 -64l44.9922 44.9922l-64 64l64 64l-44.9922 44.9922l-64 -64z" />
+    <glyph glyph-name="uniF103" unicode="&#xf103;" 
 d="M0 -63.6777l39.3477 144.139l105.354 -105.359zM332.25 373.371l105.367 -105.338l-273.858 -273.937l-105.367 105.338zM458.695 289.116l-105.344 105.323l46.3203 46.377c9.30859 9.2627 24.4795 9.2627 33.7461 0l71.6396 -71.6289
 c9.26172 -9.28711 9.26172 -24.4473 0 -33.7256z" />
   </font>

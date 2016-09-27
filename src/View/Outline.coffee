@@ -137,7 +137,7 @@ R.create "OutlineItem",
             onClick: => @_select()
           }
       if layout.showAttributesInOutline
-        R.NovelAttributesList {element}
+        R.NovelAttributesList {element, context: "Outline"}
 
 
   # ===========================================================================
