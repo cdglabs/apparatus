@@ -7,20 +7,40 @@ Util = require "../Util/Util"
 R.create "AttributeRow",
   propTypes:
     attribute: Model.Attribute
+    context: ["Outline", "Inspector"]
 
   contextTypes:
     project: Model.Project
     hoverManager: R.HoverManager
+    dragManager: R.DragManager
+
+  mixins: [R.AnnotateMixin]
 
   render: ->
-    attribute = @props.attribute
+    {attribute, context} = @props
+    {dragManager} = @context
 
-    R.div {className: R.cx {
-      AttributeRow: true
-      isInherited: !attribute.isNovel()
-      isWrapped: @_isWrapped()
-      isGoingToChange: @_isGoingToChange()
-    }},
+    canDrag = attribute.isVariantOf(Model.Variable)
+
+
+    drag = dragManager.drag
+    isDropSpot = drag?.type == "attributeRowReorder" and
+      drag.consummated and
+      drag.attribute == attribute and
+      drag.dropSpot?.context == context
+
+    attributeRow = R.div {
+      className: R.cx {
+        AttributeRow: true
+        isInherited: !attribute.isNovel()
+        isWrapped: @_isWrapped()
+        isGoingToChange: @_isGoingToChange()
+        canDrag: canDrag
+      }
+      onMouseDown: @_onMouseDown
+      onMouseEnter: @_onMouseEnter
+      onMouseLeave: @_onMouseLeave
+    },
       R.div {className: "AttributeRowControl"},
         R.div {
           className: R.cx {
@@ -36,6 +56,168 @@ R.create "AttributeRow",
         R.AttributeLabel {attribute}
       R.div {className: "AttributeRowExpression"},
         R.Expression {attribute}
+      R.div {
+        className: "AttributeRowDragHandle icon-grip"
+        onMouseDown: @_onDragHandleMouseDown
+        style:
+          visibility: if canDrag and @hovered then "visible" else "hidden"
+      }
+
+    if isDropSpot
+      R.div {},
+        R.div {className: "AttributeRowDragging", style: {
+          # left: drag.x
+          top: drag.y
+          width: drag.width
+        }},
+          attributeRow
+        R.div {className: "AttributeRowPlaceholder", style: {height: drag.height}}
+    else
+      attributeRow
+
+  _onDragHandleMouseDown: (mouseDownEvent) ->
+    target = mouseDownEvent.target
+    return if Util.closest(target, ".Interactive")
+    mouseDownEvent.preventDefault()
+    mouseDownEvent.stopPropagation()
+    Util.clearTextFocus()
+    @_startDragToReorder(mouseDownEvent)
+
+  _onMouseEnter: ->
+    {dragManager} = @context
+    return if dragManager.drag?
+    @hovered = true
+
+  _onMouseLeave: ->
+    {dragManager} = @context
+    return if dragManager.drag?
+    @hovered = false
+
+  _startDragToReorder: (mouseDownEvent) ->
+    {attribute, context} = @props
+    {dragManager} = @context
+
+    el = R.findDOMNode(this)
+    rect = el.getBoundingClientRect()
+    editorEl = Util.closest(el, ".Editor")
+
+    offsetX = mouseDownEvent.clientX - rect.left
+    offsetY = mouseDownEvent.clientY - rect.top
+
+    width = rect.width
+    height = rect.height
+
+    dragManager.start mouseDownEvent,
+      type: "attributeRowReorder"
+      attribute: attribute
+      attributeRowEl: el
+      editorEl: editorEl
+      dragSourceContext: context
+      width: width
+      height: height
+      onMove: (mouseMoveEvent) =>
+        dragManager.drag.y = mouseMoveEvent.clientY - offsetY
+        dropSpot = @_findDropSpot(dragManager.drag)
+        if dropSpot
+          dragManager.drag.dropSpot = dropSpot
+          @_reorderItem(dropSpot)
+
+  # _findDropSpot returns a dropSpot object consisting of attributesListEl
+  # (where to insert) and beforeAttributeRowEl (where to insert after, if null
+  # then insert at the end). If nothing is close enough, it will return null.
+  _findDropSpot: (drag) ->
+    {y, attributeRowEl, editorEl} = drag
+    {element} = @props
+    dragPosition = y
+
+    # Temporarily hide AttributeRowPlaceholder for the purpose of this calculation.
+    attributeRowPlaceholderEl = attributeRowEl.querySelector(".AttributeRowPlaceholder")
+    attributeRowPlaceholderEl?.style.display = "none"
+
+    # Keep track of the best drop spot.
+    bestDropSpot = {
+      quadrance: 40 * 40  # Threshold to be considered close enough to drop.
+    }
+    checkFit = (droppedPosition, attributesListEl, beforeAttributeRowEl) =>
+      quadrance = Util.quadrance(dragPosition, droppedPosition)
+      context = attributesListEl.annotation.context
+      if quadrance < bestDropSpot.quadrance
+        bestDropSpot = {quadrance, attributesListEl, beforeAttributeRowEl, context}
+
+    # Gather all the attribute lists within which we could drop...
+    attributesListEls = []
+
+    # These are attributes lists in the outline
+    outlineEl = editorEl.querySelector(".Outline")
+    outlineRect = outlineEl.getBoundingClientRect()
+    if outlineRect.top <= y and y <= outlineRect.bottom
+      attributesListEls.push(
+        outlineEl.querySelectorAll(".AttributesList")...)
+
+    # This is the "Variables" list at the top of the inspector
+    inspectorEl = editorEl.querySelector(".Inspector")
+    inspectorRect = inspectorEl.getBoundingClientRect()
+    if inspectorRect.top <= y and y <= inspectorRect.bottom
+      attributesListEls.push(
+        inspectorEl.querySelector(".VariablesList"))
+
+    for attributesListEl in attributesListEls
+      # Don't try to insert it into itself!
+      continue if Util.closest(attributesListEl, ".AttributeRowDragging")
+
+      # Collect draggable children.
+      childEls = _.filter(
+        attributesListEl.childNodes,
+        (el) -> Util.matches(el, ".AttributeRow.canDrag")
+      )
+
+      # Check fit before each child.
+      for childEl in childEls
+        childRect = childEl.getBoundingClientRect()
+        droppedPosition = childRect.top
+        checkFit(droppedPosition, attributesListEl, childEl)
+
+      # Check fit after last draggable AttributeRow.
+      if childEls.length > 0
+        lastChildRect = _.last(childEls).getBoundingClientRect()
+        droppedPosition = lastChildRect.bottom
+        checkFit(droppedPosition, attributesListEl, null)
+
+      # Check fit at end of the entire attributes list.
+      listRect = attributesListEl.getBoundingClientRect()
+      droppedPosition = listRect.bottom
+      checkFit(droppedPosition, attributesListEl, null)
+
+      # If no children, check fit at beginning of entire attributes list.
+      if childEls.length == 0
+        droppedPosition = listRect.top
+        checkFit(droppedPosition, attributesListEl, null)
+
+    # Clean up by unhiding AttributeRowPlaceholderEl
+    attributeRowPlaceholderEl?.style.display = ""
+
+    if bestDropSpot.attributesListEl
+      return bestDropSpot
+    else
+      return null
+
+  # _reorderItem will move my element to a dropSpot. dropSpot should be an
+  # object with attributesListEl (where to insert) and beforeAttributeRowEl
+  # (where to insert after, if null then insert at the end).
+  _reorderItem: (dropSpot) ->
+
+    {attribute} = @props
+    {attributesListEl, beforeAttributeRowEl} = dropSpot
+
+    parentElement = attributesListEl.annotation.element
+    if beforeAttributeRowEl
+      beforeAttribute = beforeAttributeRowEl.annotation.attribute
+      if parentElement.children().indexOf(attribute) != -1
+        parentElement.removeChild(attribute)
+      index = parentElement.children().indexOf(beforeAttribute)
+      parentElement.addChild(attribute, index)
+    else
+      parentElement.addChild(attribute)
 
   _isWrapped: ->
     {attribute} = @props
@@ -69,6 +251,9 @@ R.create "AttributeRow",
     else
       selectedElement.addControlledAttribute(attribute)
 
+  annotation: ->
+    # Used for drag reording.
+    {attribute: @props.attribute}
 
 R.create "AttributeLabel",
   propTypes:

@@ -65,6 +65,8 @@ desugarPropType = (propType) ->
     return React.PropTypes.array.isRequired
   else if propType == Object
     return React.PropTypes.object.isRequired
+  else if _.isArray propType
+    return React.PropTypes.oneOf(propType).isRequired
   else if propType == "any"
     return React.PropTypes.any
   else if propType.isVariantOf?
