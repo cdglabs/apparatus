@@ -48,11 +48,19 @@ rgba = (r, g, b, a) ->
   b = Math.round(b * 255)
   return "rgba(#{r}, #{g}, #{b}, #{a})"
 
-spread = require "./spread"
+
+# Saved in other files:
+
+spread = require "./evaluateSpread"
+htmlToImageURL = require "./evaluateHtmlToImageURL"
+
+
+
+# =============================================================================
+# Library imports
+# =============================================================================
 
 _ = require "underscore"
 
 d3 = require "d3"
 _.extend(d3, require "d3-scale-chromatic")
-
-htmlToImageURL = require "./htmlToImageURL"
