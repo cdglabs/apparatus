@@ -16,14 +16,15 @@ R.create "Outline",
     R.div {className: "Outline"},
       R.div {className: "Header"},
         "Outline"
-        R.span {
-          className: "HeaderSetting"
-          onClick: -> layout.toggleShowAttributesInOutline()
-        },
-          if layout.showAttributesInOutline
-            "Hide Attributes"
-          else
-            "Show Attributes"
+        if layout.rightPanelWidth > 200
+          R.span {
+            className: "HeaderSetting"
+            onClick: -> layout.toggleShowAttributesInOutline()
+          },
+            if layout.showAttributesInOutline
+              "Hide Attributes"
+            else
+              "Show Attributes"
       R.div {className: "Scroller"},
         R.OutlineTree {element}
 
@@ -119,7 +120,7 @@ R.create "OutlineItem",
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
     },
-      R.div {className: "ElementRow"},
+      R.div {className: "ElementRow FlexRow"},
         R.div {className: "ElementRowDisclosure"},
           R.div {
             className: R.cx {

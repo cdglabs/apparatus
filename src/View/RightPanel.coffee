@@ -17,7 +17,7 @@ R.create "RightPanel",
       cursor: "ew-resize"
       onMove: (moveEvent) =>
         dx = moveEvent.clientX - startX
-        layout.constraintRightPanelWidth(startWidth - dx)
+        layout.setRightPanelWidth(startWidth - dx)
 
   render: ->
     layout = @context.editor.layout
@@ -25,7 +25,7 @@ R.create "RightPanel",
     if layout.fullScreen
       return null
 
-    R.div { 
+    R.div {
         className: R.cx {
            RightPanel: true
            FullScreen: layout.fullScreen
@@ -34,11 +34,10 @@ R.create "RightPanel",
           width: layout.rightPanelWidth
         }
       },
-      R.div { 
+      R.div {
         className: "RightResize"
         onMouseDown: @_onResizeMouseDown
       }
-      R.div { className: "RightPanelContainer" }, 
+      R.div { className: "RightPanelContainer" },
         R.Outline {}
         R.Inspector {}
-

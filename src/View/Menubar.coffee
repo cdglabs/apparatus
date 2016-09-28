@@ -16,7 +16,7 @@ R.create "Menubar",
     if editor.layout.fullScreen
       return null
 
-    R.div { className: "Menubar" },
+    R.div { className: "Menubar FlexRow" },
       R.MenubarItem {title: "New", isDisabled: false, fn: @_new}
       R.MenubarItem {title: "Load", isDisabled: false, fn: @_load}
       if editor.experimental

@@ -19,10 +19,10 @@ R.create "Editor",
 
   render: ->
     R.MouseManagersWrapper {},
-      R.div { className: "Editor" },
+      R.div { className: "Editor FlexRow" },
         R.DragHint {}
         R.CreatePanel {}
-        R.div { className: "Center" },
+        R.div { className: "Center FlexGrow FlexColumn" },
           R.Menubar {}
           R.EditorCanvas {}
         R.RightPanel {}

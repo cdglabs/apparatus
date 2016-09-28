@@ -2,6 +2,12 @@
 @import "../node_modules/codemirror/addon/hint/show-hint.css"
 
 
+// Please keep this code well-commented. If you add a property to fix some edge
+// case or browser quirk, then explain this in a comment. Otherwise, you risk
+// the possibility that a future contributor will remove the property, thinking
+// it is no longer necessary.
+
+
 // ============================================================================
 // Mixins
 // ============================================================================
@@ -43,7 +49,7 @@ controlledColor = #c00
 
 html, body
   margin 0
-  overflow hidden
+  overflow hidden  // prevents "overscroll" of the app
 
 [contenteditable]:active, [contenteditable]:focus, button:active, button:focus
   outline none
@@ -62,6 +68,25 @@ canvas
 
 .CursorOverride *
   cursor inherit !important
+
+.FlexRow
+  display flex
+  flex-direction row
+
+.FlexColumn
+  display flex
+  flex-direction column
+
+.FlexGrow
+  flex 1
+
+.FlexNoShrink
+  flex 0 0 auto
+
+// Strictly speaking, this is the same as FlexRow, but it communicates "I'm
+// just here to hold a single child; don't think of me as a row".
+.FlexContainer
+  display flex
 
 
 // ============================================================================
@@ -89,31 +114,21 @@ RightResizeWidth = 10px
 
 .Editor
   position absolute
-  display flex
   width 100%
   height 100%
 
 .Center
-  flex-grow 2
-  display flex
-  flex-direction column
-  height 100%
+  overflow-x hidden  // so it can shrink smaller than the menu bar's width
 
 .CreatePanel
   position relative
-  flex-shrink 0
   box-sizing border-box
-  top 0
-  left 0
-  bottom 0
   width CreatePanelWidth
   background-color #eee
   border-right 1px solid #ccc
 
 .RightPanel
   position relative
-  // this panel should not shrink
-  flex-shrink 0
   box-sizing border-box
 
 .CreatePanelContainer, .RightPanelContainer
@@ -155,23 +170,14 @@ RightResizeWidth = 10px
 
 .BareEditorCanvas, .BareViewerCanvas
   position relative
-  flex-basis 100%
-
   canvas
     position absolute
 
 .EditorCanvasDropzone
-  flex-grow 2
-
-  display flex
-  flex-direction row
-
   &.dropActive
     background-color #F8FFF8
-
   &.dropReject
     background-color #FFF8F8
-
 
 .LayoutMode
   noSelect()
@@ -193,11 +199,6 @@ RightResizeWidth = 10px
   &.FullScreen
     top 2px
 
-.Menubar
-  box-sizing border-box
-  height MenubarHeight
-  background-color #eee
-  border-bottom 1px #ccc solid
 
 // ============================================================================
 // Layout "Chrome"
@@ -234,6 +235,7 @@ HeaderSize = 18px
   overflow-y auto
   overflow-x hidden
 
+
 // ============================================================================
 // Menubar
 // ============================================================================
@@ -241,8 +243,13 @@ HeaderSize = 18px
 .Menubar
   user-select none
   padding 4px
-  display flex
+  box-sizing border-box
+  height MenubarHeight
+  background-color #eee
+  border-bottom 1px #ccc solid
+
   .MenubarItem
+    white-space nowrap
     padding 0 8px
     cursor pointer
     &:hover
@@ -252,11 +259,9 @@ HeaderSize = 18px
       color #aaa
       &:hover
         color #aaa
+
   .MenubarSeparator
     width 24px
-  .ToolbarRight
-    flex-grow 1
-    text-align right
 
 
 // ============================================================================
@@ -328,12 +333,9 @@ HeaderSize = 18px
 
 
 .ElementRow
-  display flex
   padding: 0.175em 0
   .ElementRowDisclosure
     width 1.5em
-  .ElementRowLabel
-    flex-grow 1
 
 
 .DisclosureTriangle
@@ -403,8 +405,7 @@ HeaderSize = 18px
 // ============================================================================
 
 .AttributeRow
-  padding: 0.175em 0
-  display flex
+  padding 0.175em 0
 
   &.isInherited
     opacity 0.5
@@ -419,9 +420,6 @@ HeaderSize = 18px
   .AttributeRowLabel
     forceWidth(9em)
 
-  .AttributeRowExpression
-    flex-grow 1
-
   .AttributeRowDragHandle
     text-align right
     min-width 25px
@@ -430,9 +428,6 @@ HeaderSize = 18px
 
   &.isWrapped
     flex-wrap wrap
-    .AttributeRowExpression
-      padding-left 3.25em
-      width: 100%
     .AttributeRowControl
       order 1
     .AttributeRowLabel
@@ -442,6 +437,8 @@ HeaderSize = 18px
       flex-grow 1
     .AttributeRowExpression
       order 4
+      padding-left 3.25em
+      width: 100%
 
   .AttributeControl
     width 1em

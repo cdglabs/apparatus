@@ -32,6 +32,7 @@ R.create "AttributeRow",
     attributeRow = R.div {
       className: R.cx {
         AttributeRow: true
+        FlexRow: true
         isInherited: !attribute.isNovel()
         isWrapped: @_isWrapped()
         isGoingToChange: @_isGoingToChange()
@@ -54,7 +55,7 @@ R.create "AttributeRow",
         }
       R.div {className: "AttributeRowLabel"},
         R.AttributeLabel {attribute}
-      R.div {className: "AttributeRowExpression"},
+      R.div {className: "AttributeRowExpression FlexGrow"},
         R.Expression {attribute}
       R.div {
         className: "AttributeRowDragHandle icon-grip"

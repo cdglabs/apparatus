@@ -6,10 +6,10 @@ module.exports = class Layout
     @showAttributesInOutline = true
 
     @_rightPanelMin = 100
-    @_rightPanelMax = 600
+    @_rightPanelMax = 700
 
-  # applies the constraints to the new right panel width
-  constraintRightPanelWidth: (newWidth) ->
+  # Note: constraints will be applied before setting the new right-panel width
+  setRightPanelWidth: (newWidth) ->
     @rightPanelWidth = Math.min(@_rightPanelMax, Math.max(@_rightPanelMin, newWidth))
     @_refreshLayout()
 

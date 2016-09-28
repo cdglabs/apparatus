@@ -16,7 +16,7 @@ R.create "CreatePanel",
     if layout.fullScreen
       return null
 
-    R.div { className: "CreatePanel" },
+    R.div { className: "CreatePanel FlexNoShrink" },
       R.div { className: "CreatePanelContainer" },
         R.div {className: "Header"}, "Symbols"
         R.div {className: "Scroller"},

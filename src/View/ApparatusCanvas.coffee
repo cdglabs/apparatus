@@ -516,25 +516,26 @@ R.create "EditorCanvas",
         onClick: @_toggleLayout
       }
 
-    if layout.fullScreen
-      R.BareViewerCanvas {
-        element: editingElement
-      },
-        fullScreenButton
-    else
-      R.Dropzone {
-        className: "EditorCanvasDropzone"
-        onDrop: @_onFilesDrop
-        disableClick: true
-        activeClassName: "dropActive"
-        rejectClassName: "dropReject"
-        accept: "image/*"
-        multiple: false
-      },
-        R.BareEditorCanvas {
+    R.div {className: "EditorCanvas FlexGrow FlexContainer"},
+      if layout.fullScreen
+        R.BareViewerCanvas {
           element: editingElement
         },
           fullScreenButton
+      else
+        R.Dropzone {
+          className: "EditorCanvasDropzone FlexGrow FlexContainer"
+          onDrop: @_onFilesDrop
+          disableClick: true
+          activeClassName: "dropActive"
+          rejectClassName: "dropReject"
+          accept: "image/*"
+          multiple: false
+        },
+          R.BareEditorCanvas {
+            element: editingElement
+          },
+            fullScreenButton
 
   _toggleLayout: ->
     {layout} = @context.editor
@@ -571,7 +572,7 @@ R.create "EditorCanvas",
 R.create "BareEditorCanvas",
   render: ->
     R.ApparatusCanvas {
-      className: "BareEditorCanvas"
+      className: "BareEditorCanvas FlexGrow"
       element: @props.element
       cacheRect: true
       screenMatrixScale: 1
@@ -592,7 +593,7 @@ R.create "BareEditorCanvas",
 R.create "BareViewerCanvas",
   render: ->
     R.ApparatusCanvas {
-      className: "BareViewerCanvas"
+      className: "BareViewerCanvas FlexGrow"
       element: @props.element
       cacheRect: false
       screenMatrixScale: 1
@@ -613,7 +614,7 @@ R.create "BareViewerCanvas",
 R.create "ThumbnailCanvas",
   render: ->
     R.ApparatusCanvas {
-      className: "ThumbnailCanvas"
+      className: "ThumbnailCanvas FlexGrow"
       element: @props.element
       cacheRect: true  # no interaction so it's just for size
       screenMatrixScale: 0.1
