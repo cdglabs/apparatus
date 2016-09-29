@@ -143,7 +143,7 @@ window.ApparatusViewer = class ApparatusViewer
 
     @willRefreshNextFrame = false
     for eventName in refreshEventNames
-      window.addEventListener(eventName, => @_refresh())
+      @_element.addEventListener(eventName, => @_refresh())
 
   _deserializeProjectData: ->
     serializer = Model.SerializerWithBuiltIns.getSerializer()
