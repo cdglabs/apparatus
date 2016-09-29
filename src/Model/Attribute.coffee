@@ -66,6 +66,13 @@ module.exports = Attribute = Node.createVariant
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
 
+  deleteExpression: ->
+    delete @exprString
+
+    # Remove all existing reference links
+    for referenceLink in @childrenOfType(Model.ReferenceLink)
+      @removeChild(referenceLink)
+
   setOverrideValue: (overrideValue) ->
     @__overrideValue = overrideValue
 

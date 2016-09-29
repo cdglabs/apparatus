@@ -276,7 +276,7 @@ R.create "AttributeLabel",
     {hoverManager, editor} = @context
 
     isHovered = hoverManager.hoveredAttribute == attribute
-    canHaveMenu = editor.experimental and attribute.isVariantOf(Model.Variable)
+    canHaveMenu = editor.experimental
     isMenuHovered = @isMenuHovered
     isMenuVisible = canHaveMenu and (isHovered or isMenuHovered)
 
@@ -374,9 +374,16 @@ R.create "AttributeLabel",
 
   _onMenuMouseDown: (e) ->
     {attribute} = @props
-    parent = attribute.parent()
-    return unless parent
-    parent.removeChild(attribute)
+
+    if attribute.isVariantOf(Model.Variable)
+      # We straight-up delete variables ...
+      parent = attribute.parent()
+      return unless parent
+      parent.removeChild(attribute)
+    else
+      # ... but we just reset non-variable attributes.
+      attribute.deleteExpression()
+
 
 R.create "AttributeToken",
   propTypes:
