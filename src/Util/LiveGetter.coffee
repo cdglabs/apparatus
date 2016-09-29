@@ -14,6 +14,8 @@ parseXML = (res, fn) ->
 request.parse['application/xml'] = parseXML
 request.parse['text/xml'] = parseXML
 
+# Some endpoint set their headers incorrectly...
+request.parse['text/javascript'] = request.parse['application/json']
 
 # LiveGetter manages a bunch of HTTP requests which will want to be refreshed on
 # a regular interval. A user of LiveGetter calls `liveGetter.get(myURL,
