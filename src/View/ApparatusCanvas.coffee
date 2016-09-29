@@ -40,6 +40,7 @@ R.create "ApparatusCanvas",
     enableGeneralInteraction: Boolean
     enableControllerInteraction: Boolean
     enablePanAndZoom: Boolean
+    clampMouseWhileDragging: Boolean
 
   render: ->
     {className, children} = @props
@@ -358,7 +359,11 @@ R.create "ApparatusCanvas",
     dragManager.start mouseDownEvent,
       onMove: (mouseMoveEvent) =>
         return unless startImmediately or dragManager.drag.consummated
-        currentMousePixel = @_mousePosition(mouseMoveEvent)
+        currentMousePixel =
+          if @props.clampMouseWhileDragging
+            @_clampedMousePosition(mouseMoveEvent)
+          else
+            @_mousePosition(mouseMoveEvent)
         initialValues = for attribute in attributesToChange
           attribute.value()
         precisions = for attribute in attributesToChange
@@ -459,6 +464,11 @@ R.create "ApparatusCanvas",
     x = mouseEvent.clientX - rect.left
     y = mouseEvent.clientY - rect.top
     return [x, y]
+
+  _clampedMousePosition: (mouseEvent) ->
+    [x, y] = @_mousePosition(mouseEvent)
+    rect = @_rect()
+    return [Util.clamp(x, 0, rect.width), Util.clamp(y, 0, rect.height)]
 
 
   # ===========================================================================
@@ -583,6 +593,7 @@ R.create "BareEditorCanvas",
       enableGeneralInteraction: true
       enableControllerInteraction: true
       enablePanAndZoom: true
+      clampMouseWhileDragging: false
       children: @props.children
     }
 
@@ -604,6 +615,7 @@ R.create "BareViewerCanvas",
       enableGeneralInteraction: false
       enableControllerInteraction: true
       enablePanAndZoom: false
+      clampMouseWhileDragging: true
       children: @props.children
     }
 
@@ -625,4 +637,5 @@ R.create "ThumbnailCanvas",
       enableGeneralInteraction: false
       enableControllerInteraction: false
       enablePanAndZoom: false
+      clampMouseWhileDragging: false  # irrelevant
     }

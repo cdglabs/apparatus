@@ -98,6 +98,8 @@ Util.solve = (objective, startArgs) ->
     solution = uncmin.solution
     return solution
 
+Util.clamp = (x, min, max) ->
+  Math.max(min, Math.min(max, x))
 
 # =============================================================================
 # Precision
