@@ -33,6 +33,7 @@ R.create "AttributeRow",
       className: R.cx {
         AttributeRow: true
         FlexRow: true
+        FlexAlignStart: true
         isInherited: !attribute.isNovel()
         isWrapped: @_isWrapped()
         isGoingToChange: @_isGoingToChange()
@@ -53,7 +54,7 @@ R.create "AttributeRow",
           }
           onClick: @_toggleControl
         }
-      R.div {className: "AttributeRowLabel"},
+      R.div {className: "AttributeRowLabel FlexContainer"},
         R.AttributeLabel {attribute}
       R.div {className: "AttributeRowExpression FlexGrow"},
         R.Expression {attribute}
@@ -264,6 +265,7 @@ R.create "AttributeLabel",
     attribute: Model.Attribute
 
   contextTypes:
+    editor: Model.Editor
     dragManager: R.DragManager
     hoverManager: R.HoverManager
 
@@ -271,26 +273,55 @@ R.create "AttributeLabel",
 
   render: ->
     {attribute} = @props
-    {hoverManager} = @context
+    {hoverManager, editor} = @context
+
+    isHovered = hoverManager.hoveredAttribute == attribute
+    canHaveMenu = editor.experimental and attribute.isVariantOf(Model.Variable)
+    isMenuHovered = @isMenuHovered
+    isMenuVisible = canHaveMenu and (isHovered or isMenuHovered)
 
     R.div {
       className: R.cx {
         AttributeLabel: true
+        FlexGrow: true
+        FlexRow: true
         Interactive: true
-        isHovered: hoverManager.hoveredAttribute == attribute
+        isHovered: isHovered
         isGoingToChange: _.contains(hoverManager.attributesToChange, attribute)
+        isMenuHovered: isMenuHovered
+        isMenuVisible: isMenuVisible
       }
-      title: Util.getId(attribute)
-      onMouseDown: @_onMouseDown
-      onMouseEnter: @_onMouseEnter
-      onMouseLeave: @_onMouseLeave
     },
-      R.EditableText {
-        className: "EditableTextInline Interactive"
-        value: attribute.label
-        setValue: (newValue) ->
-          attribute.label = newValue
-      }
+      R.span {
+        className: R.cx {
+          AttributeLabelMainPart: true
+          FlexGrow: true
+        }
+        onMouseDown: @_onMouseDown
+        onMouseEnter: @_onMouseEnter
+        onMouseLeave: @_onMouseLeave
+      },
+        R.EditableText {
+          className: "EditableTextInline Interactive"
+          value: attribute.label
+          setValue: (newValue) ->
+            attribute.label = newValue
+        }
+      if canHaveMenu
+        R.span {
+          className: R.cx {
+            AttributeLabelMenuPart: true
+            FlexContainer: true
+          }
+          onMouseDown: @_onMenuMouseDown
+          onMouseEnter: @_onMenuMouseEnter
+          onMouseLeave: @_onMenuMouseLeave
+          style:
+            visibility: if isMenuVisible then "visible" else "hidden"
+        },
+          R.span {className: R.cx {AttributeLabelMenuPartIcon: true}},
+            "\u2715"  # "\u25BE"
+
 
   annotation: ->
     # For autocomplete to find all the attributes on the screen.
@@ -335,6 +366,17 @@ R.create "AttributeLabel",
     return if dragManager.drag?
     hoverManager.hoveredAttribute = null
 
+  _onMenuMouseEnter: (e) ->
+    @isMenuHovered = true
+
+  _onMenuMouseLeave: (e) ->
+    @isMenuHovered = false
+
+  _onMenuMouseDown: (e) ->
+    {attribute} = @props
+    parent = attribute.parent()
+    return unless parent
+    parent.removeChild(attribute)
 
 R.create "AttributeToken",
   propTypes:
@@ -363,6 +405,9 @@ R.create "AttributeToken",
   _label: ->
     {attribute, contextElement} = @props
     parentElement = attribute.parentElement()
+    if !parentElement
+      return "\u26A0 Orphaned #{attribute.label} \u26A0"
+
     if contextElement
       isSameContext = parentElement.isAncestorOf(contextElement)
     else

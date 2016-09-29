@@ -69,6 +69,8 @@ canvas
 .CursorOverride *
   cursor inherit !important
 
+// Flex parent classes
+
 .FlexRow
   display flex
   flex-direction row
@@ -77,16 +79,22 @@ canvas
   display flex
   flex-direction column
 
+.FlexContainer
+  display flex
+  // (Strictly speaking, this is the same as FlexRow, but it communicates "I'm
+  // just here to hold a single child; don't think of me as a row".)
+
+// Flex child classes
+
+.FlexAlignStart
+  align-items flex-start
+
 .FlexGrow
   flex 1
 
 .FlexNoShrink
   flex 0 0 auto
 
-// Strictly speaking, this is the same as FlexRow, but it communicates "I'm
-// just here to hold a single child; don't think of me as a row".
-.FlexContainer
-  display flex
 
 
 // ============================================================================
@@ -418,7 +426,7 @@ HeaderSize = 18px
     forceWidth(1.5em)
 
   .AttributeRowLabel
-    forceWidth(9em)
+    forceWidth(10em)
 
   .AttributeRowDragHandleSpacer
     text-align right
@@ -468,20 +476,47 @@ HeaderSize = 18px
 
 .AttributeLabel
   margin-right 0.5em
-  border-radius 20px
-  padding 0 0.75em
-  cursor grab
+
   &.Editing
     cursor text
 
-.AttributeLabel, .ReferenceToken
+  .AttributeLabelMainPart
+    border-radius 20px 0 0 20px
+    padding 0 0 0 0.75em
+    cursor grab
+
+  &:not(.isMenuVisible) .AttributeLabelMainPart
+    border-radius 20px
+
+  .AttributeLabelMenuPart
+    border-radius 0 20px 20px 0
+    padding 0 0.5em 0 0.25em
+    border-left 1px solid #cccccc
+    cursor pointer
+
+    .AttributeLabelMenuPartIcon
+      margin auto
+      color #999
+
+.AttributeLabel .AttributeLabelMainPart
+.AttributeLabel .AttributeLabelMenuPart
+.ReferenceToken
   defaultFont()
   color #333
   background-image linear-gradient(to bottom, #f4f4f4, #e4e4e4)
-  &.isHovered
-    background-image linear-gradient(to bottom, tint(hoveredColor, 75%), tint(hoveredColor, 40%))
-  &.isGoingToChange
-    background-image linear-gradient(to bottom, tint(controlledColor, 75%), tint(controlledColor, 40%))
+
+.AttributeLabel.isHovered .AttributeLabelMainPart
+.AttributeLabel.isHovered .AttributeLabelMenuPart
+.ReferenceToken.isHovered
+  background-image linear-gradient(to bottom, tint(hoveredColor, 75%), tint(hoveredColor, 40%))
+
+.AttributeLabel.isGoingToChange .AttributeLabelMainPart
+.AttributeLabel.isGoingToChange .AttributeLabelMenuPart
+.ReferenceToken.isGoingToChange
+  background-image linear-gradient(to bottom, tint(controlledColor, 75%), tint(controlledColor, 40%))
+
+.AttributeLabel.isMenuHovered .AttributeLabelMenuPart
+  background-image linear-gradient(to bottom, #e4e4e4, #c4c4c4)
 
 
 // ============================================================================
