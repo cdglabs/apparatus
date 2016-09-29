@@ -72,7 +72,7 @@ window.ApparatusViewer = class ApparatusViewer
       throw "Found no attributes with label #{label}"
     if foundMultiple
       throw "Found multiple attributes with label #{label}"
-    return new Attribute(attribute)
+    return new Attribute(attribute, this)
 
   # ADVANCED USAGE: Returns a reference to the internal `Project` object being
   # displayed in the viewer. You can read and write to this object, but beware:
@@ -163,7 +163,7 @@ window.ApparatusViewer = class ApparatusViewer
 
 
 ApparatusViewer.Attribute = class Attribute
-  constructor: (@_attribute) ->
+  constructor: (@_attribute, @_viewer) ->
 
   # Returns the current value of the attribute.
   value: ->
@@ -172,6 +172,7 @@ ApparatusViewer.Attribute = class Attribute
   # Sets the defining expression of the attribute to the string given.
   setExpression: (exprString) ->
     @_attribute.setExpression(exprString)
+    @_viewer._refresh()
     return
 
   # ADVANCED USAGE: Returns a reference to the internal `Attribute` node
