@@ -53,7 +53,8 @@ rgba = (r, g, b, a) ->
 
 spread = require "./evaluateSpread"
 htmlToImageURL = require "./evaluateHtmlToImageURL"
-npmRequire = require "./evaluateNpmRequire"
+jspmRequire = (require "./evaluateJspmRequire").jspmRequire
+npmRequire = (require "./evaluateJspmRequire").npmRequire
 get = require "./evaluateGet"
 
 
