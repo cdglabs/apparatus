@@ -420,10 +420,13 @@ HeaderSize = 18px
   .AttributeRowLabel
     forceWidth(9em)
 
-  .AttributeRowDragHandle
+  .AttributeRowDragHandleSpacer
     text-align right
-    min-width 25px
     margin 0px 4px
+
+  .AttributeRowDragHandle
+    display inline-block
+    min-width 20px
     cursor grab
 
   &.isWrapped
@@ -432,13 +435,13 @@ HeaderSize = 18px
       order 1
     .AttributeRowLabel
       order 2
-    .AttributeRowDragHandle
+    .AttributeRowDragHandleSpacer
       order 3
       flex-grow 1
     .AttributeRowExpression
       order 4
       padding-left 3.25em
-      width: 100%
+      flex-basis 100%
 
   .AttributeControl
     width 1em

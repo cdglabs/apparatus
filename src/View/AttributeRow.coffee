@@ -58,11 +58,14 @@ R.create "AttributeRow",
       R.div {className: "AttributeRowExpression FlexGrow"},
         R.Expression {attribute}
       R.div {
-        className: "AttributeRowDragHandle icon-grip"
-        onMouseDown: @_onDragHandleMouseDown
+        className: "AttributeRowDragHandleSpacer"
         style:
           visibility: if canDrag and @hovered then "visible" else "hidden"
-      }
+      },
+        R.span {
+          className: "AttributeRowDragHandle icon-grip"
+          onMouseDown: @_onDragHandleMouseDown
+        }
 
     if isDropSpot
       R.div {},
