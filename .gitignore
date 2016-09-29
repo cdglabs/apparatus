@@ -2,3 +2,7 @@ node_modules
 .DS_Store
 npm-debug.log
 .fontcustom-manifest.json
+
+/dist/*.js
+/dist/*.css
+/dist/*.map
