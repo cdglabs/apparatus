@@ -112,7 +112,7 @@ Model.Interaction = Model.Component.createVariant
   label: "Interaction"
 
 Model.Interaction.addChildren [
-  createAttribute("Hovered", "hovered", "false")
+  createAttribute("Hovered?", "hovered", "false")
 ]
 
 
@@ -197,7 +197,7 @@ Model.PathComponent = Model.Component.createVariant
   graphicClass: Graphic.PathComponent
 
 Model.PathComponent.addChildren [
-  createAttribute("Close Path", "closed", "true")
+  createAttribute("Close Path?", "closed", "true")
 ]
 
 Model.Path = Model.Shape.createVariant
