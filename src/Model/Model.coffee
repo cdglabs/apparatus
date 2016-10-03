@@ -116,6 +116,17 @@ Model.Interaction.addChildren [
 ]
 
 
+Model.GeneralComponent = Model.Component.createVariant
+  label: "General"
+
+  filter: ->
+    @getAttributesValuesByName().filter
+
+Model.GeneralComponent.addChildren [
+  createAttribute("CSS Filter", "filter", "\"\"")
+]
+
+
 # =============================================================================
 # Elements
 # =============================================================================
@@ -145,6 +156,7 @@ Model.Shape = Model.Element.createVariant
 
 Model.Shape.addChildren [
   Model.Transform.createVariant()
+  Model.GeneralComponent.createVariant()
   Model.Interaction.createVariant()
 ]
 

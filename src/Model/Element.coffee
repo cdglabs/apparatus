@@ -25,6 +25,8 @@ module.exports = Element = NodeWithAttributes.createVariant
       "graphic"
       "contextMatrix"
       "accumulatedMatrix"
+      "contextFilter"
+      "accumulatedFilter"
     ]
     for prop in propsToCellify
       this[prop] = Dataflow.cell(this["_" + prop].bind(this))
@@ -189,6 +191,30 @@ module.exports = Element = NodeWithAttributes.createVariant
 
 
   # ===========================================================================
+  # Filter
+  # ===========================================================================
+
+  filter: ->
+    generalComponent = @childOfType(Model.GeneralComponent)
+    if generalComponent
+      return generalComponent.filter()
+    else
+      # Backwards compatibility
+      return ""
+
+  _contextFilter: ->
+    parent = @parent()
+    if parent and parent.isVariantOf(Element)
+      return parent.accumulatedFilter()
+    else
+      return ""
+
+  _accumulatedFilter: ->
+    # Apply filters bottom-up
+    return @filter() + @contextFilter()
+
+
+  # ===========================================================================
   # Graphic
   # ===========================================================================
 
@@ -199,6 +225,8 @@ module.exports = Element = NodeWithAttributes.createVariant
     graphic.particularElement = new Model.ParticularElement(this, spreadEnv)
 
     graphic.matrix = @accumulatedMatrix()
+
+    graphic.filter = @accumulatedFilter()
 
     graphic.components = _.map @components(), (component) ->
       component.graphic()

@@ -120,8 +120,11 @@ class Graphic.Path extends Graphic.Element
       return null
 
   performPaintOps: ({ctx}) ->
+    ctx.save()
+    ctx.filter = @filter
     for component in @componentsOfType(Graphic.PaintOp)
       component.paint(ctx)
+    ctx.restore()
 
   highlightIfNecessary: ({highlight, ctx}) ->
     return unless highlight
@@ -174,10 +177,15 @@ class Graphic.Circle extends Graphic.Path
 class Graphic.Text extends Graphic.Path
   render: (opts) ->
     ctx = opts.ctx
+
     ctx.save()
+    ctx.filter = @filter
+
     @setupText(opts)
     @renderText(opts)
+
     ctx.restore()
+
     if opts.highlight
       @buildPath(opts)
       @highlightIfNecessary(opts)
@@ -284,8 +292,14 @@ class Graphic.Image extends Graphic.Path
 
     ctx.save()
     matrix.canvasTransform(ctx)
+    ctx.filter = @filter
 
     ctx.drawImage(image, 0, 0)
+
+    ctx.restore()
+
+    ctx.save()
+    matrix.canvasTransform(ctx)
 
     if opts.highlight
       ctx.beginPath()
