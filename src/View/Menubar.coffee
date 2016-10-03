@@ -39,10 +39,10 @@ R.create "Menubar",
 
       if editor.experimental
         [
-          R.div {className: "MenubarSeparator"}
-          R.div {className: "MenubarSeparator"}
+          R.div {key: 1, className: "MenubarSeparator"}
+          R.div {key: 2, className: "MenubarSeparator"}
 
-          R.div {style: {color: "red"}}, "Experimental mode is on"
+          R.div {key: 3, style: {color: "red"}}, "Experimental mode is on"
         ]
 
   componentDidMount: ->
