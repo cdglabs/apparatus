@@ -156,3 +156,9 @@ Util.isNumberString = (string) ->
 
 Util.isStringLiteral = (string) ->
   return /^(?:"(?:\\"|[^"\r\n])*"|'(?:\\'|[^'\r\n])*')$/.test(string)
+
+Util.isKeywordLiteral = (string) ->
+  return (
+    string == "true" or string == "false" or
+    string == "null" or string == "undefined"
+  )
