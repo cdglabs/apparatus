@@ -218,6 +218,14 @@ module.exports = Element = NodeWithAttributes.createVariant
   # Graphic
   # ===========================================================================
 
+  shouldShow: ->
+    generalComponent = @childOfType(Model.GeneralComponent)
+    if generalComponent
+      return generalComponent.show()
+    else
+      # Backwards compatibility
+      return true
+
   _graphic: ->
     graphic = new @graphicClass()
 
@@ -238,6 +246,7 @@ module.exports = Element = NodeWithAttributes.createVariant
     return graphic
 
   allGraphics: ->
+    return [] if not @shouldShow()
     return [] if @_isBeyondMaxDepth()
     result = @graphic.asSpread()
     if result instanceof Dataflow.Spread

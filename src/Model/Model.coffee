@@ -119,10 +119,14 @@ Model.Interaction.addChildren [
 Model.GeneralComponent = Model.Component.createVariant
   label: "General"
 
+  show: ->
+    @getAttributesValuesByName().show
+
   filter: ->
     @getAttributesValuesByName().filter
 
 Model.GeneralComponent.addChildren [
+  createAttribute("Show?", "show", "true")
   createAttribute("CSS Filter", "filter", "\"\"")
 ]
 
