@@ -105,6 +105,7 @@ Model.Stroke = Model.Component.createVariant
 Model.Stroke.addChildren [
   createAttribute("Stroke Color", "color", "rgba(0.60, 0.60, 0.60, 1.00)")
   createAttribute("Line Width", "lineWidth", "1")
+  createAttribute("Scale Stroke?", "scale", "false")
 ]
 
 

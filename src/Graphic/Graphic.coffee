@@ -119,11 +119,12 @@ class Graphic.Path extends Graphic.Element
     else
       return null
 
-  performPaintOps: ({ctx}) ->
+  performPaintOps: ({ctx, viewMatrix}) ->
     ctx.save()
     ctx.filter = @filter
+    matrix = viewMatrix.compose(@matrix)
     for component in @componentsOfType(Graphic.PaintOp)
-      component.paint(ctx)
+      component.paint(ctx, matrix)
     ctx.restore()
 
   highlightIfNecessary: ({highlight, ctx}) ->
@@ -356,9 +357,11 @@ class Graphic.Fill extends Graphic.PaintOp
     ctx.restore()
 
 class Graphic.Stroke extends Graphic.PaintOp
-  paint: (ctx) ->
+  paint: (ctx, matrix) ->
     return if @lineWidth <= 0
     ctx.save()
+    if @scale
+      matrix.canvasTransform(ctx)
     ctx.strokeStyle = @color
     ctx.lineWidth = @lineWidth
     ctx.stroke()
