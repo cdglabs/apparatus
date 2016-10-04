@@ -16,12 +16,12 @@ module.exports = class NodeVisitor
     if @linksToFollow.master
       master = node.master()
       @visit(master) if master
-    if @linksToFollow.variants
+    if @linksToFollow.variants and node.isHatched()
       @visit(variant) for variant in node.variants()
     if @linksToFollow.parent
       parent = node.parent()
       @visit(parent) if parent
-    if @linksToFollow.children
+    if @linksToFollow.children and node.isHatched()
       @visit(child) for child in node.children()
     return
 

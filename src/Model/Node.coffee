@@ -108,13 +108,14 @@ module.exports = Node = {
     return @_variants
 
   parent: ->
-    @_parent
+    return @_parent
 
   children: ->
     @_hatch()
     return @_children
 
-  head: -> @_head
+  head: ->
+    return @_head
 
 
   # ===========================================================================
@@ -133,6 +134,11 @@ module.exports = Node = {
       for masterChild in @_master.children()
         myChild = masterChild._createVariantWithHead(@_head)
         @addChild(myChild)
+
+  # This is an implementation detail and should rarely be called. It is used by
+  # some procedures which walk the node graph and need to know when to stop.
+  isHatched: ->
+    return @_isHatched
 
 
   # ===========================================================================

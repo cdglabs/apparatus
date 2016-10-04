@@ -154,6 +154,10 @@ Model.Shape = Model.Element.createVariant
     return interaction?.getAttributesByName().hovered
 
   clearHoveredAttr: () ->
+    # Prevent infinite descent in recursive shapes
+    if not @_isHatched
+      return
+
     @hoveredAttr()?.setOverrideValue(false)
     for child in @childrenOfType(Model.Shape)
       child.clearHoveredAttr()
