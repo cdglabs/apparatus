@@ -22,7 +22,7 @@ R.create "ExpressionValue",
     attribute: Model.Attribute
   render: ->
     attribute = @props.attribute
-    if attribute.isTrivial()
+    if attribute.isTrivial() and not attribute.hasOverrideValue()
       R.span {}
     else
       value = attribute.value()
