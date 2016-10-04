@@ -16,7 +16,7 @@ R.create "Menubar",
     if editor.layout.fullScreen
       return null
 
-    R.div { className: "Menubar" },
+    R.div { className: "Menubar FlexRow" },
       R.MenubarItem {title: "New", isDisabled: false, fn: @_new}
       R.MenubarItem {title: "Load", isDisabled: false, fn: @_load}
       if editor.experimental
@@ -39,10 +39,10 @@ R.create "Menubar",
 
       if editor.experimental
         [
-          R.div {className: "MenubarSeparator"}
-          R.div {className: "MenubarSeparator"}
+          R.div {key: 1, className: "MenubarSeparator"}
+          R.div {key: 2, className: "MenubarSeparator"}
 
-          R.div {style: {color: "red"}}, "Experimental mode is on"
+          R.div {key: 3, style: {color: "red"}}, "Experimental mode is on"
         ]
 
   componentDidMount: ->

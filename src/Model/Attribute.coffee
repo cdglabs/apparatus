@@ -17,6 +17,9 @@ module.exports = Attribute = Node.createVariant
     @value = Dataflow.cell(@_value.bind(this))
 
   _value: ->
+    if @hasOverrideValue()
+      return @__overrideValue
+
     # Optimization
     if @isNumber()
       return parseFloat(@exprString)
@@ -63,6 +66,19 @@ module.exports = Attribute = Node.createVariant
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
 
+  deleteExpression: ->
+    delete @exprString
+
+    # Remove all existing reference links
+    for referenceLink in @childrenOfType(Model.ReferenceLink)
+      @removeChild(referenceLink)
+
+  setOverrideValue: (overrideValue) ->
+    @__overrideValue = overrideValue
+
+  hasOverrideValue: () ->
+    @hasOwnProperty('__overrideValue')
+
   references: ->
     references = {}
     for referenceLink in @childrenOfType(Model.ReferenceLink)
@@ -76,9 +92,14 @@ module.exports = Attribute = Node.createVariant
   isNumber: ->
     return Util.isNumberString(@exprString)
 
+  isString: ->
+    return Util.isStringLiteral(@exprString)
+
+  isKeyword: ->
+    return Util.isKeywordLiteral(@exprString)
+
   isTrivial: ->
-    # TODO
-    return @isNumber()
+    return @isNumber() or @isString() or @isKeyword()
 
   isNovel: ->
     @hasOwnProperty("exprString")
@@ -127,7 +148,7 @@ module.exports = Attribute = Node.createVariant
 
   parentElement: ->
     result = @parent()
-    until result.isVariantOf(Model.Element)
+    until !result or result.isVariantOf(Model.Element)
       result = result.parent()
     return result
 
@@ -157,7 +178,10 @@ class CompiledExpression
 
     compiled = @_wrapFunctionInSpreadCheck(compiled)
 
-    if @referenceKeys.length == 0
+    # We assume an expression with no references and no parentheses must be a
+    # constant. (Parentheses mean there might be a non-referentially-transparent
+    # function call.)
+    if @referenceKeys.length == 0 and @exprString.indexOf("(") == -1
       try
         value = compiled()
       catch error

@@ -1,17 +1,17 @@
 _ = require "underscore"
-Node = require "./Node"
+NodeWithAttributes = require "./NodeWithAttributes"
 Link = require "./Link"
 Model = require "./Model"
 Dataflow = require "../Dataflow/Dataflow"
 Util = require "../Util/Util"
 
 
-module.exports = Element = Node.createVariant
+module.exports = Element = NodeWithAttributes.createVariant
   label: "Element"
 
   constructor: ->
     # Call "super" constructor
-    Node.constructor.apply(this, arguments)
+    NodeWithAttributes.constructor.apply(this, arguments)
 
     # Because the expanded properly is not inherited, it is initialized in
     # the constructor for every Element.
@@ -25,6 +25,8 @@ module.exports = Element = Node.createVariant
       "graphic"
       "contextMatrix"
       "accumulatedMatrix"
+      "contextFilter"
+      "accumulatedFilter"
     ]
     for prop in propsToCellify
       this[prop] = Dataflow.cell(this["_" + prop].bind(this))
@@ -45,7 +47,8 @@ module.exports = Element = Node.createVariant
 
   components: -> @childrenOfType(Model.Component)
 
-  attributes: ->
+  # Includes attributes of components!
+  allAttributes: ->
     result = []
     for variable in @variables()
       result.push(variable)
@@ -188,8 +191,40 @@ module.exports = Element = Node.createVariant
 
 
   # ===========================================================================
+  # Filter
+  # ===========================================================================
+
+  filter: ->
+    generalComponent = @childOfType(Model.GeneralComponent)
+    if generalComponent
+      return generalComponent.filter()
+    else
+      # Backwards compatibility
+      return ""
+
+  _contextFilter: ->
+    parent = @parent()
+    if parent and parent.isVariantOf(Element)
+      return parent.accumulatedFilter()
+    else
+      return ""
+
+  _accumulatedFilter: ->
+    # Apply filters bottom-up
+    return @filter() + @contextFilter()
+
+
+  # ===========================================================================
   # Graphic
   # ===========================================================================
+
+  shouldShow: ->
+    generalComponent = @childOfType(Model.GeneralComponent)
+    if generalComponent
+      return generalComponent.show()
+    else
+      # Backwards compatibility
+      return true
 
   _graphic: ->
     graphic = new @graphicClass()
@@ -198,6 +233,8 @@ module.exports = Element = Node.createVariant
     graphic.particularElement = new Model.ParticularElement(this, spreadEnv)
 
     graphic.matrix = @accumulatedMatrix()
+
+    graphic.filter = @accumulatedFilter()
 
     graphic.components = _.map @components(), (component) ->
       component.graphic()
@@ -209,6 +246,7 @@ module.exports = Element = Node.createVariant
     return graphic
 
   allGraphics: ->
+    return [] if not @shouldShow()
     return [] if @_isBeyondMaxDepth()
     result = @graphic.asSpread()
     if result instanceof Dataflow.Spread

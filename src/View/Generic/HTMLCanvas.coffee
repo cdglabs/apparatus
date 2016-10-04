@@ -26,7 +26,7 @@ R.create "HTMLCanvas",
     @_canvasIsSized = false
 
   _refresh: ->
-    canvas = @getDOMNode()
+    canvas = R.findDOMNode(@)
 
     if @_canvasIsSized
       canvas.width = canvas.width

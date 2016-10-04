@@ -1,20 +1,24 @@
 
 module.exports = class Layout
-  constructor: ->  
+  constructor: ->
     @rightPanelWidth = 400
     @fullScreen = false
+    @showAttributesInOutline = true
 
     @_rightPanelMin = 100
-    @_rightPanelMax = 600
+    @_rightPanelMax = 700
 
-  # applies the constraints to the new right panel width
-  constraintRightPanelWidth: (newWidth) ->
+  # Note: constraints will be applied before setting the new right-panel width
+  setRightPanelWidth: (newWidth) ->
     @rightPanelWidth = Math.min(@_rightPanelMax, Math.max(@_rightPanelMin, newWidth))
     @_refreshLayout()
 
   toggleFullScreen: ->
     @fullScreen = !@fullScreen
     @_refreshLayout()
+
+  toggleShowAttributesInOutline: ->
+    @showAttributesInOutline = !@showAttributesInOutline
 
   _refreshLayout: ->
     # Changing the layout will deform the canvas

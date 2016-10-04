@@ -1,4 +1,6 @@
 _ = require "underscore"
+Util = require "../Util/Util"
+
 
 module.exports = Graphic = {}
 
@@ -147,9 +149,13 @@ class Graphic.Path extends Graphic.Element
     return "<#{elementName} #{pointsAttribute} #{paintAttributes} />"
 
 
-  performPaintOps: ({ctx}) ->
+  performPaintOps: ({ctx, viewMatrix}) ->
+    ctx.save()
+    ctx.filter = @filter
+    matrix = viewMatrix.compose(@matrix)
     for component in @componentsOfType(Graphic.PaintOp)
-      component.paint(ctx)
+      component.paint(ctx, matrix)
+    ctx.restore()
 
   svgPaintAttributes: ->
     # Note: below needs to be fixed once Elements are allowed to have multiple
@@ -224,10 +230,15 @@ class Graphic.Circle extends Graphic.Path
 class Graphic.Text extends Graphic.Path
   render: (opts) ->
     ctx = opts.ctx
+
     ctx.save()
+    ctx.filter = @filter
+
     @setupText(opts)
     @renderText(opts)
+
     ctx.restore()
+
     if opts.highlight
       @buildPath(opts)
       @highlightIfNecessary(opts)
@@ -310,6 +321,82 @@ class Graphic.Text extends Graphic.Path
     ctx.restore()
 
 
+class Graphic.Image extends Graphic.Path
+  render: (opts) ->
+    {imageCache} = opts
+    {url} = @imageComponent()
+
+    if not _.isString(url)
+      return  # TODO: error reporting?
+
+    imageCache.get(url, (image) => @drawImage(opts, image))
+
+  imageComponent: ->
+    @componentOfType(Graphic.ImageComponent)
+
+  fullMatrix: (opts, image) ->
+    {viewMatrix} = opts
+
+    scale = 0.01
+    matrix =
+      viewMatrix
+      .compose(@matrix)
+      .compose(new Util.Matrix(scale, 0, 0, -scale, 0, scale * image.height))
+
+  drawImage: (opts, image) ->
+    {ctx} = opts
+    matrix = @fullMatrix(opts, image)
+
+    ctx.save()
+    matrix.canvasTransform(ctx)
+    ctx.filter = @filter
+
+    ctx.drawImage(image, 0, 0)
+
+    ctx.restore()
+
+    ctx.save()
+    matrix.canvasTransform(ctx)
+
+    if opts.highlight
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(0, image.height)
+      ctx.lineTo(image.width, image.height)
+      ctx.lineTo(image.width, 0)
+      ctx.closePath()
+      @highlightIfNecessary(opts)
+
+    ctx.restore()
+
+  hitDetect: (opts) ->
+    {imageCache} = opts
+    {url} = @imageComponent()
+
+    image = imageCache.getSync(url)
+    if not image
+      return null
+
+    matrix = @fullMatrix(opts, image)
+    {x, y} = opts
+    [localX, localY] = matrix.toLocal([x, y])
+    if not (0 <= localX <= image.width) or not (0 <= localY <= image.height)
+      return null
+
+    ctx = getDummyCanvasCtx()
+    ctx.canvas.width  = window.innerWidth;
+    ctx.canvas.height = window.innerHeight;
+
+    opts.ctx = ctx
+    @drawImage(opts, image)
+    pixel = ctx.getImageData(x, y, 1, 1).data
+
+    if pixel[3] > 0  # alpha layer
+      return [@particularElement]
+    else
+      return null
+
+
 # =============================================================================
 # Components
 # =============================================================================
@@ -336,9 +423,11 @@ class Graphic.Fill extends Graphic.PaintOp
     return @color == "transparent" or /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*0\s*\)$/.test(@color)
 
 class Graphic.Stroke extends Graphic.PaintOp
-  paint: (ctx) ->
+  paint: (ctx, matrix) ->
     return if @lineWidth <= 0
     ctx.save()
+    if @scale
+      matrix.canvasTransform(ctx)
     ctx.strokeStyle = @color
     ctx.lineWidth = @lineWidth
     ctx.stroke()
@@ -350,6 +439,8 @@ class Graphic.Stroke extends Graphic.PaintOp
 class Graphic.PathComponent extends Graphic.Component
 
 class Graphic.TextComponent extends Graphic.Component
+
+class Graphic.ImageComponent extends Graphic.Component
 
 # =============================================================================
 # Dummy Canvas

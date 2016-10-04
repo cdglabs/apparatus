@@ -1,4 +1,5 @@
-# React = require "react"
+React = require "react"
+ReactDOM = require "react-dom"
 _ = require "underscore"
 
 Model = require "../Model/Model"
@@ -24,10 +25,10 @@ R.AnnotateMixin = {
   componentDidUpdate: -> @_annotateDOMNode()
   componentWillUnmount: -> @_clearAnnotation()
   _annotateDOMNode: ->
-    el = @getDOMNode()
+    el = ReactDOM.findDOMNode(@)
     el.annotation = @annotation()
   _clearAnnotation: ->
-    el = @getDOMNode()
+    el = ReactDOM.findDOMNode(@)
     delete el.annotation
 }
 
@@ -44,7 +45,8 @@ R.create = (name, spec) ->
   R[name] = React.createFactory(component)
 
 
-R.render = React.render
+R.render = ReactDOM.render
+R.findDOMNode = ReactDOM.findDOMNode
 
 
 desugarPropTypes = (propTypes) ->
@@ -63,6 +65,8 @@ desugarPropType = (propType) ->
     return React.PropTypes.array.isRequired
   else if propType == Object
     return React.PropTypes.object.isRequired
+  else if _.isArray propType
+    return React.PropTypes.oneOf(propType).isRequired
   else if propType == "any"
     return React.PropTypes.any
   else if propType.isVariantOf?
@@ -83,14 +87,23 @@ R.HoverManager = require "./Manager/HoverManager"
 
 require "./Generic/EditableText"
 require "./Generic/HTMLCanvas"
-require "./Picture"
 require "./Editor"
 require "./Menubar"
 require "./CreatePanel"
-require "./Canvas"
+require "./ApparatusCanvas"
 require "./RightPanel"
 require "./Outline"
 require "./Inspector"
 require "./AttributeRow"
 require "./Expression"
 require "./ExpressionCode"
+require "./Viewer"
+
+
+Dropzone = require "react-dropzone"
+R.Dropzone = React.createFactory(Dropzone)
+
+{ObjectInspector, chromeLight} = require 'react-inspector'
+R.ObjectInspector = React.createFactory(ObjectInspector)
+R.ObjectInspector.chromeLightTransparent =
+  _.extend({}, chromeLight, {BASE_BACKGROUND_COLOR: "inherit"})

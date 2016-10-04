@@ -11,11 +11,13 @@ The Apparatus editor runs in the browser. You can play with it, see examples, an
 
 # Building the project
 
-First run `npm install` which will install all the dependencies for building Apparatus.
+First run `npm install`, which will install all the dependencies for building Apparatus.
 
-Then you can run `npm run build` which will compile the coffeescript files in `src/` into `dist/apparatus.js` and the stylus files in `style/` into `dist/apparatus.css`. Now you can open `index.html` in a browser to run the Apparatus editor.
+Then run `npm run start`, which starts up a webpack dev server. This will watch for changes to `src/` and `style/`, compile them automatically, and host the resulting app at http://localhost:8080. Even better, http://localhost:8080/webpack-dev-server will automatically reload your browser when files change and keep you informed of the build status along the way.
 
-For development, you can also run `npm run dev` which will set up a watcher for changes to `src/` and `style/` and also a livereload server. To use livereload, you will need to install an [extension](http://livereload.com/extensions/) for your browser.
+To build a static version of Apparatus, run `npm run build`. This will compile the coffeescript files in `src/` into `dist/apparatus.js` and the stylus files in `style/` into `dist/apparatus.css`. Now you can open `index.html` in a browser to run the Apparatus editor.
+
+(If you ever want compiled JS/CSS really fast, you can run `npm run build-dev`. Compilation will be much faster, though the output will not be as optimized.)
 
 You can run `npm run test` to run all the tests in `test/`.
 

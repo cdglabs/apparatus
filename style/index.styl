@@ -2,6 +2,12 @@
 @import "../node_modules/codemirror/addon/hint/show-hint.css"
 
 
+// Please keep this code well-commented. If you add a property to fix some edge
+// case or browser quirk, then explain this in a comment. Otherwise, you risk
+// the possibility that a future contributor will remove the property, thinking
+// it is no longer necessary.
+
+
 // ============================================================================
 // Mixins
 // ============================================================================
@@ -43,7 +49,7 @@ controlledColor = #c00
 
 html, body
   margin 0
-  overflow hidden
+  overflow hidden  // prevents "overscroll" of the app
 
 [contenteditable]:active, [contenteditable]:focus, button:active, button:focus
   outline none
@@ -62,6 +68,33 @@ canvas
 
 .CursorOverride *
   cursor inherit !important
+
+// Flex parent classes
+
+.FlexRow
+  display flex
+  flex-direction row
+
+.FlexColumn
+  display flex
+  flex-direction column
+
+.FlexContainer
+  display flex
+  // (Strictly speaking, this is the same as FlexRow, but it communicates "I'm
+  // just here to hold a single child; don't think of me as a row".)
+
+// Flex child classes
+
+.FlexAlignStart
+  align-items flex-start
+
+.FlexGrow
+  flex 1
+
+.FlexNoShrink
+  flex 0 0 auto
+
 
 
 // ============================================================================
@@ -89,31 +122,21 @@ RightResizeWidth = 10px
 
 .Editor
   position absolute
-  display flex
   width 100%
   height 100%
 
 .Center
-  flex-grow 2
-  display flex
-  flex-direction column
-  height 100%
+  overflow-x hidden  // so it can shrink smaller than the menu bar's width
 
 .CreatePanel
   position relative
-  flex-shrink 0
   box-sizing border-box
-  top 0
-  left 0
-  bottom 0
   width CreatePanelWidth
   background-color #eee
   border-right 1px solid #ccc
 
 .RightPanel
   position relative
-  // this panel should not shrink
-  flex-shrink 0
   box-sizing border-box
 
 .CreatePanelContainer, .RightPanelContainer
@@ -153,13 +176,16 @@ RightResizeWidth = 10px
   background-color #fff
   border-left 1px solid #ccc
 
-.Canvas
-  box-sizing border-box
-  flex-grow 2
+.BareEditorCanvas, .BareViewerCanvas
   position relative
-
   canvas
     position absolute
+
+.EditorCanvasDropzone
+  &.dropActive
+    background-color #F8FFF8
+  &.dropReject
+    background-color #FFF8F8
 
 .LayoutMode
   noSelect()
@@ -181,11 +207,6 @@ RightResizeWidth = 10px
   &.FullScreen
     top 2px
 
-.Menubar
-  box-sizing border-box
-  height MenubarHeight
-  background-color #eee
-  border-bottom 1px #ccc solid
 
 // ============================================================================
 // Layout "Chrome"
@@ -206,11 +227,22 @@ HeaderSize = 18px
   border-top 1px solid #e6e6e6
   border-bottom 1px solid #d3d3d3
 
+.HeaderSetting
+  position absolute
+  right 8px
+  cursor pointer
+  font-size 80%
+  color #aaa
+
+  &:hover
+    color #000
+
 .Scroller
   width 100%
   height "calc(100% - %s)" % HeaderSize
   overflow-y auto
   overflow-x hidden
+
 
 // ============================================================================
 // Menubar
@@ -219,8 +251,13 @@ HeaderSize = 18px
 .Menubar
   user-select none
   padding 4px
-  display flex
+  box-sizing border-box
+  height MenubarHeight
+  background-color #eee
+  border-bottom 1px #ccc solid
+
   .MenubarItem
+    white-space nowrap
     padding 0 8px
     cursor pointer
     &:hover
@@ -230,18 +267,16 @@ HeaderSize = 18px
       color #aaa
       &:hover
         color #aaa
+
   .MenubarSeparator
     width 24px
-  .ToolbarRight
-    flex-grow 1
-    text-align right
 
 
 // ============================================================================
 // CreatePanel
 // ============================================================================
 
-.Thumbnail
+.ThumbnailCanvas
   width 100%
   height 100%
 
@@ -306,12 +341,9 @@ HeaderSize = 18px
 
 
 .ElementRow
-  display flex
   padding: 0.175em 0
   .ElementRowDisclosure
     width 1.5em
-  .ElementRowLabel
-    flex-grow 1
 
 
 .DisclosureTriangle
@@ -331,7 +363,7 @@ HeaderSize = 18px
 
 
 
-.OutlineDragging
+.OutlineDragging, .AttributeRowDragging
   position fixed
   z-index 20
   background-color white
@@ -339,7 +371,7 @@ HeaderSize = 18px
   box-shadow 0px 2px 6px rgba(0,0,0,0.5)
   opacity 0.7
 
-.OutlinePlaceholder
+.OutlinePlaceholder, .AttributeRowPlaceholder
   background-color #bbb
   box-shadow inset 0px 1px 3px rgba(0,0,0,0.5)
 
@@ -381,8 +413,7 @@ HeaderSize = 18px
 // ============================================================================
 
 .AttributeRow
-  padding: 0.175em 0
-  display flex
+  padding 0.175em 0
 
   &.isInherited
     opacity 0.5
@@ -395,16 +426,30 @@ HeaderSize = 18px
     forceWidth(1.5em)
 
   .AttributeRowLabel
-    forceWidth(9em)
+    forceWidth(10em)
 
-  .AttributeRowExpression
-    flex-grow 1
+  .AttributeRowDragHandleSpacer
+    text-align right
+    margin 0px 4px
+
+  .AttributeRowDragHandle
+    display inline-block
+    min-width 20px
+    cursor grab
 
   &.isWrapped
     flex-wrap wrap
+    .AttributeRowControl
+      order 1
+    .AttributeRowLabel
+      order 2
+    .AttributeRowDragHandleSpacer
+      order 3
+      flex-grow 1
     .AttributeRowExpression
+      order 4
       padding-left 3.25em
-      width: 100%
+      flex-basis 100%
 
   .AttributeControl
     width 1em
@@ -431,20 +476,47 @@ HeaderSize = 18px
 
 .AttributeLabel
   margin-right 0.5em
-  border-radius 20px
-  padding 0 0.75em
-  cursor grab
+
   &.Editing
     cursor text
 
-.AttributeLabel, .ReferenceToken
+  .AttributeLabelMainPart
+    border-radius 20px 0 0 20px
+    padding 0 0 0 0.75em
+    cursor grab
+
+  &:not(.isMenuVisible) .AttributeLabelMainPart
+    border-radius 20px
+
+  .AttributeLabelMenuPart
+    border-radius 0 20px 20px 0
+    padding 0 0.5em 0 0.25em
+    border-left 1px solid #cccccc
+    cursor pointer
+
+    .AttributeLabelMenuPartIcon
+      margin auto
+      color #999
+
+.AttributeLabel .AttributeLabelMainPart
+.AttributeLabel .AttributeLabelMenuPart
+.ReferenceToken
   defaultFont()
   color #333
   background-image linear-gradient(to bottom, #f4f4f4, #e4e4e4)
-  &.isHovered
-    background-image linear-gradient(to bottom, tint(hoveredColor, 75%), tint(hoveredColor, 40%))
-  &.isGoingToChange
-    background-image linear-gradient(to bottom, tint(controlledColor, 75%), tint(controlledColor, 40%))
+
+.AttributeLabel.isHovered .AttributeLabelMainPart
+.AttributeLabel.isHovered .AttributeLabelMenuPart
+.ReferenceToken.isHovered
+  background-image linear-gradient(to bottom, tint(hoveredColor, 75%), tint(hoveredColor, 40%))
+
+.AttributeLabel.isGoingToChange .AttributeLabelMainPart
+.AttributeLabel.isGoingToChange .AttributeLabelMenuPart
+.ReferenceToken.isGoingToChange
+  background-image linear-gradient(to bottom, tint(controlledColor, 75%), tint(controlledColor, 40%))
+
+.AttributeLabel.isMenuHovered .AttributeLabelMenuPart
+  background-image linear-gradient(to bottom, #e4e4e4, #c4c4c4)
 
 
 // ============================================================================
@@ -507,6 +579,11 @@ HeaderSize = 18px
   &.CodeMirror-focused
     .CodeMirror-selected
       opacity 1
+
+  // We float CodeMirror left, but this causes a problem with not being able to
+  // see a cursor at the very end of a line. This should fix that.
+  .CodeMirror-sizer
+    padding-right 1px !important
 
 // Numbers are scrubbable
 .cm-number

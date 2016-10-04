@@ -162,6 +162,7 @@
       [data-icon]:before,
       .icon-edit:before,
 .icon-fullscreen:before,
+.icon-grip:before,
 .icon-pencil:before,
 .icon-x:before {
         display: inline-block;
@@ -180,8 +181,9 @@
 
       .icon-edit:before { content: "\f100"; }
 .icon-fullscreen:before { content: "\f101"; }
-.icon-pencil:before { content: "\f102"; }
-.icon-x:before { content: "\f103"; }
+.icon-grip:before { content: "\f102"; }
+.icon-pencil:before { content: "\f103"; }
+.icon-x:before { content: "\f104"; }
     </style>
 
     <!--[if lte IE 8]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
@@ -197,7 +199,7 @@
   <body class="characters-off">
     <div id="page" class="container">
       <header>
-        <h1>icons contains 4 glyphs:</h1>
+        <h1>icons contains 5 glyphs:</h1>
         <a onclick="toggleCharacters(); return false;" href="#">Toggle Preview Characters</a>
       </header>
 
@@ -230,6 +232,19 @@
       
       <div class="glyph">
         <div class="preview-glyphs">
+          <span class="step size-12"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-14"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-16"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-18"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-21"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-24"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-36"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-48"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-60"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span><span class="step size-72"><span class="letters">Pp</span><i id="icon-grip" class="icon-grip"></i></span>
+        </div>
+        <div class="preview-scale">
+          <span class="step">12</span><span class="step">14</span><span class="step">16</span><span class="step">18</span><span class="step">21</span><span class="step">24</span><span class="step">36</span><span class="step">48</span><span class="step">60</span><span class="step">72</span>
+        </div>
+        <div class="usage">
+          <input class="class" type="text" readonly="readonly" onClick="this.select();" value=".icon-grip" />
+          <input class="point" type="text" readonly="readonly" onClick="this.select();" value="&amp;#xf102;" />
+        </div>
+      </div>
+      
+      <div class="glyph">
+        <div class="preview-glyphs">
           <span class="step size-12"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-14"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-16"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-18"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-21"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-24"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-36"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-48"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-60"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span><span class="step size-72"><span class="letters">Pp</span><i id="icon-pencil" class="icon-pencil"></i></span>
         </div>
         <div class="preview-scale">
@@ -237,7 +252,7 @@
         </div>
         <div class="usage">
           <input class="class" type="text" readonly="readonly" onClick="this.select();" value=".icon-pencil" />
-          <input class="point" type="text" readonly="readonly" onClick="this.select();" value="&amp;#xf102;" />
+          <input class="point" type="text" readonly="readonly" onClick="this.select();" value="&amp;#xf103;" />
         </div>
       </div>
       
@@ -250,7 +265,7 @@
         </div>
         <div class="usage">
           <input class="class" type="text" readonly="readonly" onClick="this.select();" value=".icon-x" />
-          <input class="point" type="text" readonly="readonly" onClick="this.select();" value="&amp;#xf103;" />
+          <input class="point" type="text" readonly="readonly" onClick="this.select();" value="&amp;#xf104;" />
         </div>
       </div>
       

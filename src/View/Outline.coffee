@@ -7,12 +7,24 @@ Util = require "../Util/Util"
 R.create "Outline",
   contextTypes:
     project: Model.Project
+    editor: Model.Editor
 
   render: ->
-    {project} = @context
+    {project, editor} = @context
     element = project.editingElement
+    layout = editor.layout
     R.div {className: "Outline"},
-      R.div {className: "Header"}, "Outline"
+      R.div {className: "Header"},
+        "Outline"
+        if layout.rightPanelWidth > 200
+          R.span {
+            className: "HeaderSetting"
+            onClick: -> layout.toggleShowAttributesInOutline()
+          },
+            if layout.showAttributesInOutline
+              "Hide Attributes"
+            else
+              "Show Attributes"
       R.div {className: "Scroller"},
         R.OutlineTree {element}
 
@@ -66,7 +78,8 @@ R.create "OutlineChildren",
 
   render: ->
     {element} = @props
-    R.div {className: "OutlineChildren"},
+    interpretationClasses = element.getAllowedShapeInterpretationContextForChildren().join(" ")
+    R.div {className: "OutlineChildren " + interpretationClasses},
       for childElement in element.childElements()
         R.OutlineTree {element: childElement, key: Util.getId(childElement)}
 
@@ -81,6 +94,7 @@ R.create "OutlineItem",
 
   contextTypes:
     project: Model.Project
+    editor: Model.Editor
     hoverManager: R.HoverManager
     dragManager: R.DragManager
 
@@ -95,6 +109,8 @@ R.create "OutlineItem",
     isController = element.isController()
     isExpanded = element.expanded
 
+    layout = @context.editor.layout
+
     R.div {
       className: R.cx {
         OutlineItem: true
@@ -104,7 +120,7 @@ R.create "OutlineItem",
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
     },
-      R.div {className: "ElementRow"},
+      R.div {className: "ElementRow FlexRow"},
         R.div {className: "ElementRowDisclosure"},
           R.div {
             className: R.cx {
@@ -119,8 +135,10 @@ R.create "OutlineItem",
             className: "EditableTextInline Interactive"
             value: element.label
             setValue: @_setLabelValue
+            onClick: => @_select()
           }
-      R.NovelAttributesList {element}
+      if layout.showAttributesInOutline
+        R.NovelAttributesList {element, context: "Outline"}
 
 
   # ===========================================================================
@@ -175,7 +193,7 @@ R.create "OutlineItem",
     {element} = @props
     {dragManager} = @context
 
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
     outlineTreeEl = Util.closest(el, ".OutlineTree")
     outlineEl = Util.closest(el, ".Outline")
     rect = outlineTreeEl.getBoundingClientRect()
@@ -204,6 +222,7 @@ R.create "OutlineItem",
   # then insert at the end). If nothing is close enough, it will return null.
   _findDropSpot: (drag) ->
     {x, y, outlineEl} = drag
+    {element} = @props
     dragPosition = [x, y]
 
     # Temporarily hide OutlinePlaceholder for the purpose of this calculation.
@@ -219,8 +238,11 @@ R.create "OutlineItem",
       if quadrance < bestDropSpot.quadrance
         bestDropSpot = {quadrance, outlineChildrenEl, beforeOutlineTreeEl}
 
+    allowedDraggingClasses = element.getAllowedShapeInterpretationContext().map((interpretationContext) ->
+      ".OutlineChildren." + interpretationContext).join(", ")
+
     # All the places within which we could drop.
-    outlineChildrenEls = outlineEl.querySelectorAll(".OutlineChildren")
+    outlineChildrenEls = outlineEl.querySelectorAll(allowedDraggingClasses)
 
     for outlineChildrenEl in outlineChildrenEls
       # Don't try to insert it into itself!

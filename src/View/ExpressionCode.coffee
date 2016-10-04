@@ -15,7 +15,7 @@ R.create "ExpressionCode",
 
   contextTypes:
     editor: Model.Editor # extraneous
-    project: Model.Project # extraneous
+    project: Model.Project
     dragManager: R.DragManager
     hoverManager: R.HoverManager # extraneous
     # Note: we need to include all the context variables to pass down to
@@ -39,7 +39,7 @@ R.create "ExpressionCode",
     {component: this}
 
   componentDidMount: ->
-    el = @getDOMNode()
+    el = R.findDOMNode(@)
 
     @mirror = CodeMirror(el, {
       mode: "javascript"
@@ -66,6 +66,7 @@ R.create "ExpressionCode",
 
     @mirror.on("change", @_onChange)
     @mirror.on("mousedown", @_onMirrorMouseDown)
+    @mirror.on("dblclick", @_onMirrorDoubleClick)
     @componentDidUpdate()
 
   componentDidUpdate: ->
@@ -81,6 +82,12 @@ R.create "ExpressionCode",
     if Util.matches(el, ".cm-number")
       mouseDownEvent.preventDefault()
       @_startNumberScrub(mouseDownEvent)
+
+  _onMirrorDoubleClick: (mirror, dblClickEvent) ->
+    el = dblClickEvent.target
+    if Util.matches(el, ".cm-number")
+      dblClickEvent.preventDefault()
+      @_endNumberScrub(dblClickEvent)
 
   _onMouseUp: (mouseUpEvent) ->
     {attribute} = @props
@@ -101,17 +108,16 @@ R.create "ExpressionCode",
     @_updateMarks()
 
   _updateAttributeFromMirror: ->
+    project = @context.project
     attribute = @props.attribute
     newExprString = @mirror.getValue()
     if attribute.exprString != newExprString
-      # We clean up references to get rid of attribute references which no
-      # longer appear in exprString.
-      oldReferences = attribute.references()
       newReferences = {}
-      for own referenceKey, referenceNode of oldReferences
-        isUsed = (newExprString.indexOf(referenceKey) != -1)
-        if isUsed
-          newReferences[referenceKey] = referenceNode
+      for own id, node of project.editingElementNodesById()
+        if node.isVariantOf(Model.Attribute)
+          isUsed = (newExprString.indexOf(id) != -1)
+          if isUsed
+            newReferences[id] = node
       attribute.setExpression(newExprString, newReferences)
 
 
@@ -128,7 +134,7 @@ R.create "ExpressionCode",
   _replaceSelectionWithReference: (referenceAttribute) ->
     {attribute} = @props
     references = attribute.references()
-    referenceKey = Util.generateId()
+    referenceKey = Util.getId(referenceAttribute)
     references[referenceKey] = referenceAttribute
     exprString = attribute.exprString
     attribute.setExpression(exprString, references)
@@ -137,7 +143,7 @@ R.create "ExpressionCode",
   _replaceAllWithReference: (referenceAttribute) ->
     {attribute} = @props
     references = {}
-    referenceKey = Util.generateId()
+    referenceKey = Util.getId(referenceAttribute)
     references[referenceKey] = referenceAttribute
     exprString = referenceKey
     attribute.setExpression(exprString, references)
@@ -161,18 +167,19 @@ R.create "ExpressionCode",
     value = @mirror.getValue()
     marks = []
     for own referenceKey, referenceAttribute of attribute.references()
-      startChar = value.indexOf(referenceKey)
-      continue if startChar == -1
-      endChar = startChar + referenceKey.length
-      do (referenceAttribute) ->
-        from = Util.charToLineCh(value, startChar)
-        to = Util.charToLineCh(value, endChar)
-        render = ->
-          R.AttributeToken {
-            attribute: referenceAttribute
-            contextElement: attribute.parentElement()
-          }
-        marks.push {from, to, render}
+      startChar = -1
+      while (startChar = value.indexOf(referenceKey, startChar)) > -1
+        endChar = startChar + referenceKey.length
+        do (referenceAttribute) ->
+          from = Util.charToLineCh(value, startChar)
+          to = Util.charToLineCh(value, endChar)
+          render = ->
+            R.AttributeToken {
+              attribute: referenceAttribute
+              contextElement: attribute.parentElement()
+            }
+          marks.push {from, to, render}
+        startChar = endChar
     return marks
 
   _updateMarks: ->
@@ -219,6 +226,7 @@ R.create "ExpressionCode",
         @_renderMark(mark, el)
         newMark = @mirror.markText(mark.from, mark.to, {
           replacedWith: el
+          handleMouseEvents: true
         })
         newMark.el = el
         @_existingMarks.push(newMark)
@@ -228,7 +236,7 @@ R.create "ExpressionCode",
       context: @context
       childRender: mark.render
     }
-    React.render(wrappedReactElement, el)
+    R.render(wrappedReactElement, el)
 
 
   # ===========================================================================
@@ -291,7 +299,7 @@ R.create "ExpressionCode",
               contextElement: attribute.parentElement()
             }
           }
-          React.render(wrappedReactElement, el)
+          R.render(wrappedReactElement, el)
         hint: =>
           @mirror.setSelection(from, to)
           @_replaceSelectionWithReference(matchingAttribute)
@@ -335,6 +343,10 @@ R.create "ExpressionCode",
     @mirror.setSelection(start, end)
     @_startScrubbingSelection(mouseDownEvent)
 
+  _endNumberScrub: (dblClickEvent) ->
+    position = @mirror.coordsChar({left: dblClickEvent.clientX, top: dblClickEvent.clientY})
+    @mirror.setCursor(position)
+
   _getTokenPositionFromCursor: (mouseDownEvent) ->
     position = @mirror.coordsChar({left: mouseDownEvent.clientX, top: mouseDownEvent.clientY})
     # Make sure it's really on the right character.
@@ -374,10 +386,3 @@ R.create "ExpressionCode",
           newValue = Util.roundToPrecision(newValue, precision - 1)
         newValue = Util.toPrecision(newValue, precision)
         @mirror.replaceSelection(""+newValue, "around")
-
-
-
-
-
-
-

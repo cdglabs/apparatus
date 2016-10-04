@@ -13,7 +13,8 @@ R.create "Expression",
     attribute = @props.attribute
 
     R.div {className: "Expression"},
-      R.ExpressionCode {attribute}
+      if not attribute.hasOverrideValue()
+        R.ExpressionCode {attribute}
       R.ExpressionValue {attribute}
 
 R.create "ExpressionValue",
@@ -21,7 +22,7 @@ R.create "ExpressionValue",
     attribute: Model.Attribute
   render: ->
     attribute = @props.attribute
-    if attribute.isTrivial()
+    if attribute.isTrivial() and not attribute.hasOverrideValue()
       R.span {}
     else
       value = attribute.value()
@@ -43,7 +44,11 @@ R.create "Value",
       else if _.isNumber(value)
         Util.toMaxPrecision(value, 3)
       else
-        JSON.stringify(value)
+        R.div {style: {opacity: 0.7, display: "inline-block"}},
+          R.ObjectInspector {
+            data: value,
+            theme: R.ObjectInspector.chromeLightTransparent
+          }
 
 # TODO: The styling/formatting for this could be better. Also it should
 # highlight the particular selected item when appropriate.
@@ -57,7 +62,7 @@ R.create "SpreadValue",
     R.span {className: "SpreadValue"},
       for index in [0...Math.min(spread.items.length, maxSpreadItems)]
         value = spread.items[index]
-        R.span {className: "SpreadValueItem"},
+        R.span {key: index, className: "SpreadValueItem"},
           R.Value {value: value}
       if spread.items.length > maxSpreadItems
         "..."

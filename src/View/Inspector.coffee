@@ -16,15 +16,16 @@ R.create "Inspector",
         element?.label ? ""
       R.div {className: "Scroller"},
         if element
-          R.FullAttributesList {element}
+          R.FullAttributesList {element, context: "Inspector"}
 
 
 R.create "FullAttributesList",
   propTypes:
     element: Model.Element
+    context: ["Outline", "Inspector"]
 
   render: ->
-    element = @props.element
+    {element, context} = @props
 
     R.div {className: "InspectorList"},
       R.div {className: "ComponentSection"},
@@ -32,25 +33,44 @@ R.create "FullAttributesList",
           R.span {},
             "Variables"
         R.div {className: "ComponentSectionContent"},
-          for attribute in element.variables()
-            R.AttributeRow {attribute, key: Util.getId(attribute)}
+          R.VariablesList {element, context},
         R.div {className: "AddVariableRow"},
           R.button {className: "AddButton", onClick: @_addVariable}
 
       for component in element.components()
-        R.ComponentSection {component, key: Util.getId(component)}
+        R.ComponentSection {element, component, key: Util.getId(component), context}
 
   _addVariable: ->
     {element} = @props
     element.addVariable()
 
 
+R.create "VariablesList",
+  propTypes:
+    element: Model.Element
+    context: ["Outline", "Inspector"]
+
+  mixins: [R.AnnotateMixin]
+
+  render: ->
+    {element, context} = @props
+
+    R.div {className: "VariablesList"},
+      for attribute in element.variables()
+        R.AttributeRow {attribute, key: Util.getId(attribute), context}
+
+  annotation: ->
+    # Used for drag reording.
+    {element: @props.element, context: @props.context}
+
+
 R.create "ComponentSection",
   propTypes:
     component: Model.Component
+    context: ["Outline", "Inspector"]
 
   render: ->
-    component = @props.component
+    {component, context} = @props
 
     R.div {className: "ComponentSection"},
       R.div {className: "ComponentSectionTitle"},
@@ -58,7 +78,7 @@ R.create "ComponentSection",
           component.label
       R.div {className: "ComponentSectionContent"},
         for attribute in component.attributes()
-          R.AttributeRow {attribute, key: Util.getId(attribute)}
+          R.AttributeRow {attribute, key: Util.getId(attribute), context}
 
 
 # NovelAttributesList is used to show attributes in the Outline. A design
@@ -70,19 +90,22 @@ R.create "ComponentSection",
 R.create "NovelAttributesList",
   propTypes:
     element: Model.Element
+    context: ["Outline", "Inspector"]
 
   contextTypes:
     project: Model.Project
 
+  mixins: [R.AnnotateMixin]
+
   render: ->
-    {element} = @props
+    {element, context} = @props
     {project} = @context
 
     R.div {className: "AttributesList"},
-      for attribute in element.attributes()
+      for attribute, i in element.allAttributes()
         shouldShow = attribute.isNovel() or attribute.isVariantOf(Model.Variable)
         if shouldShow
-          R.AttributeRow {attribute}
+          R.AttributeRow {key: Util.getId(attribute), attribute, context}
       if element == project.editingElement
         R.div {className: "AddVariableRow"},
           R.button {className: "AddButton Interactive", onClick: @_addVariable}
@@ -90,3 +113,7 @@ R.create "NovelAttributesList",
   _addVariable: ->
     {element} = @props
     element.addVariable()
+
+  annotation: ->
+    # Used for drag reording.
+    {element: @props.element, context: @props.context}

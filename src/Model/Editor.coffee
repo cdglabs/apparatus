@@ -1,6 +1,5 @@
 _ = require "underscore"
 queryString = require "query-string"
-Dataflow = require "../Dataflow/Dataflow"
 Model = require "./Model"
 Util = require "../Util/Util"
 Storage = require "../Storage/Storage"
@@ -24,13 +23,7 @@ module.exports = class Editor
       @createNewProject()
 
   _setupSerializer: ->
-    builtInObjects = []
-    for own name, object of @_builtIn()
-      if _.isFunction(object)
-        object = object.prototype
-      Util.assignId(object, name)
-      builtInObjects.push(object)
-    @serializer = new Storage.Serializer(builtInObjects)
+    @serializer = Model.SerializerWithBuiltIns.getSerializer()
 
   # Checks if we should load an external JSON file based on the query string
   # (the ?stuff at the end of the URL).
@@ -43,17 +36,6 @@ module.exports = class Editor
     else if parsed.loadFirebase
       @loadFromFirebase(parsed.loadFirebase)
 
-  # builtIn returns all of the built in classes and objects that are used as
-  # the "anchors" for serialization and deserialization. That is, all of the
-  # objects and classes which should not themselves be serialized but instead
-  # be *referenced* from a serialization. When deserialized, these references
-  # are then bound appropriately.
-  _builtIn: ->
-    builtIn = _.clone(Model)
-    builtIn["SpreadEnv"] = Dataflow.SpreadEnv
-    builtIn["Matrix"] = Util.Matrix
-    return builtIn
-
   # TODO: get version via build process / ENV variable?
   version: "0.4.1"
 
@@ -63,6 +45,7 @@ module.exports = class Editor
     # and convert or fail appropriately.
     if json.type == "Apparatus"
       @project = @serializer.dejsonify(json)
+      @project.performIdempotentCompatibilityFixes()
 
   loadJsonStringIntoProjectFromExternalSource: (jsonString) ->
     @loadJsonStringIntoProject(jsonString)

@@ -98,6 +98,8 @@ Util.solve = (objective, startArgs) ->
     solution = uncmin.solution
     return solution
 
+Util.clamp = (x, min, max) ->
+  Math.max(min, Math.min(max, x))
 
 # =============================================================================
 # Precision
@@ -151,3 +153,12 @@ Util.charToLineCh = (string, char) ->
 
 Util.isNumberString = (string) ->
   return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(string)
+
+Util.isStringLiteral = (string) ->
+  return /^(?:"(?:\\"|[^"\r\n])*"|'(?:\\'|[^'\r\n])*')$/.test(string)
+
+Util.isKeywordLiteral = (string) ->
+  return (
+    string == "true" or string == "false" or
+    string == "null" or string == "undefined"
+  )

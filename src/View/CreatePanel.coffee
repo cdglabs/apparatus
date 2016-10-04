@@ -16,13 +16,13 @@ R.create "CreatePanel",
     if layout.fullScreen
       return null
 
-    R.div { className: "CreatePanel" },
+    R.div { className: "CreatePanel FlexNoShrink" },
       R.div { className: "CreatePanelContainer" },
         R.div {className: "Header"}, "Symbols"
         R.div {className: "Scroller"},
           for element in project.createPanelElements
             R.CreatePanelItem {element, key: Util.getId(element)}
-  
+
           R.div {className: "CreatePanelAddItem"},
             R.button {
               className: "AddButton",
@@ -56,7 +56,7 @@ R.create "CreatePanelItem",
         className: "CreatePanelThumbnail"
         onMouseDown: @_onMouseDown
       },
-        R.Thumbnail {element}
+        R.ThumbnailCanvas {element}
 
       if @_isEditable()
         R.span {},

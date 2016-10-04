@@ -2,9 +2,12 @@ _ = require "underscore"
 Dataflow = require "../Dataflow/Dataflow"
 Graphic = require "../Graphic/Graphic"
 Util = require "../Util/Util"
+TestImage = require "../Util/TestImage"
 
 
 module.exports = Model = {}
+
+Model.SerializerWithBuiltIns = require "./SerializerWithBuiltIns"
 
 # These are *classes*
 Model.Project = require "./Project"
@@ -13,6 +16,7 @@ Model.Layout = require "./Layout"
 
 # These are *variants of the Node object*
 Model.Node = require "./Node"
+Model.NodeWithAttributes = require "./NodeWithAttributes"
 Model.Link = require "./Link"
 Model.Attribute = require "./Attribute"
 Model.Element = require "./Element"
@@ -43,22 +47,8 @@ createAttribute = (label, name, exprString) ->
 # Components
 # =============================================================================
 
-Model.Component = Model.Node.createVariant
+Model.Component = Model.NodeWithAttributes.createVariant
   label: "Component"
-
-  attributes: ->
-    @childrenOfType(Model.Attribute)
-
-  getAttributesByName: ->
-    _.indexBy @attributes(), "name"
-
-  getAttributesValuesByName: ->
-    result = {}
-    for attribute in @attributes()
-      name = attribute.name
-      value = attribute.value()
-      result[name] = value
-    return result
 
   graphicClass: Graphic.Component
 
@@ -115,6 +105,30 @@ Model.Stroke = Model.Component.createVariant
 Model.Stroke.addChildren [
   createAttribute("Stroke Color", "color", "rgba(0.60, 0.60, 0.60, 1.00)")
   createAttribute("Line Width", "lineWidth", "1")
+  createAttribute("Scale Stroke?", "scale", "false")
+]
+
+
+Model.Interaction = Model.Component.createVariant
+  label: "Interaction"
+
+Model.Interaction.addChildren [
+  createAttribute("Hovered?", "hovered", "false")
+]
+
+
+Model.GeneralComponent = Model.Component.createVariant
+  label: "General"
+
+  show: ->
+    @getAttributesValuesByName().show
+
+  filter: ->
+    @getAttributesValuesByName().filter
+
+Model.GeneralComponent.addChildren [
+  createAttribute("Show?", "show", "true")
+  createAttribute("CSS Filter", "filter", "\"\"")
 ]
 
 
@@ -122,21 +136,71 @@ Model.Stroke.addChildren [
 # Elements
 # =============================================================================
 
+# Shape Interpretation Contexts
+RENDERING = 'renderingContext'
+ANCHOR_COLLECTION = 'anchorCollectionContext'
+NONE = 'noDraggingContext'
+
 Model.Shape = Model.Element.createVariant
   label: "Shape"
 
+  getAllowedShapeInterpretationContext: () ->
+    return [RENDERING]
+
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [RENDERING]
+
+  hoveredAttr: () ->
+    interaction = @childOfType(Model.Interaction)
+    return interaction?.getAttributesByName().hovered
+
+  clearHoveredAttr: () ->
+    # Prevent infinite descent in recursive shapes
+    if not @_isHatched
+      return
+
+    @hoveredAttr()?.setOverrideValue(false)
+    for child in @childrenOfType(Model.Shape)
+      child.clearHoveredAttr()
+
 Model.Shape.addChildren [
   Model.Transform.createVariant()
+  Model.GeneralComponent.createVariant()
+  Model.Interaction.createVariant()
 ]
-
 
 Model.Group = Model.Shape.createVariant
   label: "Group"
+  getAllowedShapeInterpretationContext: () ->
+    childElements = this.childElements()
+    isRenderable = _.some(childElements, (child) ->
+      _.some(child.getAllowedShapeInterpretationContext(), (shapeContext) -> shapeContext == RENDERING))
+
+    if childElements.length == 0
+      return [ANCHOR_COLLECTION, RENDERING]
+    else if isRenderable
+      return [RENDERING]
+    else
+      return [ANCHOR_COLLECTION]
+
+  getAllowedShapeInterpretationContextForChildren: () ->
+    if this._parent?.getAllowedShapeInterpretationContextForChildren
+      return this._parent.getAllowedShapeInterpretationContextForChildren()
+    else
+      return [RENDERING]
+
   graphicClass: Graphic.Group
 
 
 Model.Anchor = Model.Shape.createVariant
   label: "Anchor"
+
+  getAllowedShapeInterpretationContext: () ->
+    return [ANCHOR_COLLECTION]
+
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
+
   graphicClass: Graphic.Anchor
 
 createAnchor = (x, y) ->
@@ -154,7 +218,7 @@ Model.PathComponent = Model.Component.createVariant
   graphicClass: Graphic.PathComponent
 
 Model.PathComponent.addChildren [
-  createAttribute("Close Path", "closed", "true")
+  createAttribute("Close Path?", "closed", "true")
 ]
 
 Model.Path = Model.Shape.createVariant
@@ -170,11 +234,16 @@ Model.Path.addChildren [
 
 Model.Circle = Model.Path.createVariant
   label: "Circle"
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
+
   graphicClass: Graphic.Circle
 
 
 Model.Rectangle = Model.Path.createVariant
   label: "Rectangle"
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [ANCHOR_COLLECTION]
 
 Model.Rectangle.addChildren [
   createAnchor("0.00", "0.00")
@@ -187,6 +256,7 @@ Model.Rectangle.addChildren [
 Model.TextComponent = Model.Component.createVariant
   _devLabel: "TextComponent"
   label: "Text"
+
   graphicClass: Graphic.TextComponent
 
 Model.TextComponent.addChildren [
@@ -200,7 +270,30 @@ Model.TextComponent.addChildren [
 Model.Text = Model.Shape.createVariant
   label: "Text"
   graphicClass: Graphic.Text
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
 
 Model.Text.addChildren [
   Model.TextComponent.createVariant()
+]
+
+
+Model.ImageComponent = Model.Component.createVariant
+  _devLabel: "ImageComponent"
+  label: "Image"
+
+  graphicClass: Graphic.ImageComponent
+
+Model.ImageComponent.addChildren [
+  createAttribute("URL", "url", "\"#{TestImage}\"")
+]
+
+Model.Image = Model.Shape.createVariant
+  label: "Image"
+  graphicClass: Graphic.Image
+  getAllowedShapeInterpretationContextForChildren: () ->
+    return [NONE]
+
+Model.Image.addChildren [
+  Model.ImageComponent.createVariant()
 ]

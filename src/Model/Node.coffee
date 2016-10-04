@@ -76,14 +76,11 @@ _ = require "underscore"
 module.exports = Node = {
   label: "Node"
 
-  constructor: ->
-    @_master = null
+  constructor: (@_master, @_head) ->
     @_variants = []
 
     @_parent = null
     @_children = []
-
-    @_head = null
 
     @_isHatched = false
 
@@ -111,13 +108,14 @@ module.exports = Node = {
     return @_variants
 
   parent: ->
-    @_parent
+    return @_parent
 
   children: ->
     @_hatch()
     return @_children
 
-  head: -> @_head
+  head: ->
+    return @_head
 
 
   # ===========================================================================
@@ -136,6 +134,11 @@ module.exports = Node = {
       for masterChild in @_master.children()
         myChild = masterChild._createVariantWithHead(@_head)
         @addChild(myChild)
+
+  # This is an implementation detail and should rarely be called. It is used by
+  # some procedures which walk the node graph and need to know when to stop.
+  isHatched: ->
+    return @_isHatched
 
 
   # ===========================================================================
@@ -207,13 +210,10 @@ module.exports = Node = {
   _createVariantWithHead: (head=null, spec) ->
     variant = Object.create(this)
     _.extend(variant, spec) if spec?
-    variant.constructor()
 
-    if !head?
-      head = variant
+    head ?= variant
+    variant.constructor(this, head)
 
-    variant._head = head
-    variant._master = this
     @_variants.push(variant)
 
     return variant
@@ -309,4 +309,4 @@ module.exports = Node = {
     return lineage
 }
 
-Node.constructor()
+Node.constructor(null, null)
