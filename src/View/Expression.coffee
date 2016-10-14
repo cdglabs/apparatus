@@ -13,8 +13,9 @@ R.create "Expression",
     attribute = @props.attribute
 
     R.div {className: "Expression"},
-      if not attribute.hasOverrideValue()
-        R.ExpressionCode {attribute}
+      # TODO: sometimes override values want expressioncode?
+      # if not attribute.hasOverrideValue()
+      R.ExpressionCode {attribute}
       R.ExpressionValue {attribute}
 
 R.create "ExpressionValue",

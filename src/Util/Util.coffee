@@ -90,6 +90,9 @@ Util.quadrance = (p1, p2) ->
   numeric.dot(d, d)
 
 Util.solve = (objective, startArgs) ->
+  if !_.all(startArgs, (arg) => _.isFinite(arg))
+    console.log(startArgs)
+    throw "Bad startArgs!"
   uncmin = numeric.uncmin(objective, startArgs)
   if isNaN(uncmin.f)
     console.warn "NaN"

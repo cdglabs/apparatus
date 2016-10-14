@@ -25,5 +25,6 @@ SerializerWithBuiltIns.getSerializer = ->
 _builtIn = ->
   builtIn = _.clone(Model)
   builtIn["SpreadEnv"] = Dataflow.SpreadEnv
+  builtIn["Spread"] = Dataflow.Spread
   builtIn["Matrix"] = Util.Matrix
   return builtIn

@@ -1,6 +1,7 @@
 _ = require "underscore"
 Util = require "../Util/Util"
 Dataflow = require "../Dataflow/Dataflow"
+Spread = require "../Dataflow/Spread"
 Evaluator = require "../Evaluator/Evaluator"
 Node = require "./Node"
 Link = require "./Link"
@@ -21,8 +22,18 @@ module.exports = Attribute = Node.createVariant
     @_swatchColor = false
 
   _value: ->
+    if asSpreadLike = @asSpreadLike()
+      {ref} = asSpreadLike
+      refValue = ref.value.asSpread()
+      if not refValue
+        return undefined
+      # Now we want to update @_overrideValue based on changes in refValue's size & dimensions.
+      if !@hasOverrideValue()
+        @_overrideValue = 0
+      @_overrideValue = Spread.reshapeLike(@_overrideValue, refValue)
+
     if @hasOverrideValue()
-      return @__overrideValue
+      return @_overrideValue
 
     # Optimization
     if @isNumber()
@@ -70,6 +81,10 @@ module.exports = Attribute = Node.createVariant
       referenceLink.setTarget(attribute)
       @addChild(referenceLink)
 
+    # TODO: There might be a cleaner way of doing this kind of cleanup
+    if not @asSpreadLike()
+      @deleteOverrideValue()
+
   deleteExpression: ->
     delete @exprString
 
@@ -77,11 +92,47 @@ module.exports = Attribute = Node.createVariant
     for referenceLink in @childrenOfType(Model.ReferenceLink)
       @removeChild(referenceLink)
 
+  asSpreadLike: ->
+    # TODO: this should be some kinda fancy parser, right?
+    spreadLikePattern = /spreadLike\(([^,]*)(,(.*))?\)/
+    if spreadLikeMatch = @exprString.replace(" ", "").match(spreadLikePattern)
+      refId = spreadLikeMatch[1]
+      ref = @references()[refId]
+      precision = spreadLikeMatch[3] and +spreadLikeMatch[3]
+      return {ref, precision}
+    else
+      return false
+
+  precision: ->
+    if asSpreadLike = @asSpreadLike()
+      return asSpreadLike.precision ? 2
+    else
+      Util.precision(@exprString)
+
   setOverrideValue: (overrideValue) ->
-    @__overrideValue = overrideValue
+    @_overrideValue = overrideValue
+
+  deleteOverrideValue: () ->
+    delete @_overrideValue
 
   hasOverrideValue: () ->
-    @hasOwnProperty('__overrideValue')
+    @hasOwnProperty('_overrideValue')
+
+  # TODO: value is a string here, I guess?
+  setAt: (value, spreadEnv) ->
+    if @hasOverrideValue()
+      if @_overrideValue instanceof Spread
+        @_overrideValue.setAt(+value, spreadEnv)
+      else
+        @_overrideValue = +value
+    else
+      @setExpression(value)
+
+  valueAt: (spreadEnv) ->
+    return spreadEnv.resolve(@value())
+
+  isDraggable: ->
+    return @isNumber() or !!@exprString.match(/spreadLike\((.*)\)/i)
 
   references: ->
     references = {}
