@@ -142,7 +142,7 @@ module.exports = Element = NodeWithAttributes.createVariant
     attributesToChange = @implicitlyControlledAttributes()
     if attributesToChange.length == 0
       attributesToChange = @defaultAttributesToChange()
-    attributesToChange = @onlyNumbers(attributesToChange)
+    attributesToChange = @onlyDraggable(attributesToChange)
     return attributesToChange
 
   defaultAttributesToChange: ->
@@ -165,7 +165,7 @@ module.exports = Element = NodeWithAttributes.createVariant
       for controlPoint in controlPoints
         attributesToChange = controlPoint.attributesToChange
         attributesToChange = @allDependencies(attributesToChange)
-        attributesToChange = @onlyNumbers(attributesToChange)
+        attributesToChange = @onlyDraggable(attributesToChange)
         controlPoint.attributesToChange = attributesToChange
       result.push(controlPoints...)
     return result
@@ -182,9 +182,9 @@ module.exports = Element = NodeWithAttributes.createVariant
       result.push(attribute.dependencies()...)
     return _.unique(result)
 
-  onlyNumbers: (attributes) ->
+  onlyDraggable: (attributes) ->
     _.filter attributes, (attribute) ->
-      attribute.isNumber()
+      attribute.isDraggable()
 
 
   # ===========================================================================

@@ -1,6 +1,7 @@
 _ = require "underscore"
 Util = require "../Util/Util"
 Dataflow = require "../Dataflow/Dataflow"
+Spread = require "../Dataflow/Spread"
 Evaluator = require "../Evaluator/Evaluator"
 Node = require "./Node"
 Link = require "./Link"
@@ -24,28 +25,29 @@ module.exports = Attribute = Node.createVariant
     # Get an up-to-date (possibly cached) parsing:
     parsing = @_parsing()
 
-    switch parsing.type
-      when "override", "number", "rangedNumber"
-        # These types have constant values stored in the parsing...
+    if @__overrideValue  # The attribute has been externally overriden
+      return @__overrideValue
+    else if parsing.hasOwnProperty("value")  # The parsing determines a constant value
+      return parsing.value
+    else if parsing.hasOwnProperty("evaluate")  # The parsing determines a custom evaluate function
+      try
+        return parsing.evaluate()
+      catch error
+        return error
+    else if parsing.hasOwnProperty("compiledExpression")  # The parsing determines a compiled expression
+      if (circularReferencePath = @circularReferencePath())?
+        return new CircularReferenceError(circularReferencePath)
 
-        return parsing.value
+      referenceValues = _.mapObject @references(), (referenceAttribute) ->
+        referenceAttribute.value()
 
-      when "expression"
-        # This type requires computation...
-
-        if (circularReferencePath = @circularReferencePath())?
-          return new CircularReferenceError(circularReferencePath)
-
-        referenceValues = _.mapObject @references(), (referenceAttribute) ->
-          referenceAttribute.value()
-
-        try
-          return parsing.compiledExpression.evaluate(referenceValues)
-        catch error
-          if error instanceof Dataflow.UnresolvedSpreadError
-            throw error
-          else
-            return error
+      try
+        return parsing.compiledExpression.evaluate(referenceValues)
+      catch error
+        if error instanceof Dataflow.UnresolvedSpreadError
+          throw error
+        else
+          return error
 
   _parsing: ->
     if not @hasOwnProperty("__parsing") or @__parsing.exprString != @exprString
@@ -55,12 +57,7 @@ module.exports = Attribute = Node.createVariant
         exprString: @exprString
       }
 
-      if @hasOwnProperty("__overrideValue")
-        _.extend @__parsing, {
-          type: "override"
-          value: @__overrideValue
-        }
-      else if Util.isNumberString(@exprString)
+      if Util.isNumberString(@exprString)
         _.extend @__parsing, {
           type: "number"
           value: parseFloat(@exprString)
@@ -74,6 +71,83 @@ module.exports = Attribute = Node.createVariant
           high: parseFloat(rangedNumberMatch.highStr)
           precision: Util.precision(rangedNumberMatch.valueStr)
         }
+      else if match = @exprString.replace(" ", "").match(/spreadLike\(([^,]*)(,(.*))?\)/)
+        refId = match[1]
+        defaultValue = if match[3] then +match[3] else 0
+        precision = if match[3] then Util.precision(match[3]) else 2
+        _.extend @__parsing, {
+          type: "specialForm"
+          specialForm: "spreadLike"
+          precision: precision
+          evaluate: () =>
+            # TODO: Ideally, we would only rerun this when the ref changes its value, not every frame
+            # (even if @_spreadLikeValue is changing!)
+            ref = @references()[refId]
+            refValue = ref?.value.asSpread()
+            if not (refValue instanceof Spread)
+              return new Error("'spreadLike' is a special form that needs a spread reference as input")
+            # Now we want to update @_spreadLikeValue based on changes in refValue's size & dimensions.
+            if not @hasOwnProperty('_spreadLikeValue')
+              @_spreadLikeValue = defaultValue
+            @_spreadLikeValue = Spread.reshapeLike(@_spreadLikeValue, refValue, defaultValue)
+            return @_spreadLikeValue
+        }
+      else if match = @exprString.replace(" ", "").match(/unspread\(([^,]*)\)/)
+        refId = match[1]
+        _.extend @__parsing, {
+          type: "specialForm"
+          specialForm: "unspread"
+          evaluate: () =>
+            ref = @references()[refId]
+            refValue = ref?.value.asSpread()
+            if not (refValue instanceof Spread)
+              return new Error("'unspread' is a special form that needs a spread reference as input")
+            return refValue.toArray()
+        }
+      else if match = @exprString.replace(" ", "").match(/prev\(([^,]*)(,(.*))?\)/)
+        refId = match[1]
+        defaultValue = match[3] and +match[3]
+        _.extend @__parsing, {
+          type: "specialForm"
+          specialForm: "prev"
+          evaluate: () =>
+            ref = @references()[refId]
+            refValue = ref?.value.asSpread()
+            if not (refValue instanceof Spread)
+              return new Error("'prev' is a special form that needs a spread reference as input")
+            refValueClone = refValue.cloneSingleLevel()
+            popped = refValueClone.items.pop()
+            refValueClone.items.unshift(defaultValue ? popped)
+            return refValueClone
+        }
+      else if match = @exprString.replace(" ", "").match(/next\(([^,]*)(,(.*))?\)/)
+        refId = match[1]
+        defaultValue = match[3] and +match[3]
+        _.extend @__parsing, {
+          type: "specialForm"
+          specialForm: "next"
+          evaluate: () =>
+            ref = @references()[refId]
+            refValue = ref?.value.asSpread()
+            if not (refValue instanceof Spread)
+              return new Error("'next' is a special form that needs a spread reference as input")
+            refValueClone = refValue.cloneSingleLevel()
+            shifted = refValueClone.items.shift()
+            refValueClone.items.push(defaultValue ? shifted)
+            return refValueClone
+        }
+      else if match = @exprString.replace(" ", "").match(/spreadIndex\(([^,]*)\)/)
+        refId = match[1]
+        _.extend @__parsing, {
+          type: "specialForm"
+          specialForm: "next"
+          evaluate: () =>
+            ref = @references()[refId]
+            refValue = ref?.value.asSpread()
+            if not (refValue instanceof Spread)
+              return new Error("'spreadIndex' is a special form that needs a spread reference as input")
+            return refValue.mapSingleLevel((x, i) -> i)
+        }
       else
         compiledExpression = new CompiledExpression(this)
         if compiledExpression.isSyntaxError
@@ -83,10 +157,11 @@ module.exports = Attribute = Node.createVariant
           compiledExpression: compiledExpression
         }
 
-    return @__parsing
+      # HACK: Where does this belong?
+      if @__parsing.specialForm != "spreadLike"
+        delete @_spreadLikeValue
 
-  _clearParsing: ->
-    delete @__parsing
+    return @__parsing
 
   setExpression: (exprString, references={}) ->
     @exprString = String(exprString)
@@ -109,12 +184,32 @@ module.exports = Attribute = Node.createVariant
     for referenceLink in @childrenOfType(Model.ReferenceLink)
       @removeChild(referenceLink)
 
+  # This is only used for the 'hover' attribute (so far).
   setOverrideValue: (overrideValue) ->
     @__overrideValue = overrideValue
-    @_clearParsing()
-
+  deleteOverrideValue: () ->
+    delete @__overrideValue
   hasOverrideValue: () ->
-    @_parsing().type == "override"
+    @hasOwnProperty("__overrideValue")
+
+  # This is used for dragging
+  # HACK: `value` is a string, cuz it includes precision.
+  setAt: (value, spreadEnv) ->
+    if @hasOwnProperty("_spreadLikeValue")
+      value = +value
+      if @_spreadLikeValue instanceof Spread
+        @_spreadLikeValue.setAt(value, spreadEnv)
+      else
+        @_spreadLikeValue = value
+    else
+      @setExpression(value)
+
+  valueAt: (spreadEnv) ->
+    value = @value()
+    return spreadEnv.resolve(value)
+
+  isDraggable: ->
+    return @isNumber() or @hasOwnProperty("_spreadLikeValue")
 
   references: ->
     references = {}

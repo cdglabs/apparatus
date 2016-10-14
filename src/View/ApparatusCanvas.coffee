@@ -386,7 +386,7 @@ R.create "ApparatusCanvas",
           else
             @_mousePosition(mouseMoveEvent)
         initialValues = for attribute in attributesToChange
-          attribute.value()
+          attribute.valueAt(particularElementToDrag.spreadEnv)
         precisions = for attribute in attributesToChange
           attribute.precision()
         ranges = for attribute in attributesToChange
@@ -401,7 +401,7 @@ R.create "ApparatusCanvas",
             # trialValues. Maybe if this ever becomes a problem we could have
             # the objective "clean up" after itself, setting the attributes
             # back to their original values, to make it pure.
-            attribute.setExpression(trialValue)
+            attribute.setAt(trialValue, particularElementToDrag.spreadEnv)
           trialAccumulatedMatrix = particularElementToDrag.accumulatedMatrix()
           trialMousePixel = @_viewMatrix().compose(trialAccumulatedMatrix).fromLocal(originalMouseLocal)
           error = Util.quadrance(trialMousePixel, currentMousePixel)
@@ -427,7 +427,7 @@ R.create "ApparatusCanvas",
           if range
             solvedValue = solvedValue + "{#{range.low}-#{range.high}}"
 
-          attribute.setExpression(solvedValue)
+          attribute.setAt(solvedValue, particularElementToDrag.spreadEnv)
 
     if startImmediately
       dragManager.drag.onMove(mouseDownEvent)
