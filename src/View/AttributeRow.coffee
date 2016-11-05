@@ -297,20 +297,24 @@ R.create "AttributeLabel",
         className: R.cx {
           AttributeLabelMainPart: true
           FlexGrow: true
-          FlexRow: true
         }
         onMouseDown: @_onMouseDown
         onMouseEnter: @_onMouseEnter
         onMouseLeave: @_onMouseLeave
       },
+        R.Swatches {
+          attribute,
+          style:
+            paddingRight: "0.75em"
+            float: "right"
+            paddingTop: "3px"
+        }
         R.EditableText {
           className: "EditableTextInline Interactive"
           value: attribute.label
           setValue: (newValue) ->
             attribute.label = newValue
         }
-        R.span {className: "Spacer FlexGrow"}
-        R.Swatches {attribute, style: {paddingRight: "0.75em"}}
       if canHaveMenu
         R.span {
           className: R.cx {
@@ -469,5 +473,5 @@ R.create "Swatches",
           className: "Swatch"
           style: {backgroundColor: color}
         },
-          if isOrigin
-            R.span {className: "SwatchStar"}, "\u2605"
+          if not isOrigin
+            R.span {className: "SwatchIcon icon-link"} #,  "🔗" # "\u2605"

@@ -26,6 +26,7 @@
 .icon-edit:before,
 .icon-fullscreen:before,
 .icon-grip:before,
+.icon-link:before,
 .icon-pencil:before,
 .icon-x:before {
   display: inline-block;
@@ -45,5 +46,6 @@
 .icon-edit:before { content: "\f100"; }
 .icon-fullscreen:before { content: "\f101"; }
 .icon-grip:before { content: "\f102"; }
-.icon-pencil:before { content: "\f103"; }
-.icon-x:before { content: "\f104"; }
+.icon-link:before { content: "\f103"; }
+.icon-pencil:before { content: "\f104"; }
+.icon-x:before { content: "\f105"; }
