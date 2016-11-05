@@ -1,4 +1,5 @@
 _ = require "underscore"
+d3chromatic = require "d3-scale-chromatic"
 NodeWithAttributes = require "./NodeWithAttributes"
 Link = require "./Link"
 Model = require "./Model"
@@ -16,6 +17,9 @@ module.exports = Element = NodeWithAttributes.createVariant
     # Because the expanded properly is not inherited, it is initialized in
     # the constructor for every Element.
     @expanded = false
+
+    # This one too
+    @_nextSwatchColorCode = 0
 
     # These methods need to be cells because we want to be able to call their
     # asSpread version. Note that we need to keep the original method around
@@ -212,6 +216,12 @@ module.exports = Element = NodeWithAttributes.createVariant
   _accumulatedFilter: ->
     # Apply filters bottom-up
     return @filter() + @contextFilter()
+
+  assignNewSwatchColor: ->
+    toReturn = d3chromatic.schemeDark2[this._nextSwatchColorCode]
+    this._nextSwatchColorCode = (this._nextSwatchColorCode + 1) % 8
+    return toReturn
+
 
 
   # ===========================================================================

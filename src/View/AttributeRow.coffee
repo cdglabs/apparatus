@@ -2,6 +2,7 @@ _ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
+Spread = require "../Dataflow/Spread"
 
 
 R.create "AttributeRow",
@@ -296,6 +297,7 @@ R.create "AttributeLabel",
         className: R.cx {
           AttributeLabelMainPart: true
           FlexGrow: true
+          FlexRow: true
         }
         onMouseDown: @_onMouseDown
         onMouseEnter: @_onMouseEnter
@@ -307,6 +309,8 @@ R.create "AttributeLabel",
           setValue: (newValue) ->
             attribute.label = newValue
         }
+        R.span {className: "Spacer FlexGrow"}
+        R.Swatches {attribute, style: {paddingRight: "0.75em"}}
       if canHaveMenu
         R.span {
           className: R.cx {
@@ -408,6 +412,7 @@ R.create "AttributeToken",
       onMouseLeave: @_onMouseLeave
     },
       @_label()
+      R.Swatches {attribute, style: {paddingLeft: "0.75em"}}
 
   _label: ->
     {attribute, contextElement} = @props
@@ -434,3 +439,40 @@ R.create "AttributeToken",
     {dragManager, hoverManager} = @context
     return if dragManager.drag?
     hoverManager.hoveredAttribute = null
+
+
+R.create "Swatches",
+  propTypes:
+    attribute: Model.Attribute
+
+  contextTypes:
+    project: Model.Project
+
+  render: ->
+    {attribute, style} = @props
+    {project} = @context
+    {editingElement} = project
+    style ||= {}
+
+    spreadOriginColors = (
+      Spread.origins(attribute.value())
+      .map((attr) => attr.swatchColor(editingElement))
+    )
+
+    R.span {
+      className: "Swatches"
+      style
+    },
+      spreadOriginColors.map((color, i) =>
+        R.div {
+          key: i
+          className: "Swatch"
+          style: {
+            display: "inline-block"
+            width: 10
+            height: 10
+            marginLeft: 3
+            backgroundColor: color
+          }
+        }
+      )
