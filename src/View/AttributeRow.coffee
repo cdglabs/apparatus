@@ -411,8 +411,9 @@ R.create "AttributeToken",
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
     },
-      @_label()
-      R.Swatches {attribute, style: {paddingLeft: "0.75em"}}
+      R.span {className: "ReferenceTokenRow FlexRow"},
+        @_label()
+        R.Swatches {attribute, style: {paddingLeft: "0.75em"}}
 
   _label: ->
     {attribute, contextElement} = @props
@@ -454,25 +455,19 @@ R.create "Swatches",
     {editingElement} = project
     style ||= {}
 
-    spreadOriginColors = (
-      Spread.origins(attribute.value())
-      .map((attr) => attr.swatchColor(editingElement))
-    )
+    spreadOrigins = Spread.origins(attribute.value())
 
     R.span {
-      className: "Swatches"
+      className: "Swatches FlexRow"
       style
     },
-      spreadOriginColors.map((color, i) =>
+      spreadOrigins.map (origin, i) =>
+        color = origin.swatchColor(editingElement)
+        isOrigin = (origin == attribute)
         R.div {
           key: i
           className: "Swatch"
-          style: {
-            display: "inline-block"
-            width: 10
-            height: 10
-            marginLeft: 3
-            backgroundColor: color
-          }
-        }
-      )
+          style: {backgroundColor: color}
+        },
+          if isOrigin
+            R.span {className: "SwatchStar"}, "\u2605"

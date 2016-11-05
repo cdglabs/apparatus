@@ -24,7 +24,12 @@ module.exports = class Spread
         if value.items.length == 0
           []
         else
-          Spread.origins(value.items[0])
+          bestRestOfOrigins = []
+          for item in value.items
+            curRestOfOrigins = Spread.origins(item)
+            if curRestOfOrigins.length > bestRestOfOrigins.length
+              bestRestOfOrigins = curRestOfOrigins
+          bestRestOfOrigins
       restOfOrigins.push(value.origin)
       return restOfOrigins
     else

@@ -66,7 +66,7 @@ R.create "SpreadValue",
 
     maxSpreadItems = 5
     swatchColor = spread.origin.swatchColor(editingElement)
-    delimiterStyle = {color: swatchColor, opacity: 0.5}
+    delimiterStyle = {color: swatchColor, opacity: 0.75}
 
     R.span {className: "SpreadValue"},
       R.span {style: delimiterStyle}, "["
