@@ -468,10 +468,26 @@ R.create "Swatches",
       spreadOrigins.map (origin, i) =>
         color = origin.swatchColor(editingElement)
         isOrigin = (origin == attribute)
-        R.div {
-          key: i
-          className: "Swatch"
-          style: {backgroundColor: color}
+
+        tooltipOverlay =
+          R.span {},
+            if isOrigin
+              "This attribute originates a new spread"
+            else
+              [
+                "Spread originates in "
+                R.AttributeToken {attribute: origin, contextElement: attribute.parentElement()}
+              ]
+
+        R.Tooltip {
+          placement: "top"
+          trigger: ["hover"]
+          overlay: tooltipOverlay
         },
-          if not isOrigin
-            R.span {className: "SwatchIcon icon-link"} #,  "🔗" # "\u2605"
+          R.div {
+            key: i
+            className: "Swatch"
+            style: {backgroundColor: color}
+          },
+            if not isOrigin
+              R.span {className: "SwatchIcon icon-link"} #,  "🔗" # "\u2605"
