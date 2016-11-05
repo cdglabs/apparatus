@@ -30,7 +30,7 @@ module.exports = class Spread
             if curRestOfOrigins.length > bestRestOfOrigins.length
               bestRestOfOrigins = curRestOfOrigins
           bestRestOfOrigins
-      restOfOrigins.push(value.origin)
+      restOfOrigins.unshift(value.origin)
       return restOfOrigins
     else
       return []

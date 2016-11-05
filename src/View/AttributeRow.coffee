@@ -302,7 +302,7 @@ R.create "AttributeLabel",
         onMouseEnter: @_onMouseEnter
         onMouseLeave: @_onMouseLeave
       },
-        R.Swatches {
+        R.SwatchesForAttribute {
           attribute,
           style:
             paddingRight: "0.75em"
@@ -417,7 +417,7 @@ R.create "AttributeToken",
     },
       R.span {className: "ReferenceTokenRow FlexRow"},
         @_label()
-        R.Swatches {attribute, style: {paddingLeft: "0.75em"}}
+        R.SwatchesForAttribute {attribute, style: {paddingLeft: "0.75em"}}
 
   _label: ->
     {attribute, contextElement} = @props
@@ -448,18 +448,20 @@ R.create "AttributeToken",
 
 R.create "Swatches",
   propTypes:
-    attribute: Model.Attribute
+    value: "any"
+    contextElement: "any"  # TODO: should be Model.Element or null
+    attribute: "any"  # TODO: should be Model.Attribute or null
 
   contextTypes:
     project: Model.Project
 
   render: ->
-    {attribute, style} = @props
+    {value, contextElement, attribute, style} = @props
     {project} = @context
     {editingElement} = project
     style ||= {}
 
-    spreadOrigins = Spread.origins(attribute.value())
+    spreadOrigins = Spread.origins(value)
 
     R.span {
       className: "Swatches FlexRow"
@@ -476,18 +478,40 @@ R.create "Swatches",
             else
               [
                 "Spread originates in "
-                R.AttributeToken {attribute: origin, contextElement: attribute.parentElement()}
+                R.AttributeToken {attribute: origin, contextElement}
               ]
 
         R.Tooltip {
+          key: i
           placement: "top"
           trigger: ["hover"]
           overlay: tooltipOverlay
         },
           R.div {
-            key: i
             className: "Swatch"
             style: {backgroundColor: color}
           },
             if not isOrigin
               R.span {className: "SwatchIcon icon-link"} #,  "🔗" # "\u2605"
+
+
+R.create "SwatchesForAttribute",
+  render: ->
+    {attribute, style} = @props
+    R.Swatches {
+      value: attribute.value()
+      contextElement: attribute.parentElement()
+      attribute
+      style
+    }
+
+
+R.create "SwatchesForElement",
+  render: ->
+    {element, style} = @props
+    R.Swatches {
+      value: element.graphic()
+      contextElement: element
+      attribute: null
+      style
+    }
