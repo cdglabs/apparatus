@@ -474,10 +474,10 @@ R.create "Swatches",
         tooltipOverlay =
           R.span {},
             if isOrigin
-              "This attribute originates a new spread"
+              "New axis of variation"
             else
               [
-                "Spread originates in "
+                "Varies with changing "
                 R.AttributeToken {attribute: origin, contextElement}
               ]
 
