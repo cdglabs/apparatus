@@ -64,6 +64,9 @@ get = require "./evaluateGet"
 # =============================================================================
 
 _ = require "underscore"
+_.mixin
+  sum: (list) -> _.reduce(list, ((memo, num) -> memo + num), 0)
+  avg: (list) -> _.sum(list) / _.size(list)
 
 d3 = require "d3"
 _.extend(d3, require "d3-scale-chromatic")

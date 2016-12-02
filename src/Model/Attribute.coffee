@@ -32,6 +32,11 @@ module.exports = Attribute = Node.createVariant
         @_overrideValue = 0
       @_overrideValue = Spread.reshapeLike(@_overrideValue, refValue)
 
+    if asUnspread = @asUnspread()
+      {ref} = asUnspread
+      refValue = ref.value.asSpread()
+      return refValue.toArray()
+
     if @hasOverrideValue()
       return @_overrideValue
 
@@ -94,12 +99,22 @@ module.exports = Attribute = Node.createVariant
 
   asSpreadLike: ->
     # TODO: this should be some kinda fancy parser, right?
-    spreadLikePattern = /spreadLike\(([^,]*)(,(.*))?\)/
-    if spreadLikeMatch = @exprString.replace(" ", "").match(spreadLikePattern)
-      refId = spreadLikeMatch[1]
+    pattern = /spreadLike\(([^,]*)(,(.*))?\)/
+    if match = @exprString.replace(" ", "").match(pattern)
+      refId = match[1]
       ref = @references()[refId]
-      precision = spreadLikeMatch[3] and +spreadLikeMatch[3]
+      precision = match[3] and +match[3]
       return {ref, precision}
+    else
+      return false
+
+  asUnspread: ->
+    # TODO: this should be some kinda fancy parser, right?
+    pattern = /unspread\(([^,]*)\)/
+    if match = @exprString.replace(" ", "").match(pattern)
+      refId = match[1]
+      ref = @references()[refId]
+      return {ref}
     else
       return false
 
