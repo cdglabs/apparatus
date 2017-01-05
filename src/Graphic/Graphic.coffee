@@ -265,8 +265,23 @@ class Graphic.Text extends Graphic.Path
       @highlightIfNecessary(opts)
 
   toSvg: ({viewMatrix}) ->
-    # TODO
-    return ""
+    {text, fontFamily, textAlign, textBaseline, color} = @textComponent()
+    matrix = viewMatrix.compose(@matrix)
+    matrix = matrix.scale(1 / @textMultiplier, -1 / @textMultiplier)
+    text = Util.escapeHtml(text)
+    if textAlign == "left"
+      textAlign = "start"
+    else if textAlign == "center"
+      textAlign = "middle"
+    else if textAlign == "right"
+      textAlign = "end"
+    if textBaseline == "top"
+      textBaseline = "text-before-edge"
+    else if textBaseline == "bottom"
+      textBaseline = "text-after-edge"
+    return "<text font-size=\"#{@textMultiplier}\" font-family=\"#{fontFamily}\" " +
+           "text-anchor=\"#{textAlign}\" dominant-baseline=\"#{textBaseline}\" " +
+           "fill=\"#{color}\" transform=\"#{matrix.toSvg()}\">#{text}</text>"
 
   textComponent: ->
     @componentOfType(Graphic.TextComponent)
