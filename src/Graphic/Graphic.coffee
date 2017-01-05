@@ -367,6 +367,10 @@ class Graphic.Image extends Graphic.Path
 
     imageCache.get(url, (image) => @drawImage(opts, image))
 
+  toSvg: (opts) ->
+    # TODO
+    return ""
+
   imageComponent: ->
     @componentOfType(Graphic.ImageComponent)
 
