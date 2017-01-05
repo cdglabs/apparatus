@@ -212,19 +212,40 @@ class Graphic.Circle extends Graphic.Path
     ctx.restore()
 
   toSvg: ({viewMatrix}) ->
-    matrix = viewMatrix.compose(@matrix)
-    # TODO: In canvas we can transform a path without transforming a stroke.
-    # In SVG, the only way to do this is with the vector-effect attribute. But
-    # that is not supported in SVG 1.1, and I want this to work with CairoSVG,
-    # laser cutter, etc. So for now, I'm just going to assume all circles are
-    # transformed with only translation, rotation, and uniform scaling; not
-    # the more general case of all affine transformations.
-    r = Math.sqrt(matrix.a*matrix.a + matrix.b*matrix.b)
-    cx = matrix.e
-    cy = matrix.f
     paintAttributes = @svgPaintAttributes()
-    return "<circle cx=\"#{cx}\" cy=\"#{cy}\" r=\"#{r}\" #{paintAttributes} />"
+    matrix = viewMatrix.compose(@matrix)
 
+    # In canvas we can transform a path without transforming a stroke. In SVG,
+    # the only way to do this is with the vector-effect attribute. But that is
+    # not supported in SVG 1.1, and I want this to work with CairoSVG, laser
+    # cutter, etc.
+
+    # To deal with this, we'll use a <circle> element if we can (if the
+    # transform is just a uniform scaling) and otherwise we'll approximate the
+    # circle (really an ellipse at this point) with a bezier curve.
+
+    {a, b, c, d, e, f} = matrix
+    r1 = Math.sqrt(a*a + b*b)
+    r2 = Math.sqrt(c*c + d*d)
+    if Math.abs(r1 - r2) < .000000001
+      return "<circle cx=\"#{e}\" cy=\"#{f}\" r=\"#{r1}\" #{paintAttributes} />"
+    else
+      # Using http://spencermortensen.com/articles/bezier-circle/
+      cp = 0.551915024494
+      beziers = [
+        [[1,cp], [cp,1], [0,1]]
+        [[-cp,1], [-1,cp], [-1,0]]
+        [[-1,-cp], [-cp, -1], [0,-1]]
+        [[cp,-1], [1,-cp], [1,0]]
+      ]
+      transformedFirstPoint = matrix.fromLocal([1,0])
+      path = "M #{transformedFirstPoint[0]} #{transformedFirstPoint[1]}"
+      for bezier in beziers
+        path += " C"
+        for point in bezier
+          transformedPoint = matrix.fromLocal(point)
+          path += " #{transformedPoint[0]} #{transformedPoint[1]}"
+      return "<path d=\"#{path}\" #{paintAttributes} />"
 
 
 class Graphic.Text extends Graphic.Path
