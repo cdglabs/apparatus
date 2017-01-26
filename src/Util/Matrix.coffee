@@ -51,8 +51,8 @@ module.exports = class Matrix
     [@e, @f]
 
 
-  toSVG: ->
-    "matrix(#{@m.join(" ")})"
+  toSvg: ->
+    "matrix(#{@a} #{@b} #{@c} #{@d} #{@e} #{@f})"
 
   canvasSetTransform: (ctx) ->
     ctx.setTransform(@a, @b, @c, @d, @e, @f)

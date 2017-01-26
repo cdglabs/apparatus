@@ -162,6 +162,36 @@ module.exports = class Editor
 
 
   # ===========================================================================
+  # Export
+  # ===========================================================================
+
+  exportSvg: (opts) ->
+    svgString = @exportSvgString(opts)
+    fileName = @project.editingElement.label + ".svg"
+    Storage.saveFile(svgString, fileName, "image/svg+xml;charset=utf-8")
+
+  exportSvgString: (opts={}) ->
+    dpi = opts.dpi ? 100
+    xMin = opts.xMin ? -6
+    xMax = opts.xMax ? 6
+    yMin = opts.yMin ? -6
+    yMax = opts.yMax ? 6
+
+    # Note we flip vertically so the SVG has the same orientation as what's
+    # shown in the Apparatus canvas.
+    viewMatrix = new Util.Matrix(dpi, 0, 0, -dpi, -xMin*dpi, yMax*dpi)
+    width = (xMax-xMin) * dpi
+    height = (yMax-yMin) * dpi
+
+    graphics = @project.editingElement.allGraphics()
+    svgString = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"#{width}\" height=\"#{height}\">"
+    for graphic in graphics
+      svgString += graphic.toSvg({viewMatrix})
+    svgString += "</svg>"
+    return svgString
+
+
+  # ===========================================================================
   # Revision History
   # ===========================================================================
 

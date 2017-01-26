@@ -62,6 +62,19 @@ class Graphic.Element
     ###
     throw "Not implemented"
 
+  toSvg: (opts) ->
+    ###
+
+    Returns an svg for the graphic as a string. The svg string does not have a
+    wrapper <svg> element.
+
+    Opts:
+
+    viewMatrix:
+
+    ###
+    throw "Not implemented"
+
 
   # ===========================================================================
   # Helpers
@@ -93,6 +106,11 @@ class Graphic.Group extends Graphic.Element
     else
       return null
 
+  toSvg: (opts) ->
+    svgString = ""
+    for childGraphic in @childGraphics
+      svgString += childGraphic.toSvg(opts)
+    return svgString
 
 
 class Graphic.Anchor extends Graphic.Element
@@ -119,6 +137,18 @@ class Graphic.Path extends Graphic.Element
     else
       return null
 
+  toSvg: ({viewMatrix}) ->
+    anchors = @collectAnchors()
+    pointStrings = []
+    for anchor in anchors
+      [x, y] = viewMatrix.compose(anchor.matrix).origin()
+      pointStrings.push("#{x},#{y}")
+    pointsAttribute = "points=\"#{pointStrings.join(" ")}\""
+    paintAttributes = @svgPaintAttributes()
+    elementName = if @isClosed() then "polygon" else "polyline"
+    return "<#{elementName} #{pointsAttribute} #{paintAttributes} />"
+
+
   performPaintOps: ({ctx, viewMatrix}) ->
     ctx.save()
     ctx.filter = @filter
@@ -126,6 +156,13 @@ class Graphic.Path extends Graphic.Element
     for component in @componentsOfType(Graphic.PaintOp)
       component.paint(ctx, matrix)
     ctx.restore()
+
+  svgPaintAttributes: ->
+    # Note: below needs to be fixed once Elements are allowed to have multiple
+    # fill, stroke, etc. Components.
+    fillAttribute = @componentOfType(Graphic.Fill).toSvg()
+    strokeAttribute = @componentOfType(Graphic.Stroke).toSvg()
+    return "#{fillAttribute} #{strokeAttribute}"
 
   highlightIfNecessary: ({highlight, ctx}) ->
     return unless highlight
@@ -174,6 +211,42 @@ class Graphic.Circle extends Graphic.Path
     ctx.arc(0, 0, 1, 0, 2 * Math.PI, false)
     ctx.restore()
 
+  toSvg: ({viewMatrix}) ->
+    paintAttributes = @svgPaintAttributes()
+    matrix = viewMatrix.compose(@matrix)
+
+    # In canvas we can transform a path without transforming a stroke. In SVG,
+    # the only way to do this is with the vector-effect attribute. But that is
+    # not supported in SVG 1.1, and I want this to work with CairoSVG, laser
+    # cutter, etc.
+
+    # To deal with this, we'll use a <circle> element if we can (if the
+    # transform is just a uniform scaling) and otherwise we'll approximate the
+    # circle (really an ellipse at this point) with a bezier curve.
+
+    {a, b, c, d, e, f} = matrix
+    r1 = Math.sqrt(a*a + b*b)
+    r2 = Math.sqrt(c*c + d*d)
+    if Math.abs(r1 - r2) < .000000001
+      return "<circle cx=\"#{e}\" cy=\"#{f}\" r=\"#{r1}\" #{paintAttributes} />"
+    else
+      # Using http://spencermortensen.com/articles/bezier-circle/
+      cp = 0.551915024494
+      beziers = [
+        [[1,cp], [cp,1], [0,1]]
+        [[-cp,1], [-1,cp], [-1,0]]
+        [[-1,-cp], [-cp, -1], [0,-1]]
+        [[cp,-1], [1,-cp], [1,0]]
+      ]
+      transformedFirstPoint = matrix.fromLocal([1,0])
+      path = "M #{transformedFirstPoint[0]} #{transformedFirstPoint[1]}"
+      for bezier in beziers
+        path += " C"
+        for point in bezier
+          transformedPoint = matrix.fromLocal(point)
+          path += " #{transformedPoint[0]} #{transformedPoint[1]}"
+      return "<path d=\"#{path}\" #{paintAttributes} />"
+
 
 class Graphic.Text extends Graphic.Path
   render: (opts) ->
@@ -190,6 +263,25 @@ class Graphic.Text extends Graphic.Path
     if opts.highlight
       @buildPath(opts)
       @highlightIfNecessary(opts)
+
+  toSvg: ({viewMatrix}) ->
+    {text, fontFamily, textAlign, textBaseline, color} = @textComponent()
+    matrix = viewMatrix.compose(@matrix)
+    matrix = matrix.scale(1 / @textMultiplier, -1 / @textMultiplier)
+    text = Util.escapeHtml(text)
+    if textAlign == "left"
+      textAlign = "start"
+    else if textAlign == "center"
+      textAlign = "middle"
+    else if textAlign == "right"
+      textAlign = "end"
+    if textBaseline == "top"
+      textBaseline = "text-before-edge"
+    else if textBaseline == "bottom"
+      textBaseline = "text-after-edge"
+    return "<text font-size=\"#{@textMultiplier}\" font-family=\"#{fontFamily}\" " +
+           "text-anchor=\"#{textAlign}\" dominant-baseline=\"#{textBaseline}\" " +
+           "fill=\"#{color}\" transform=\"#{matrix.toSvg()}\">#{text}</text>"
 
   textComponent: ->
     @componentOfType(Graphic.TextComponent)
@@ -275,6 +367,10 @@ class Graphic.Image extends Graphic.Path
 
     imageCache.get(url, (image) => @drawImage(opts, image))
 
+  toSvg: (opts) ->
+    # TODO
+    return ""
+
   imageComponent: ->
     @componentOfType(Graphic.ImageComponent)
 
@@ -351,10 +447,20 @@ class Graphic.PaintOp extends Graphic.Component
 
 class Graphic.Fill extends Graphic.PaintOp
   paint: (ctx) ->
-    ctx.save()
-    ctx.fillStyle = @color
-    ctx.fill()
-    ctx.restore()
+    unless @isTransparent()
+      ctx.save()
+      ctx.fillStyle = @color
+      ctx.fill()
+      ctx.restore()
+
+  toSvg: ->
+    if @isTransparent()
+      return "fill=\"none\""
+    else
+      return "fill=\"#{@color}\""
+
+  isTransparent: ->
+    return @color == "transparent" or /^rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*0\s*\)$/.test(@color)
 
 class Graphic.Stroke extends Graphic.PaintOp
   paint: (ctx, matrix) ->
@@ -366,6 +472,9 @@ class Graphic.Stroke extends Graphic.PaintOp
     ctx.lineWidth = @lineWidth
     ctx.stroke()
     ctx.restore()
+
+  toSvg: ->
+    return "stroke=\"#{@color}\" stroke-width=\"#{@lineWidth}\""
 
 class Graphic.PathComponent extends Graphic.Component
 
