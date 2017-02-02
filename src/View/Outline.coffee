@@ -137,6 +137,7 @@ R.create "OutlineItem",
             setValue: @_setLabelValue
             onClick: => @_select()
           }
+        R.SwatchesForElement {element}
       if layout.showAttributesInOutline
         R.NovelAttributesList {element, context: "Outline"}
 

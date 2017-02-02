@@ -2,6 +2,7 @@ _ = require "underscore"
 R = require "./R"
 Model = require "../Model/Model"
 Util = require "../Util/Util"
+Spread = require "../Dataflow/Spread"
 
 
 R.create "AttributeRow",
@@ -301,6 +302,13 @@ R.create "AttributeLabel",
         onMouseEnter: @_onMouseEnter
         onMouseLeave: @_onMouseLeave
       },
+        R.SwatchesForAttribute {
+          attribute,
+          style:
+            paddingRight: "0.75em"
+            float: "right"
+            paddingTop: "3px"
+        }
         R.EditableText {
           className: "EditableTextInline Interactive"
           value: attribute.label
@@ -407,7 +415,9 @@ R.create "AttributeToken",
       onMouseEnter: @_onMouseEnter
       onMouseLeave: @_onMouseLeave
     },
-      @_label()
+      R.span {className: "ReferenceTokenRow FlexRow"},
+        @_label()
+        R.SwatchesForAttribute {attribute, style: {paddingLeft: "0.75em"}}
 
   _label: ->
     {attribute, contextElement} = @props
@@ -434,3 +444,74 @@ R.create "AttributeToken",
     {dragManager, hoverManager} = @context
     return if dragManager.drag?
     hoverManager.hoveredAttribute = null
+
+
+R.create "Swatches",
+  propTypes:
+    value: "any"
+    contextElement: "any"  # TODO: should be Model.Element or null
+    attribute: "any"  # TODO: should be Model.Attribute or null
+
+  contextTypes:
+    project: Model.Project
+
+  render: ->
+    {value, contextElement, attribute, style} = @props
+    {project} = @context
+    {editingElement} = project
+    style ||= {}
+
+    spreadOrigins = Spread.origins(value)
+
+    R.span {
+      className: "Swatches FlexRow"
+      style
+    },
+      spreadOrigins.map (origin, i) =>
+        color = origin.swatchColor(editingElement)
+        isOrigin = (origin == attribute)
+
+        tooltipOverlay =
+          R.span {},
+            if isOrigin
+              "New axis of variation"
+            else
+              [
+                "Varies with changing "
+                R.AttributeToken {attribute: origin, contextElement}
+              ]
+
+        R.Tooltip {
+          key: i
+          placement: "top"
+          trigger: ["hover"]
+          overlay: tooltipOverlay
+        },
+          R.div {
+            className: "Swatch"
+            style: {backgroundColor: color}
+          },
+            if not isOrigin
+              R.span {className: "SwatchIcon icon-link"} #,  "🔗" # "\u2605"
+
+
+R.create "SwatchesForAttribute",
+  render: ->
+    {attribute, style} = @props
+    R.Swatches {
+      value: attribute.value()
+      contextElement: attribute.parentElement()
+      attribute
+      style
+    }
+
+
+R.create "SwatchesForElement",
+  render: ->
+    {element, style} = @props
+    R.Swatches {
+      value: element.graphic()
+      contextElement: element
+      attribute: null
+      style
+    }

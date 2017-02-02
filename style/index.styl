@@ -519,6 +519,26 @@ HeaderSize = 18px
   background-image linear-gradient(to bottom, #e4e4e4, #c4c4c4)
 
 
+// ===========================================================================
+// Spread Swatches
+// ===========================================================================
+
+.Swatches
+  align-items center
+
+  .Swatch
+    display inline-flex
+    width 10px
+    height 10px
+    margin-left 3px
+    align-items center
+    justify-content center
+
+    .SwatchIcon
+      color white
+      font-size 70%
+
+
 // ============================================================================
 // Expression
 // ============================================================================
@@ -534,19 +554,6 @@ HeaderSize = 18px
   padding 0 0.75em
   display inline-block
 
-.SpreadValue
-  &:before
-    content "["
-    opacity 0.5
-  &:after
-    content "]"
-    opacity 0.5
-
-.SpreadValueItem
-  &:not(:last-child):after
-    content ", "
-    opacity 0.5
-
 // ============================================================================
 // Editable Text
 // ============================================================================
@@ -554,7 +561,6 @@ HeaderSize = 18px
 .EditableTextInline
   display inline
   padding-right 0.75em
-
 
 // ============================================================================
 // CodeMirror
@@ -593,7 +599,12 @@ HeaderSize = 18px
   font-family inherit
 
 
+// ============================================================================
+// rc-tooltip
+// ============================================================================
 
+.rc-tooltip-inner
+  min-height 0 !important
 
 
 

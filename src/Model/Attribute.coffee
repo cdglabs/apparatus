@@ -16,6 +16,10 @@ module.exports = Attribute = Node.createVariant
 
     @value = Dataflow.cell(@_value.bind(this))
 
+    # Because the _swatchColor property is not inherited, it is initialized
+    # in the constructor for every Attribute.
+    @_swatchColor = false
+
   _value: ->
     if @hasOverrideValue()
       return @__overrideValue
@@ -151,6 +155,13 @@ module.exports = Attribute = Node.createVariant
     until !result or result.isVariantOf(Model.Element)
       result = result.parent()
     return result
+
+  # editingElement is needed so that we can keep track of the next swatch color
+  # to assign
+  swatchColor: (editingElement) ->
+    if not this._swatchColor
+      this._swatchColor = editingElement.assignNewSwatchColor()
+    return this._swatchColor
 
 
 

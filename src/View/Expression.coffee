@@ -55,14 +55,29 @@ R.create "Value",
 R.create "SpreadValue",
   propTypes:
     spread: "any"
+
+  contextTypes:
+    project: Model.Project
+
   render: ->
     {spread} = @props
+    {project} = @context
+    {editingElement} = project
+
     maxSpreadItems = 5
+    swatchColor = spread.origin.swatchColor(editingElement)
+    delimiterStyle = {color: swatchColor, opacity: 0.75}
 
     R.span {className: "SpreadValue"},
+      R.span {style: delimiterStyle}, "["
       for index in [0...Math.min(spread.items.length, maxSpreadItems)]
         value = spread.items[index]
-        R.span {key: index, className: "SpreadValueItem"},
-          R.Value {value: value}
+        [
+          R.span {key: index, className: "SpreadValueItem"},
+            R.Value {value: value}
+          if index < spread.items.length - 1
+            R.span {style: delimiterStyle}, ","
+        ]
       if spread.items.length > maxSpreadItems
         "..."
+      R.span {style: delimiterStyle}, "]"

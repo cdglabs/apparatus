@@ -15,3 +15,22 @@ module.exports = class Spread
 
   flattenToArray: ->
     _.flatten(@toArray())
+
+  # Given a value, returns an array of its spread-origins (if it's a spread) or
+  # [] (otherwise). Assumes that spreads are homogeneous.
+  @origins: (value) ->
+    if value instanceof Spread
+      restOfOrigins =
+        if value.items.length == 0
+          []
+        else
+          bestRestOfOrigins = []
+          for item in value.items
+            curRestOfOrigins = Spread.origins(item)
+            if curRestOfOrigins.length > bestRestOfOrigins.length
+              bestRestOfOrigins = curRestOfOrigins
+          bestRestOfOrigins
+      restOfOrigins.unshift(value.origin)
+      return restOfOrigins
+    else
+      return []
