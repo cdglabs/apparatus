@@ -277,7 +277,7 @@ R.create "AttributeLabel",
     {hoverManager, editor} = @context
 
     isHovered = hoverManager.hoveredAttribute == attribute
-    canHaveMenu = editor.experimental
+    canHaveMenu = true
     isMenuHovered = @isMenuHovered
     isMenuVisible = canHaveMenu and (isHovered or isMenuHovered)
 
