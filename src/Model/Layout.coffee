@@ -14,7 +14,10 @@ module.exports = class Layout
     @_refreshLayout()
 
   toggleFullScreen: ->
-    @fullScreen = !@fullScreen
+    @setFullScreen(!@fullScreen)
+
+  setFullScreen: (fullScreen) ->
+    @fullScreen = fullScreen
     @_refreshLayout()
 
   toggleShowAttributesInOutline: ->

@@ -40,6 +40,9 @@ module.exports = class Editor
     else if parsed.loadFirebase
       @loadFromFirebase(parsed.loadFirebase)
 
+    if parsed.fullScreen == '1'
+      @layout.setFullScreen(true)
+
   # TODO: get version via build process / ENV variable?
   version: "0.4.1"
 
