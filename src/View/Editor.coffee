@@ -18,14 +18,17 @@ R.create "Editor",
     }
 
   render: ->
-    R.MouseManagersWrapper {},
-      R.div { className: "Editor FlexRow" },
-        R.DragHint {}
-        R.CreatePanel {}
-        R.div { className: "Center FlexGrow FlexColumn" },
-          R.Menubar {}
-          R.EditorCanvas {}
-        R.RightPanel {}
+    if @props.editor.project
+      R.MouseManagersWrapper {},
+        R.div { className: "Editor FlexRow" },
+          R.DragHint {}
+          R.CreatePanel {}
+          R.div { className: "Center FlexGrow FlexColumn" },
+            R.Menubar {}
+            R.EditorCanvas {}
+          R.RightPanel {}
+    else
+      R.div {style: {margin: 20, fontSize: "200%"}}, "Loading diagram..."
 
 
 # This wrapper provides a DragManager and HoverManager for its children to

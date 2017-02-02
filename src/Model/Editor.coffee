@@ -10,14 +10,16 @@ module.exports = class Editor
   constructor: ->
     @_setupLayout()
     @_setupSerializer()
+    @_parseQueryString()
     @_setupProject()
     @_setupRevision()
-    @_parseQueryString()
 
   _setupLayout: ->
     @layout = new Model.Layout()
 
   _setupProject: ->
+    if @loadingProject then return
+
     @loadFromLocalStorage()
     if !@project
       @createNewProject()
@@ -29,8 +31,10 @@ module.exports = class Editor
   # (the ?stuff at the end of the URL).
   _parseQueryString: ->
     parsed = queryString.parse(location.search)
+
     if parsed.experimental == '1'
       @experimental = true
+
     if parsed.load
       @loadFromURL(parsed.load)
     else if parsed.loadFirebase
@@ -132,6 +136,7 @@ module.exports = class Editor
       @loadJsonStringIntoProjectFromExternalSource(jsonString)
     xhr.open("GET", url, true)
     xhr.send()
+    @loadingProject = true
 
   loadFromFirebase: (key) ->
     @firebaseAccess ?= new FirebaseAccess()
@@ -146,6 +151,8 @@ module.exports = class Editor
         else
           throw error
       .done()
+
+    @loadingProject = true
 
   saveToFirebase: ->
     @firebaseAccess ?= new FirebaseAccess()
