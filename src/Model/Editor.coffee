@@ -1,51 +1,56 @@
 _ = require "underscore"
 queryString = require "query-string"
+require "whatwg-fetch"
 Model = require "./Model"
 Util = require "../Util/Util"
 Storage = require "../Storage/Storage"
 FirebaseAccess = require "../Storage/FirebaseAccess"
 
-
 module.exports = class Editor
   constructor: ->
-    @_setupLayout()
-    @_setupSerializer()
-    @_parseQueryString()
-    @_setupProject()
-    @_setupRevision()
-
-  _setupLayout: ->
     @layout = new Model.Layout()
+    @serializer = Model.SerializerWithBuiltIns.getSerializer()
 
-  _setupProject: ->
-    if @loadingProject then return
+    parsedQuery = queryString.parse(location.search)
 
+    isSelected = (str) => str and str.trim() == '1'
+
+    if isSelected(parsedQuery.experimental)
+      @experimental = true
+    if isSelected(parsedQuery.fullScreen)
+      @layout.setFullScreen(true)
+
+    if parsedQuery.load
+      jsonPromise = @getJsonFromURLPromise(parsedQuery.load)
+    else if parsedQuery.loadFirebase
+      jsonPromise = @getJsonFromFirebasePromise(parsedQuery.loadFirebase)
+
+    if jsonPromise
+      # Remote initial load
+      jsonPromise
+        .then (json) =>
+          @loadJsonStringIntoProject(json)
+          @setupRevision()
+          Apparatus.refresh()
+        .catch (e) =>
+          @initialLoadError = e
+          Apparatus.refresh()
+    else
+      @performLocalInitialLoad()
+
+  performLocalInitialLoad: ->
     @loadFromLocalStorage()
     if !@project
       @createNewProject()
-
-  _setupSerializer: ->
-    @serializer = Model.SerializerWithBuiltIns.getSerializer()
-
-  # Checks if we should load an external JSON file based on the query string
-  # (the ?stuff at the end of the URL).
-  _parseQueryString: ->
-    parsed = queryString.parse(location.search)
-
-    if parsed.experimental == '1'
-      @experimental = true
-
-    if parsed.load
-      @loadFromURL(parsed.load)
-    else if parsed.loadFirebase
-      @loadFromFirebase(parsed.loadFirebase)
-
-    if parsed.fullScreen == '1'
-      @layout.setFullScreen(true)
+    @setupRevision()
 
   # TODO: get version via build process / ENV variable?
   version: "0.4.1"
 
+  # Given a JSON string, parses it and loads it as the editor's project. This
+  # does not modify the revision history, so it is safe for use by undo/redo
+  # procedures. However, the caller should make sure to checkpoint and/or
+  # refresh Apparatus afterwards if necessary.
   loadJsonStringIntoProject: (jsonString) ->
     json = JSON.parse(jsonString)
     # TODO: If the file format changes, this will need to check the version
@@ -54,11 +59,10 @@ module.exports = class Editor
       @project = @serializer.dejsonify(json)
       @project.performIdempotentCompatibilityFixes()
 
-  loadJsonStringIntoProjectFromExternalSource: (jsonString) ->
-    @loadJsonStringIntoProject(jsonString)
-    @checkpoint()
-    Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
-
+  # Given a JSON string, parses it and merges novel create panel elements into
+  # the editor's project. This does not modify the revision history, so the
+  # caller should make sure to checkpoint (and/or refresh Apparatus afterwards)
+  # if necessary.
   mergeJsonStringIntoProject: (jsonString) ->
     json = JSON.parse(jsonString)
     # TODO: If the file format changes, this will need to check the version
@@ -69,12 +73,10 @@ module.exports = class Editor
         if createPanelElement not in @project.createPanelElements
           @project.createPanelElements.push(createPanelElement)
 
-  mergeJsonStringIntoProjectFromExternalSource: (jsonString) ->
-    @mergeJsonStringIntoProject(jsonString)
-    @checkpoint()
-    Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
-
   getJsonStringOfProject: ->
+    if not @project
+      throw "Trying to get JSON string of nonexistent project"
+
     json = @serializer.jsonify(@project)
     json.type = "Apparatus"
     json.version = @version
@@ -116,46 +118,33 @@ module.exports = class Editor
 
   loadFromFile: ->
     Storage.loadFile (jsonString) =>
-      @loadJsonStringIntoProjectFromExternalSource(jsonString)
+      @loadJsonStringIntoProject(jsonString)
+      @checkpoint()
+      Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
 
   mergeFromFile: ->
     Storage.loadFile (jsonString) =>
-      @mergeJsonStringIntoProjectFromExternalSource(jsonString)
+      @mergeJsonStringIntoProject(jsonString)
+      @checkpoint()
+      Apparatus.refresh()  # HACK: calling Apparatus seems funky here.
 
 
   # ===========================================================================
   # External URL
   # ===========================================================================
 
-  # TODO: Deal with error conditions, timeout, etc.
-  # TODO: Maybe move xhr stuff to Util.
-  # TODO: Show some sort of loading indicator.
-  loadFromURL: (url) ->
-    xhr = new XMLHttpRequest()
-    xhr.onreadystatechange = =>
-      return unless xhr.readyState == 4
-      return unless xhr.status == 200
-      jsonString = xhr.responseText
-      @loadJsonStringIntoProjectFromExternalSource(jsonString)
-    xhr.open("GET", url, true)
-    xhr.send()
-    @loadingProject = true
+  getJsonFromURLPromise: (url) ->
+    return fetch(url).then (response) =>
+      if not response.ok
+        throw "Request for \"#{url}\" failed with code \"#{response.status} #{response.statusText}\""
+      return response.text()
 
-  loadFromFirebase: (key) ->
+  getJsonFromFirebasePromise: (key) ->
     @firebaseAccess ?= new FirebaseAccess()
 
     @firebaseAccess.loadDrawingPromise(key)
       .then (drawingData) =>
-        jsonString = drawingData.source
-        @loadJsonStringIntoProjectFromExternalSource(jsonString)
-      .catch (error) =>
-        if error instanceof FirebaseAccess.DrawingNotFoundError
-          console.warn "Drawing #{key} not found in Firebase!"
-        else
-          throw error
-      .done()
-
-    @loadingProject = true
+        return drawingData.source
 
   saveToFirebase: ->
     @firebaseAccess ?= new FirebaseAccess()
@@ -205,7 +194,7 @@ module.exports = class Editor
   # Revision History
   # ===========================================================================
 
-  _setupRevision: ->
+  setupRevision: ->
     # @current is a JSON string representing the current state. @undoStack and
     # @redoStack are arrays of such JSON strings.
     @current = @getJsonStringOfProject()
@@ -214,6 +203,8 @@ module.exports = class Editor
     @maxUndoStackSize = 100
 
   checkpoint: ->
+    return if not @undoStack  # revision history hasn't been set up yet
+
     jsonString = @saveToLocalStorage()
     return if @current == jsonString
     @undoStack.push(@current)
