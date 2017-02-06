@@ -19,6 +19,13 @@ module.exports = class Editor
       @experimental = true
     if isSelected(parsedQuery.fullScreen)
       @layout.setFullScreen(true)
+    if parsedQuery.regionOfInterest
+      try
+        @initialLoadRegionOfInterest = JSON.parse(parsedQuery.regionOfInterest)
+      catch e
+        @initialLoadError =
+          "Error parsing regionOfInterest query parameter: #{e.toString()}"
+        return
 
     if parsedQuery.load
       jsonPromise = @getJsonFromURLPromise(parsedQuery.load)
@@ -30,6 +37,12 @@ module.exports = class Editor
       jsonPromise
         .then (json) =>
           @loadJsonStringIntoProject(json)
+
+          if @initialLoadRegionOfInterest
+            @project.editingElement.zoomViewMatrixToRegionOfInterest(
+              @initialLoadRegionOfInterest,
+              window.innerWidth, window.innerHeight)
+
           @setupRevision()
           Apparatus.refresh()
         .catch (e) =>
