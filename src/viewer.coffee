@@ -117,15 +117,8 @@ window.ApparatusViewer = class ApparatusViewer
     # Use regionOfInterest to compute view matrix:
     {regionOfInterest} = @options
     rect = @_element.getBoundingClientRect()
-    scaleFactor = Math.min(
-      rect.width / (regionOfInterest.x[1] - regionOfInterest.x[0]),
-      rect.height / (regionOfInterest.y[1] - regionOfInterest.y[0]))
-    matrix = new Util.Matrix()
-    matrix = matrix.scale(scaleFactor, scaleFactor)
-    matrix = matrix.translate(
-      -(regionOfInterest.x[1] + regionOfInterest.x[0])/2,
-      -(regionOfInterest.y[1] + regionOfInterest.y[0])/2)
-    @_project.editingElement.viewMatrix = matrix
+    @_project.editingElement.zoomViewMatrixToRegionOfInterest(
+      regionOfInterest, rect.width, rect.height)
 
     @_render()
 

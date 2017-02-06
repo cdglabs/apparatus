@@ -40,6 +40,20 @@ module.exports = Element = NodeWithAttributes.createVariant
   # create panel). The default is zoomed to 100 pixels per unit.
   viewMatrix: new Util.Matrix(100, 0, 0, 100, 0, 0)
 
+  # Sets the viewMatrix so that the view (of size viewWidth x viewHeight)
+  # contains the entire region of interest, centered, as large as possible.
+  # roi is in the format {x: [lo, hi], y: [lo, hi]}.
+  zoomViewMatrixToRegionOfInterest: (roi, viewWidth, viewHeight) ->
+    scaleFactor = Math.min(
+      viewWidth / (roi.x[1] - roi.x[0]),
+      viewHeight / (roi.y[1] - roi.y[0]))
+    @viewMatrix =
+      new Util.Matrix()
+      .scale(scaleFactor, scaleFactor)
+      .translate(
+        -(roi.x[1] + roi.x[0]) / 2,
+        -(roi.y[1] + roi.y[0]) / 2)
+
 
   # ===========================================================================
   # Getters
