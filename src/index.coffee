@@ -32,7 +32,7 @@ Apparatus.editor = editor
 
 render = ->
   Dataflow.run ->
-    R.render(R.Editor({editor}), document.getElementById("apparatus-container"))
+    R.render(R.EditorLoader({editor}), document.getElementById("apparatus-container"))
 
 render()
 

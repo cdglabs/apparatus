@@ -87,6 +87,7 @@ R.HoverManager = require "./Manager/HoverManager"
 
 require "./Generic/EditableText"
 require "./Generic/HTMLCanvas"
+require "./EditorLoader"
 require "./Editor"
 require "./Menubar"
 require "./CreatePanel"

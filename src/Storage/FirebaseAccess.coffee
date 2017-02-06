@@ -59,10 +59,13 @@ module.exports = class FirebaseAccess
     return FirebasePromises.getValuePromise(drawingRef)
       .then (drawingDataSnapshot) =>
         if not drawingDataSnapshot.exists()
-          throw new DrawingNotFoundError()
+          throw new DrawingNotFoundError(key)
         drawingData = drawingDataSnapshot.val()
         return drawingData
 
 
 # The error that occurs when you try to load a drawing that doesn't exist.
-FirebaseAccess.DrawingNotFoundError = class DrawingNotFoundError
+FirebaseAccess.DrawingNotFoundError = class DrawingNotFoundError extends Error
+  constructor: (key) ->
+    @name = "DrawingNotFoundError"
+    @message = "Drawing with key \"#{key}\" cannot be found in Firebase"
