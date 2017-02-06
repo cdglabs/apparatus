@@ -13,11 +13,7 @@ module.exports = class Layout
     @rightPanelWidth = Math.min(@_rightPanelMax, Math.max(@_rightPanelMin, newWidth))
     @_refreshLayout()
 
-  toggleFullScreen: ->
-    @setFullScreen(!@fullScreen)
-
-  setFullScreen: (fullScreen) ->
-    @fullScreen = fullScreen
+  setFullScreen: (@fullScreen) ->
     @_refreshLayout()
 
   toggleShowAttributesInOutline: ->

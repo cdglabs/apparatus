@@ -521,9 +521,9 @@ R.create "EditorCanvas",
         className: R.cx
           LayoutMode: true
           FullScreen: layout.fullScreen
-          "icon-fullscreen": !layout.fullScreen
+          "icon-fullscreen": not layout.fullScreen
           "icon-edit": layout.fullScreen
-        onClick: @_toggleLayout
+        onClick: => layout.setFullScreen(not layout.fullScreen)
       }
 
     R.div {className: "EditorCanvas FlexGrow FlexContainer"},
@@ -546,10 +546,6 @@ R.create "EditorCanvas",
             element: editingElement
           },
             fullScreenButton
-
-  _toggleLayout: ->
-    {layout} = @context.editor
-    layout.toggleFullScreen()
 
 
   # ===========================================================================
