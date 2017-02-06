@@ -517,14 +517,28 @@ R.create "EditorCanvas",
     {layout} = editor
 
     fullScreenButton =
-      R.div {
-        className: R.cx
-          LayoutMode: true
-          FullScreen: layout.fullScreen
-          "icon-fullscreen": not layout.fullScreen
-          "icon-edit": layout.fullScreen
-        onClick: => layout.setFullScreen(not layout.fullScreen)
-      }
+      if not layout.viewOnly
+        R.div {
+          className: R.cx
+            LayoutMode: true
+            FullScreen: layout.fullScreen
+            "icon-fullscreen": not layout.fullScreen
+            "icon-edit": layout.fullScreen
+          onClick: => layout.setFullScreen(not layout.fullScreen)
+        }
+      else if layout.editLink
+        R.a {
+          href: editor.urlForEditMode()
+          target: "_parent"
+          style: {color: "inherit"}
+          title: "Load in editor"
+        },
+          R.div {
+            className: R.cx
+              LayoutMode: true
+              EditLink: true
+              "icon-pencil": true
+          }
 
     R.div {className: "EditorCanvas FlexGrow FlexContainer"},
       if layout.fullScreen

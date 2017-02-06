@@ -19,6 +19,10 @@ module.exports = class Editor
       @experimental = true
     if isSelected(parsedQuery.fullScreen)
       @layout.setFullScreen(true)
+    if isSelected(parsedQuery.viewOnly)
+      @layout.setViewOnly(true)
+    if isSelected(parsedQuery.editLink)
+      @layout.setEditLink(true)
     if parsedQuery.regionOfInterest
       try
         @initialLoadRegionOfInterest = JSON.parse(parsedQuery.regionOfInterest)
@@ -56,6 +60,12 @@ module.exports = class Editor
     if !@project
       @createNewProject()
     @setupRevision()
+
+  urlForEditMode: ->
+    parsedQuery = queryString.parse(location.search)
+    for key in ["fullScreen", "viewOnly", "editLink", "regionOfInterest"]
+      delete parsedQuery[key]
+    return "?" + queryString.stringify(parsedQuery)
 
   # TODO: get version via build process / ENV variable?
   version: "0.4.1"

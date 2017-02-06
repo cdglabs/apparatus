@@ -16,6 +16,11 @@ module.exports = class Layout
   setFullScreen: (@fullScreen) ->
     @_refreshLayout()
 
+  setViewOnly: (@viewOnly) ->
+
+  setEditLink: (@editLink) ->
+    @viewOnly = true
+
   toggleShowAttributesInOutline: ->
     @showAttributesInOutline = !@showAttributesInOutline
 
