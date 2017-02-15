@@ -1,36 +1,62 @@
 <!DOCTYPE html>
-<html>
-
-<head>
-    <title>Apparatus Viewer Test</title>
+<html lang="en">
+  <head>
     <meta charset="utf-8">
-</head>
+    <title>Proofs by picture</title>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        margin-top: 100px;
+        margin-bottom: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row"><div class="col-md-6 col-md-offset-3">
+        <h1>Proofs by picture</h1>
 
-<body>
+        <h3>Adding up odd numbers</h3>
 
-    <h1>Adding up odd numbers</h1> What happens when you add up a bunch of odd numbers in a
-    row?
-    <div>
-        <iframe src='/?load=viewer-test/sum-of-odds.json
-                     &amp;fullScreen=1
-                     &amp;viewOnly=1
-                     &amp;editLink=1
-                     &amp;regionOfInterest={"x":[-0.5, 7.5],"y": [-1.5, 7.5]}'
-            width="300" height="300" style="border: none">
-            </iframe>
+        <p>What happens when you add up a bunch of odd numbers in a row, like 1 +
+        3 + 5 + 7?
+
+        <div>
+          <iframe src='../?load=viewer-test/sum-of-odds.json&amp;fullScreen=1&amp;viewOnly=1&amp;editLink=1&amp;regionOfInterest={"x":[-0.5, 7.5],"y": [-1.5, 7.5]}'
+              width="300" height="300" style="border: none">
+          </iframe>
+        </div>
+
+        <p>What a nifty way to make my favorite square number, 16!
+
+        <p>This diagram shows that the sum of the first <i>n</i> odd
+        numbers is always a square number – each odd number fits perfectly onto
+        the last square number, to make the next square number.
+
+        <p>Or, in symbols,
+          <blockquote><i>n</i><sup>2</sup> + (2<i>n</i> + 1) = (<i>n</i> + 1)<sup>2</sup></blockquote>
+
+        <p>Which do you find more convincing, the diagram, or the symbols? (Or
+        the diagram <i>plus</i> the symbols?)
+
+        <h3>Circles and sinusoids</h3>
+
+        <p>Here's something strange: a row of clocks with the hand going around:
+        12pm, 3pm, 6pm, 9pm. As we increase the number of circles, we'll have
+        the hand go around slower, and squeeze the circles horizontally so they
+        fit. See what happens:
+
+        <div>
+          <iframe src='../?load=viewer-test/circles.json&amp;fullScreen=1&amp;viewOnly=1&amp;editLink=1&amp;regionOfInterest={"x":[-1, 6.4],"y":[-1.1, 2.2]}'
+              width="400" height="250" style="border: none">
+          </iframe>
+        </div>
+
+        <p>By the time we get to 25 circles or so, a curve is forming. It's
+        called a <i>sine curve</i>. A sine curve tracks the vertical (or
+        horizontal) position of something moving around a circle, like our clock
+        hand.
+      </div></div>
     </div>
-
-    <h1>Circles and sinusoids</h1> What happens when you make clocks really thin?
-    <div>
-        <iframe src='/?load=viewer-test/circles.json
-                    &amp;fullScreen=1
-                    &amp;viewOnly=1
-                    &amp;editLink=1
-                    &amp;regionOfInterest={"x":[-1, 6.4],"y":[-1.1, 2.2]}'
-            width="400" height="250" style="border: none">
-            </iframe>
-    </div>
-
-</body>
-
+  </body>
 </html>
