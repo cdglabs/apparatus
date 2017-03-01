@@ -368,9 +368,11 @@ R.create "ExpressionCode",
     return {start, end}
 
   _startScrubbingSelection: (mouseDownEvent) ->
-    dragManager = @context.dragManager
+    {attribute} = @props
+    {dragManager} = @context
 
     originalValue = +@mirror.getSelection()
+    isAtStart = @mirror.getCursor("from").ch == 0
     precision = Util.precision(@mirror.getSelection())
 
     startX = mouseDownEvent.clientX
@@ -382,7 +384,10 @@ R.create "ExpressionCode",
         dx = dx / 3
         delta = dx * Math.pow(10, -precision)
         newValue = originalValue + delta
+        if isAtStart and range = attribute.range()
+          newValue = Math.min(Math.max(newValue, range.low), range.high)
         if key.command
           newValue = Util.roundToPrecision(newValue, precision - 1)
         newValue = Util.toPrecision(newValue, precision)
+
         @mirror.replaceSelection(""+newValue, "around")

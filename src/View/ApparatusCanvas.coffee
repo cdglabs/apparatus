@@ -367,7 +367,9 @@ R.create "ApparatusCanvas",
         initialValues = for attribute in attributesToChange
           attribute.value()
         precisions = for attribute in attributesToChange
-          Util.precision(attribute.exprString)
+          attribute.precision()
+        ranges = for attribute in attributesToChange
+          attribute.range()
 
         objective = (trialValues) =>
           for attribute, index in attributesToChange
@@ -385,14 +387,25 @@ R.create "ApparatusCanvas",
           return error
 
         solvedValues = Util.solve(objective, initialValues)
+
         for attribute, index in attributesToChange
           solvedValue = solvedValues[index]
           precision = precisions[index]
-          # Hold the command key to "snap-drag" to one level coarser
-          # precision.
+          range = ranges[index]
+
+          # Apply range restrictions:
+          if range
+            solvedValue = Math.min(Math.max(solvedValue, range.low), range.high)
+
+          # Apply precision: (Hold the command key to "snap-drag" to one level
+          # coarser precision.)
           if key.command
             solvedValue = Util.roundToPrecision(solvedValue, precision - 1)
           solvedValue = Util.toPrecision(solvedValue, precision)
+
+          if range
+            solvedValue = solvedValue + "{#{range.low}-#{range.high}}"
+
           attribute.setExpression(solvedValue)
 
     if startImmediately

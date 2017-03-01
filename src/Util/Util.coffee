@@ -155,9 +155,20 @@ Util.numberFragment =
   "[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
 Util.numberRegExp =
   new RegExp("^#{Util.numberFragment}$")
+Util.rangedNumberRegExp =
+  new RegExp("^(#{Util.numberFragment}){(#{Util.numberFragment})-(#{Util.numberFragment})}$")
 
 Util.isNumberString = (string) ->
   return Util.numberRegExp.test(string)
+
+Util.matchRangedNumberString = (string) ->
+  maybeMatch = string.match(Util.rangedNumberRegExp)
+  if not maybeMatch then return maybeMatch  # no match
+  return {
+    valueStr: maybeMatch[1]
+    lowStr: maybeMatch[3]
+    highStr: maybeMatch[5]
+  }
 
 Util.isStringLiteral = (string) ->
   return /^(?:"(?:\\"|[^"\r\n])*"|'(?:\\'|[^'\r\n])*')$/.test(string)

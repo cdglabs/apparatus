@@ -25,7 +25,7 @@ module.exports = Attribute = Node.createVariant
     parsing = @_parsing()
 
     switch parsing.type
-      when "override", "number"
+      when "override", "number", "rangedNumber"
         # These types have constant values stored in the parsing...
 
         return parsing.value
@@ -64,6 +64,15 @@ module.exports = Attribute = Node.createVariant
         _.extend @__parsing, {
           type: "number"
           value: parseFloat(@exprString)
+          precision: Util.precision(@exprString)
+        }
+      else if rangedNumberMatch = Util.matchRangedNumberString(@exprString)
+        _.extend @__parsing, {
+          type: "rangedNumber"
+          value: parseFloat(rangedNumberMatch.valueStr)
+          low: parseFloat(rangedNumberMatch.lowStr)
+          high: parseFloat(rangedNumberMatch.highStr)
+          precision: Util.precision(rangedNumberMatch.valueStr)
         }
       else
         compiledExpression = new CompiledExpression(this)
@@ -118,7 +127,7 @@ module.exports = Attribute = Node.createVariant
   hasReferences: -> _.any(@references(), -> true)
 
   isNumber: ->
-    return @_parsing().type == "number"
+    return @_parsing().type in ["number", "rangedNumber"]
 
   isString: ->
     return Util.isStringLiteral(@exprString)
@@ -131,6 +140,14 @@ module.exports = Attribute = Node.createVariant
 
   isNovel: ->
     @hasOwnProperty("exprString")
+
+  precision: ->
+    return @_parsing().precision
+
+  range: ->
+    parsing = @_parsing()
+    if parsing.type == 'rangedNumber'
+      return {low: parsing.low, high: parsing.high}
 
   # Descends through all recursively referenced attributes. An object is
   # returned with two properties:
