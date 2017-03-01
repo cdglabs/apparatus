@@ -21,40 +21,63 @@ module.exports = Attribute = Node.createVariant
     @_swatchColor = false
 
   _value: ->
-    if @hasOverrideValue()
-      return @__overrideValue
+    # Get an up-to-date (possibly cached) parsing:
+    parsing = @_parsing()
 
-    # Optimization
-    if @isNumber()
-      return parseFloat(@exprString)
+    switch parsing.type
+      when "override", "number"
+        # These types have constant values stored in the parsing...
 
-    if @_isDirty()
-      @_updateCompiledExpression()
+        return parsing.value
 
-    if (circularReferencePath = @circularReferencePath())?
-      return new CircularReferenceError(circularReferencePath)
+      when "expression"
+        # This type requires computation...
 
-    referenceValues = _.mapObject @references(), (referenceAttribute) ->
-      referenceAttribute.value()
+        if (circularReferencePath = @circularReferencePath())?
+          return new CircularReferenceError(circularReferencePath)
 
-    try
-      return @__compiledExpression.evaluate(referenceValues)
-    catch error
-      if error instanceof Dataflow.UnresolvedSpreadError
-        throw error
+        referenceValues = _.mapObject @references(), (referenceAttribute) ->
+          referenceAttribute.value()
+
+        try
+          return parsing.compiledExpression.evaluate(referenceValues)
+        catch error
+          if error instanceof Dataflow.UnresolvedSpreadError
+            throw error
+          else
+            return error
+
+  _parsing: ->
+    if not @hasOwnProperty("__parsing") or @__parsing.exprString != @exprString
+      # We need to parse now
+
+      @__parsing = {
+        exprString: @exprString
+      }
+
+      if @hasOwnProperty("__overrideValue")
+        _.extend @__parsing, {
+          type: "override"
+          value: @__overrideValue
+        }
+      else if Util.isNumberString(@exprString)
+        _.extend @__parsing, {
+          type: "number"
+          value: parseFloat(@exprString)
+        }
       else
-        return error
+        compiledExpression = new CompiledExpression(this)
+        if compiledExpression.isSyntaxError
+          compiledExpression.fn = @__compiledExpression?.fn ? -> new Error("Syntax error")
+        _.extend @__parsing, {
+          type: "expression"
+          compiledExpression: compiledExpression
+        }
 
-  _isDirty: ->
-    return true if !@hasOwnProperty("__compiledExpression")
-    return true if @__compiledExpression.exprString != @exprString
-    return false
+    return @__parsing
 
-  _updateCompiledExpression: ->
-    compiledExpression = new CompiledExpression(this)
-    if compiledExpression.isSyntaxError
-      compiledExpression.fn = @__compiledExpression?.fn ? -> new Error("Syntax error")
-    @__compiledExpression = compiledExpression
+  _clearParsing: ->
+    delete @__parsing
 
   setExpression: (exprString, references={}) ->
     @exprString = String(exprString)
@@ -79,9 +102,10 @@ module.exports = Attribute = Node.createVariant
 
   setOverrideValue: (overrideValue) ->
     @__overrideValue = overrideValue
+    @_clearParsing()
 
   hasOverrideValue: () ->
-    @hasOwnProperty('__overrideValue')
+    @_parsing().type == "override"
 
   references: ->
     references = {}
@@ -94,7 +118,7 @@ module.exports = Attribute = Node.createVariant
   hasReferences: -> _.any(@references(), -> true)
 
   isNumber: ->
-    return Util.isNumberString(@exprString)
+    return @_parsing().type == "number"
 
   isString: ->
     return Util.isStringLiteral(@exprString)
@@ -159,9 +183,9 @@ module.exports = Attribute = Node.createVariant
   # editingElement is needed so that we can keep track of the next swatch color
   # to assign
   swatchColor: (editingElement) ->
-    if not this._swatchColor
-      this._swatchColor = editingElement.assignNewSwatchColor()
-    return this._swatchColor
+    if not @_swatchColor
+      @_swatchColor = editingElement.assignNewSwatchColor()
+    return @_swatchColor
 
 
 
@@ -240,5 +264,5 @@ class CompiledExpression
 
 Attribute.CircularReferenceError = class CircularReferenceError extends Error
   constructor: (@attributePath) ->
-    labels = _.pluck(@attributePath, 'label')
-    @message = "Circular reference: #{labels.join(' -> ')}"
+    labels = _.pluck(@attributePath, "label")
+    @message = "Circular reference: #{labels.join(" -> ")}"

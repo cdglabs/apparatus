@@ -151,8 +151,13 @@ Util.charToLineCh = (string, char) ->
   lines = stringUpToChar.split("\n")
   return {line: lines.length-1, ch: _.last(lines).length}
 
+Util.numberFragment =
+  "[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?"
+Util.numberRegExp =
+  new RegExp("^#{Util.numberFragment}$")
+
 Util.isNumberString = (string) ->
-  return /^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/.test(string)
+  return Util.numberRegExp.test(string)
 
 Util.isStringLiteral = (string) ->
   return /^(?:"(?:\\"|[^"\r\n])*"|'(?:\\'|[^'\r\n])*')$/.test(string)
