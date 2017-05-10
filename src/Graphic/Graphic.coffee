@@ -470,6 +470,7 @@ class Graphic.Stroke extends Graphic.PaintOp
       matrix.canvasTransform(ctx)
     ctx.strokeStyle = @color
     ctx.lineWidth = @lineWidth
+    ctx.setLineDash(@lineDash) if @lineDash
     ctx.stroke()
     ctx.restore()
 
