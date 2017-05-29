@@ -56,6 +56,7 @@ htmlToImageURL = require "./evaluateHtmlToImageURL"
 jspmRequire = (require "./evaluateJspmRequire").jspmRequire
 npmRequire = (require "./evaluateJspmRequire").npmRequire
 get = require "./evaluateGet"
+timeInSecs = require "./evaluateTimeInSecs"
 
 
 
