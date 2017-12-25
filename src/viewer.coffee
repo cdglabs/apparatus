@@ -126,12 +126,6 @@ window.ApparatusViewer = class ApparatusViewer
       "mousedown"
       "mousemove"
       "mouseup"
-      "keydown"
-      "keyup"
-      "scroll"
-      "change"
-      "wheel"
-      "mousewheel"
     ]
 
     @willRefreshNextFrame = false
