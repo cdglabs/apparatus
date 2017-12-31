@@ -34,6 +34,9 @@ NodeVisitor = require "./Util/NodeVisitor"
 #       (This rectangle will be fit snuggly into the DOM node provided.)
 #
 #   You may provide...
+#     onLoad: [function]
+#       Callback to be run once the diagram is loaded (before any rendering),
+#       with `this` taking the value of the ApparatusViewer.
 #     onRender: [function]
 #       Callback to be run after each diagram render operation, with `this`
 #       taking the value of the ApparatusViewer.
@@ -119,6 +122,8 @@ window.ApparatusViewer = class ApparatusViewer
     rect = @_element.getBoundingClientRect()
     @_project.editingElement.zoomViewMatrixToRegionOfInterest(
       regionOfInterest, rect.width, rect.height)
+
+    @options.onLoad?.apply(this)
 
     @_render()
 
