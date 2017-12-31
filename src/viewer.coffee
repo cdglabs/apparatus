@@ -34,6 +34,9 @@ NodeVisitor = require "./Util/NodeVisitor"
 #       (This rectangle will be fit snuggly into the DOM node provided.)
 #
 #   You may provide...
+#     symbol: [string]
+#       Label of the symbol to be viewed. (Must be unique.) If missing, the
+#       currently edited symbol will be viewed.
 #     onLoad: [function]
 #       Callback to be run once the diagram is loaded (before any rendering),
 #       with `this` taking the value of the ApparatusViewer.
@@ -76,6 +79,18 @@ window.ApparatusViewer = class ApparatusViewer
     if foundMultiple
       throw "Found multiple attributes with label #{label}"
     return new Attribute(attribute, this)
+
+  # Switches the viewer to the symbol with label `label`, provided this label is
+  # unique.
+  switchToSymbol: (label) ->
+    matchingSymbols =
+      @_project.createPanelElements.filter (symbol) -> symbol.label == label
+    if matchingSymbols.length == 1
+      @_project.setEditing(matchingSymbols[0])
+    else if matchingSymbols.length < 1
+      throw "Found no symbols with label #{label}"
+    else
+      throw "Found multiple symbols with label #{label}"
 
   # ADVANCED USAGE: Returns a reference to the internal `Project` object being
   # displayed in the viewer. You can read and write to this object, but beware:
@@ -122,6 +137,9 @@ window.ApparatusViewer = class ApparatusViewer
     rect = @_element.getBoundingClientRect()
     @_project.editingElement.zoomViewMatrixToRegionOfInterest(
       regionOfInterest, rect.width, rect.height)
+
+    if @options.symbol?
+      @switchToSymbol(@options.symbol)
 
     @options.onLoad?.apply(this)
 
