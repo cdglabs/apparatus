@@ -15,6 +15,8 @@ module.exports = class Editor
 
     isSelected = (str) => str and str.trim() == '1'
 
+    if isSelected(parsedQuery.showFps)
+      @showFps = true
     if isSelected(parsedQuery.experimental)
       @experimental = true
     if isSelected(parsedQuery.fullScreen)

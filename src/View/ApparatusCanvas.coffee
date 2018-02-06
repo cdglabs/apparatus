@@ -61,6 +61,7 @@ R.create "ApparatusCanvas",
 
   componentWillMount: ->
     @_imageCache = new ImageCache()
+    @_lastDrawTimes = []
 
   componentDidMount: ->
     window.addEventListener "resize", @_onResize
@@ -100,6 +101,13 @@ R.create "ApparatusCanvas",
     if @props.showControlPoints
       @_drawControlPoints(ctx)
 
+    if @props.showFps
+      @_drawFps(ctx)
+
+    now = +(new Date())
+    @_lastDrawTimes.push(now)
+    @_lastDrawTimes.shift() while @_lastDrawTimes.length > 2 and @_lastDrawTimes[0] < now - 500
+
   _drawControlPoints: (ctx) ->
     {hoverManager} = @context
     for controlPoint in @_controlPoints()
@@ -117,6 +125,7 @@ R.create "ApparatusCanvas",
       ctx.fill()
       ctx.strokeStyle = color
       ctx.stroke()
+      ctx.restore()
 
   _drawBackgroundGrid: (ctx) ->
     {project} = @context
@@ -159,6 +168,18 @@ R.create "ApparatusCanvas",
     ctx.strokeStyle = "#ccc"
     ctx.lineWidth = 1
     ctx.stroke()
+    ctx.restore()
+
+  _drawFps: (ctx) ->
+    if @_lastDrawTimes.length <= 1 then return
+    fps = 1000 * (@_lastDrawTimes.length - 1) /
+          (@_lastDrawTimes[@_lastDrawTimes.length - 1] - @_lastDrawTimes[0])
+
+
+    ctx.save()
+    ctx.font = '48px Helvetica';
+    ctx.textBaseline = 'hanging';
+    ctx.fillText('FPS: ' + Math.round(fps), 10, 10);
     ctx.restore()
 
 
@@ -557,6 +578,7 @@ R.create "EditorCanvas",
       if layout.fullScreen
         R.BareViewerCanvas {
           element: editingElement
+          showFps: editor.showFps
         },
           fullScreenButton
       else
@@ -571,6 +593,7 @@ R.create "EditorCanvas",
         },
           R.BareEditorCanvas {
             element: editingElement
+            showFps: editor.showFps
           },
             fullScreenButton
 
@@ -617,11 +640,12 @@ R.create "BareEditorCanvas",
       enableControllerInteraction: true
       enablePanAndZoom: true
       clampMouseWhileDragging: false
+      showFps: @props.showFps
       children: @props.children
     }
 
 
-# BareEditorCanvas is ApparatusCanvas with settings appropriate for viewing a
+# BareViewerCanvas is ApparatusCanvas with settings appropriate for viewing a
 # diagram interactively (e.g., in an embedding of the diagram on another page).
 
 R.create "BareViewerCanvas",
@@ -639,6 +663,7 @@ R.create "BareViewerCanvas",
       enableControllerInteraction: true
       enablePanAndZoom: false
       clampMouseWhileDragging: true
+      showFps: @props.showFps
       children: @props.children
     }
 
