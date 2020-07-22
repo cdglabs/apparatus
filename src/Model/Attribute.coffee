@@ -53,6 +53,7 @@ module.exports = Attribute = Node.createVariant
     if not @hasOwnProperty("__parsing") or @__parsing.exprString != @exprString
       # We need to parse now
 
+      oldParsing = @__parsing
       @__parsing = {
         exprString: @exprString
       }
@@ -151,7 +152,8 @@ module.exports = Attribute = Node.createVariant
       else
         compiledExpression = new CompiledExpression(this)
         if compiledExpression.isSyntaxError
-          compiledExpression.fn = @__compiledExpression?.fn ? -> new Error("Syntax error")
+          # if there's an old compiled expression fn, keep it around until the sytax error is resolved
+          compiledExpression.fn = oldParsing?.compiledExpression?.fn ? -> new Error("Syntax error")
         _.extend @__parsing, {
           type: "expression"
           compiledExpression: compiledExpression
@@ -235,6 +237,9 @@ module.exports = Attribute = Node.createVariant
 
   isNovel: ->
     @hasOwnProperty("exprString")
+
+  isSyntaxError: ->
+    @_parsing().compiledExpression?.isSyntaxError
 
   precision: ->
     return @_parsing().precision

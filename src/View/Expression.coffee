@@ -26,7 +26,10 @@ R.create "ExpressionValue",
       R.span {}
     else
       value = attribute.value()
-      R.div {className: "ExpressionValue"},
+      R.div {className: R.cx {
+          ExpressionValue: true,
+          isSyntaxError: @props.attribute.isSyntaxError()
+        }},
         R.Value {value: value}
 
 R.create "Value",
