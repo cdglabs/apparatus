@@ -15,6 +15,7 @@
   "dependencies": {
     "autoprefixer": "^6.3.6",
     "codemirror": "^5.4.0",
+    "coffee-script": "^1.12.7",
     "d3": "~4.3.0",
     "d3-scale-chromatic": "^1.0.2",
     "firebase": "^2.3.2",
