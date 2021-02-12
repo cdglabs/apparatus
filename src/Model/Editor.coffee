@@ -57,6 +57,10 @@ module.exports = class Editor
     else
       @performLocalInitialLoad()
 
+    if @experimental
+      # Preload Firebase access so sharing is faster
+      @firebaseAccess ?= new FirebaseAccess()
+
   performLocalInitialLoad: ->
     @loadFromLocalStorage()
     if !@project
@@ -166,14 +170,12 @@ module.exports = class Editor
 
   getJsonFromFirebasePromise: (key) ->
     @firebaseAccess ?= new FirebaseAccess()
-
     @firebaseAccess.loadDrawingPromise(key)
       .then (drawingData) =>
         return drawingData.source
 
   saveToFirebase: ->
     @firebaseAccess ?= new FirebaseAccess()
-
     jsonString = @getJsonStringOfProject()
     @firebaseAccess.saveDrawingPromise(jsonString)
       .then (key) ->
@@ -182,7 +184,6 @@ module.exports = class Editor
           # TODO: Remove experimental=1 when Firebase access is taken out of
           # experimental mode
           'http://aprt.us/editor/?experimental=1&loadFirebase=' + key)
-      .done()
 
 
   # ===========================================================================
