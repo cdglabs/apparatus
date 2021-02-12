@@ -35,7 +35,7 @@ module.exports = class FirebaseAccess
         # save user to server
         userRef = @ref.child("users").child(@user.uid)
         newUserData =
-          date: Firebase.ServerValue.TIMESTAMP
+          date: firebase.database.ServerValue.TIMESTAMP
           email: @user.providerData[0].email
         return userRef.set(newUserData)
 
@@ -57,7 +57,7 @@ module.exports = class FirebaseAccess
       drawingsRef = @ref.child("drawings")
       newDrawingData =
         uid: @user.uid
-        date: Firebase.ServerValue.TIMESTAMP
+        date: firebase.database.ServerValue.TIMESTAMP
         source: drawing
       newKey = drawingsRef.push().key
       drawingsRef.child(newKey).set(newDrawingData)
