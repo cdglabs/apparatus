@@ -27,7 +27,7 @@
     "react-dropzone": "^3.5.3",
     "react-inspector": "^1.1.1",
     "seedrandom": "^2.4.2",
-    "superagent": "^2.3.0",
+    "superagent": "^3.7.0",
     "underscore": "^1.8.3",
     "whatwg-fetch": "^2.0.2",
     "xml2js": "^0.4.17"
