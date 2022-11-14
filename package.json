@@ -35,14 +35,14 @@
   "devDependencies": {
     "coffee-loader": "^0.7.2",
     "coffeetape": "^1.0.1",
-    "css-loader": "^0.23.1",
+    "css-loader": "^6.7.2",
     "opn-cli": "^3.1.0",
-    "postcss-loader": "^0.8.2",
+    "postcss-loader": "^7.0.1",
     "style-loader": "^0.13.1",
     "stylus": "^0.54.2",
-    "stylus-loader": "^2.0.0",
+    "stylus-loader": "^7.1.0",
     "tape": "^4.0.0",
-    "webpack": "^1.13.0",
+    "webpack": "^5.75.0",
     "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
