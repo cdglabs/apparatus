@@ -34,6 +34,8 @@ sin = Math.sin
 sqrt = Math.sqrt
 tan = Math.tan
 
+mod = (a, b) -> ((a % b) + b) % b
+
 random = (seeds...) ->
   if seeds.length == 0
     throw "`random` needs at least one seed argument"
