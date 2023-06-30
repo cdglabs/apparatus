@@ -1,6 +1,5 @@
 _ = require "underscore"
 
-
 module.exports = class JspmCache
   constructor: ->
     @_modules = {}
@@ -22,9 +21,13 @@ module.exports = class JspmCache
     else
       @_callbacksToRun[moduleName] = callback
 
-      System.import(moduleName).then(
+      url = "https://esm.sh/#{moduleName}"
+      # HACK: wrap import in eval cuz old webpack doesn't like it
+      imported = eval("import('#{url}')")
+      imported.then(
         (result) =>
-          @_modules[moduleName] = result
+          # HACK: convert Module into normal Object so it works with inspector
+          @_modules[moduleName] = Object.assign({}, result)
           callbackToRun = @_callbacksToRun[moduleName]
           delete @_callbacksToRun[moduleName]
           callbackToRun()
@@ -34,5 +37,7 @@ module.exports = class JspmCache
           delete @_callbacksToRun[moduleName]
           callbackToRun()
       )
+
+      return undefined
 
   @IS_LOADING: "__JspmCache::IS_LOADING__"

@@ -18,4 +18,4 @@ module.exports.jspmRequire = jspmRequire = (jspmModuleName) ->
 
 
 module.exports.npmRequire = npmRequire = (npmModuleName) ->
-  jspmRequire("npm:" + npmModuleName)
+  jspmRequire(npmModuleName)
