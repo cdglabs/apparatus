@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "coffee-loader": "^0.7.2",
-    "coffeetape": "^1.0.1",
+    "coffeetape": "^2.0.0",
     "css-loader": "^0.23.1",
     "opn-cli": "^3.1.0",
     "postcss-loader": "^0.8.2",
